@@ -161,6 +161,8 @@ Hope this post was as useful to you as it was to me. See you in another one.
 Some references and useful resources:
 
 [http://wiki.osdev.org/Detecting_Memory_(x86)](http://wiki.osdev.org/Detecting_Memory_%28x86%29)
+
 [https://github.com/YehudaShapira/xv6-explained/blob/master/xv6%20Code%20Explained.md](https://github.com/YehudaShapira/xv6-explained/blob/master/xv6%20Code%20Explained.md)
+
 [http://www.fotiskoutoulakis.com/2014/04/28/introduction-to-xv6-adding-a-new-system-call.html](http://www.fotiskoutoulakis.com/2014/04/28/introduction-to-xv6-adding-a-new-system-call.html)
 
