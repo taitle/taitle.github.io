@@ -11,6 +11,7 @@ xv6 Has a whole chapter dedicated to the Paging mechanism. Since the subject is 
 > **1. Look at real operating systems to see how they size memory.**
 
 This question is answered thoroughly in the famous OSDev wiki.  As it was stated in xv6, this really is a tricky thing to do in x86. Basically, our safest bet is to get the information from the BIOS. But how do we access to BIOS in protected mode, while the OS is running?
+
 http://wiki.osdev.org/Detecting_Memory_(x86)
 
 > **3. Write a user program that grows its address space with 1 byte by calling sbrk(1). Run the program and investigate the page table for the program before the call to sbrk and after the call to sbrk. How much space has the kernel allocated? What does the pte for the new memory contain?**
