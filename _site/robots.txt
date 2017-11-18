@@ -1,1 +1,1 @@
-Sitemap: http://localhost:4000/taitlex/sitemap.xml
+Sitemap: taitle.github.io/taitlex/sitemap.xml
