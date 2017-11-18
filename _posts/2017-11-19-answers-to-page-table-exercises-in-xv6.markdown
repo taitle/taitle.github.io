@@ -12,7 +12,7 @@ xv6 Has a whole chapter dedicated to the Paging mechanism. Since the subject is 
 
 This question is answered thoroughly in the famous OSDev wiki.  As it was stated in xv6, this really is a tricky thing to do in x86. Basically, our safest bet is to get the information from the BIOS. But how do we access to BIOS in protected mode, while the OS is running?
 
-http://wiki.osdev.org/Detecting_Memory_(x86)
+[http://wiki.osdev.org/Detecting_Memory_(x86)](http://wiki.osdev.org/Detecting_Memory_%28x86%29)
 
 > **3. Write a user program that grows its address space with 1 byte by calling sbrk(1). Run the program and investigate the page table for the program before the call to sbrk and after the call to sbrk. How much space has the kernel allocated? What does the pte for the new memory contain?**
 
@@ -157,4 +157,10 @@ You can modify the program header by opening it with a simple hex editor. I will
 This post has already turned out to be longer than I anticipated, but just a quick shout out to the people at MIT for preparing such a great content and making it available to the public. Also, much thanks to the UNIX gods for this amazing OS  + and the almighty C :)
 
 Hope this post was as useful to you as it was to me. See you in another one.
+
+Some references and useful resources:
+
+[http://wiki.osdev.org/Detecting_Memory_(x86)](http://wiki.osdev.org/Detecting_Memory_%28x86%29)
+[https://github.com/YehudaShapira/xv6-explained/blob/master/xv6%20Code%20Explained.md](https://github.com/YehudaShapira/xv6-explained/blob/master/xv6%20Code%20Explained.md)
+[http://www.fotiskoutoulakis.com/2014/04/28/introduction-to-xv6-adding-a-new-system-call.html](http://www.fotiskoutoulakis.com/2014/04/28/introduction-to-xv6-adding-a-new-system-call.html)
 
