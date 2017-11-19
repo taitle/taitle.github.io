@@ -122,8 +122,9 @@ The code is pretty much self-explanatory. We read the first 3 bytes of the file 
 
 You might say "Hey, how do you know the file actually has 3 bytes? Won't this cause some problems?" The answer is no because this functionality is implemented in "exec.c", so we expect that the files that come here are either ELF files, whose header size is already bigger than 3 bytes, or script files, which start with "#!" bytes anyway.
 
-Later, we read the first 16 bytes into interp_path variable, starting from the second byte into the file. Again, you might ask "Why 16 bytes? The interpreter path might be longer!" That is correct. However, xv6 is a remake of the legendary UNIX v6, and traditionally, interpreter path was assumed as 16 bytes in the first implementations. You can check the history of it here:
-https://www.in-ulm.de/~mascheck/various/shebang/
+Later, we read the first 16 bytes into interp_path variable, starting from the second byte into the file. Again, you might ask "Why 16 bytes? The interpreter path might be longer!" That is correct. However, xv6 is a remake of the legendary UNIX v6, and traditionally, interpreter path was assumed as 16 bytes in the first implementations. You can check the history of it from here:
+
+[https://www.in-ulm.de/~mascheck/various/shebang/](https://www.in-ulm.de/~mascheck/various/shebang/)
 
 One last thing, "0xa" is the newline in xv6, so it is used to separate commands from the shebang line. After that, we are done in "exec.c", so we call "exec.c" itself, with interpreter path as the file to be executed, and the script as the argument. Since interpreter path is the first argument, which is what ip points to, first two bytes will not be "#!", instead it will be the interpreter's ELF binary.
 
