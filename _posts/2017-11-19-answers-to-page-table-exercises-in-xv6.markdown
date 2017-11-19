@@ -22,6 +22,7 @@ This question is answered thoroughly in the famous OSDev wiki.  As it was stated
 To be able to investigate the page table easily, I wrote a system call which prints the page directory of the current process. Also, to understand some other problems I was curious about, I added a parameter to the system call, which acts like a switch and if it is set to 1, it prints the KERNEL pages, and if it is set to 0, it prints the USER pages. Here is the code:
 
 {% highlight c %}
+    //sysproc.c
     int sys_traverse(void){
 	struct proc *p = myproc();
 	
@@ -95,6 +96,7 @@ Great. Now when we compile xv6, we will see a file named "script" in xv6's files
 Implementing a shebang consists of two parts. First, we need to have this functionality present in our kernel. Only after that, user level programs can benefit from it and interpret the contents of the script. Since xv6 is a small system, only our beloved "sh" has the capability to interpret the script. To implement the functionality in the kernel, "exec.c" is our first stop.
 
 {% highlight c %}
+    //exec.c
     char shebang[3];
     char interp_path[16]; //16 is for historical reasons. 
     
@@ -128,9 +130,10 @@ Later, we read the first 16 bytes into interp_path variable, starting from the s
 
 One last thing, "0xa" is the newline in xv6, so it is used to separate commands from the shebang line. After that, we are done in "exec.c", so we call "exec.c" itself, with interpreter path as the file to be executed, and the script as the argument. Since interpreter path is the first argument, which is what ip points to, first two bytes will not be "#!", instead it will be the interpreter's ELF binary.
 
-Now that we are done, let's see the code we need to write in order to interpret the actual script content.
+Now that we are done, let's see the code we need to write in "sh.c" in order to interpret the actual script content.
 
 {% highlight c %}
+    //sh.c
     if( (argc == 1) & strcmp(argv[0], "sh") ){
 	fd = open(argv[0], O_RDONLY);
 	if( fd < 0)

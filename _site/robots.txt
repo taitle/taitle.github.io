@@ -1,1 +1,1 @@
-Sitemap: ruysal.com/sitemap.xml
+Sitemap: https://ruysal.com/sitemap.xml
