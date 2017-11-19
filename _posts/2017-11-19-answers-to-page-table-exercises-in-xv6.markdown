@@ -10,14 +10,18 @@ xv6 Has a whole chapter dedicated to the Paging mechanism. Since the subject is 
 
 > **1. Look at real operating systems to see how they size memory.**
 
+
 This question is answered thoroughly in the famous OSDev wiki.  As it was stated in xv6, this really is a tricky thing to do in x86. Basically, our safest bet is to get the information from the BIOS. But how do we access to BIOS in protected mode, while the OS is running?
 
 [http://wiki.osdev.org/Detecting_Memory_(x86)](http://wiki.osdev.org/Detecting_Memory_%28x86%29)
 
+
 > **3. Write a user program that grows its address space with 1 byte by calling sbrk(1). Run the program and investigate the page table for the program before the call to sbrk and after the call to sbrk. How much space has the kernel allocated? What does the pte for the new memory contain?**
+
 
 To be able to investigate the page table easily, I wrote a system call which prints the page directory of the current process. Also, to understand some other problems I was curious about, I added a parameter to the system call, which acts like a switch and if it is set to 1, it prints the KERNEL pages, and if it is set to 0, it prints the USER pages. Here is the code:
 
+{% highlight c %}
     int sys_traverse(void){
 	struct proc *p = myproc();
 	
@@ -52,10 +56,13 @@ To be able to investigate the page table easily, I wrote a system call which pri
 	}
 	return 0;
 }
+{% endhighlight %}
 
 xv6 Does not set the PTE_U bit in Page Directory Entries. That means, we cannot check whether the table belongs to USER or KERNEL in PDEs. So, I had to check this in PTEs. Hence, I summoned this ugly creature from the one-liner hell. Lesson learned: Don't hesitate to use nested ifs, this is much  uglier. 
 
+{% highlight c %}
     if( pgtab[k] & PTE_P && pgtab[k] & ( (argument == 0) ? PTE_U: ( (pgtab[k] & PTE_U) == 0) ) ){
+{% endhighlight %}
 
 The first condition checks whether the PTE is present, the second condition checks if the argument asks for USER pages (i.e 0). If we are looking for USER pages, we do bitwise and on pgtab[k] with PTE_U. Otherwise, we check whether the PGTAB contains PTE_U bit and negate it by checking against 0.
 
@@ -68,12 +75,15 @@ Now that we have a system call to traverse the page table, we can answer the que
 
 > **5. Unix implementations of exec traditionally include special handling for shell scripts. If the file to execute begins with the text #!, then the first line is taken to be a program to run to interpret the file. For example, if exec is called to run myprog arg1 and myprog’s first line is #!/interp, then exec runs /interp with command line /interp myprog arg1. Implement support for this convention in xv6.**
 
+
 Before we get into the implementation of this, we need a script with a shebang line (#!/interp) so that it will be interpreted and we will be able to debug easily as we implement the code. In xv6's main directory, I executed this to have a simple script with a visible result.
 
+{% highlight shell %}
     cat > script
     #!/sh
     echo hello;
     ls;
+{% endhighlight %}
 
 Then, we need to modify the MAKEFILE so that this script is included in xv6's filesystem. Find the following line and modify it as shown below:
 
@@ -84,6 +94,7 @@ Great. Now when we compile xv6, we will see a file named "script" in xv6's files
 
 Implementing a shebang consists of two parts. First, we need to have this functionality present in our kernel. Only after that, user level programs can benefit from it and interpret the contents of the script. Since xv6 is a small system, only our beloved "sh" has the capability to interpret the script. To implement the functionality in the kernel, "exec.c" is our first stop.
 
+{% highlight c %}
     char shebang[3];
     char interp_path[16]; //16 is for historical reasons. 
     
@@ -105,6 +116,7 @@ Implementing a shebang consists of two parts. First, we need to have this functi
 	  }
 	  exec(interp_path, argv);
     }
+{% endhighlight %}
 
 The code is pretty much self-explanatory. We read the first 3 bytes of the file into a buffer and check whether the file starts with "#!". 
 
@@ -117,6 +129,7 @@ One last thing, "0xa" is the newline in xv6, so it is used to separate commands 
 
 Now that we are done, let's see the code we need to write in order to interpret the actual script content.
 
+{% highlight c %}
     if( (argc == 1) & strcmp(argv[0], "sh") ){
 	fd = open(argv[0], O_RDONLY);
 	if( fd < 0)
@@ -133,6 +146,8 @@ Now that we are done, let's see the code we need to write in order to interpret 
     wait();
     exit();
     }
+{% endhighlight %}
+
 At first line, we are checking whether the program has only one arguments and whether it is "sh", shell's name itself. If it is, we don't have any arguments, so this condition will not be met and sh will continue executing normally. Otherwise, we have an argument which needs to be interpreted. We just read the file and since the rest of the functionality we need is actually implemented in xv6 itself, we just copy it from there.
 
 One thing that I should mention is that I haven't copied the code related to the "cd" command. If you want, you can copy it and modify the variables yourself.
@@ -143,6 +158,7 @@ And this is all we need. Let's just compile and run the script. The result is:
 
 
 > **6. Delete the check if(ph.vaddr + ph.memsz < ph.vaddr) in exec.c, and con- struct a user program that exploits that the check is missing.**
+
 
 Even though this is the easiest question of all, I really liked this one. It perfectly demonstrates how an innocent looking integer overflow can be used to takeover the whole kernel. For this question, I used "ls" binary as the subject. To inspect how the program headers look lie on a normal "ls" binary, we can use "readelf -l _ls" in xv6's main directory. The result is:
 
