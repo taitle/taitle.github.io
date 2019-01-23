@@ -1,6 +1,6 @@
 # Site settings
-title: Taitlex
-email: ramazan.uysal@ug.bilkent.edu.tr
+title: Blog
+email: 
 description: > # this means to ignore newlines until "baseurl:"
   Mostly on Information Security.
 baseurl: # # the subpath of your site, e.g. /blog
