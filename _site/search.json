@@ -1,6 +1,15 @@
 [
 
 	{
+		"title"    : "Combining Multiple Design Patterns in Java",
+		"category" : "Java",
+		"desc"     : "For a school related project, I had to design an application combining multiple Design Patterns and implement it in Java. Below is the given project description :So, first of all we have to infer w...",
+		"tags"     : "",
+		"url"      : "/2019/Combining-Multiple-Design-Patterns-in-Java/",
+		"date"     : "2019-01-23 19:15:02 +0300"
+	} ,
+
+	{
 		"title"    : "Answers to Page Table Exercises in xv6",
 		"category" : "xv6osC",
 		"desc"     : "xv6 Has a whole chapter dedicated to the Paging mechanism. Since the subject is presented extensively in the book, I won’t re-write it. Also, since xv6 is used as an actual course in many universit...",
