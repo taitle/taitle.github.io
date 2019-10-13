@@ -71,7 +71,7 @@ Implementing the rest of the system call is unrelated to this post, so I will sk
 
 Now that we have a system call to traverse the page table, we can answer the question. xv6 Allocates another page for a 1 byte sbrk call. You can see it in the screenshot below.
 
-![Exercise 3](http://oi65.tinypic.com/dmw9wh.jpg)
+![Exercıse 3]({{ site.url }}/assets/img/xv6/pgtable.png)
 
 
 > **5. Unix implementations of exec traditionally include special handling for shell scripts. If the file to execute begins with the text #!, then the first line is taken to be a program to run to interpret the file. For example, if exec is called to run myprog arg1 and myprog’s first line is #!/interp, then exec runs /interp with command line /interp myprog arg1. Implement support for this convention in xv6.**
@@ -158,7 +158,7 @@ One thing that I should mention is that I haven't copied the code related to the
 
 And this is all we need. Let's just compile and run the script. The result is: 
 
-![xv6shebang](http://oi68.tinypic.com/14250mx.jpg)
+![xv6shebang]({{ site.url }}/assets/img/xv6/page-2.png)
 
 
 > **6. Delete the check if(ph.vaddr + ph.memsz < ph.vaddr) in exec.c, and con- struct a user program that exploits that the check is missing.**
@@ -166,11 +166,12 @@ And this is all we need. Let's just compile and run the script. The result is:
 
 Even though this is the easiest question of all, I really liked this one. It perfectly demonstrates how an innocent looking integer overflow can be used to takeover the whole kernel. For this question, I used "ls" binary as the subject. To inspect how the program headers look lie on a normal "ls" binary, we can use "readelf -l _ls" in xv6's main directory. The result is:
 
-![innocent ls](http://oi68.tinypic.com/jg2uxw.jpg)
+![innocent ls]({{ site.url }}/assets/img/xv6/overflow1.png)
+
 
 So, on an innocent program, obviously (ph.vaddr + ph.memsz) will never be smaller than ph.vaddr. However, if we craft a program header like below, and the check does not exist, the address can be anything we want, including kernel's addresses. That way, we can overwrite kernel's pages, effectively taking over the system.
 
-![evil ls](http://oi67.tinypic.com/2r70w06.jpg)
+![evil ls]({{ site.url }}/assets/img/xv6/overflow2.png)
 
 You can modify the program header by opening it with a simple hex editor. I will not be showing how it is done, as there are already more than enough resources on that.
 

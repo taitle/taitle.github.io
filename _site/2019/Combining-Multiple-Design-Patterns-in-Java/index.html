@@ -11,19 +11,19 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="For a school related project, I had to design an application combining multiple Design Patterns and implement it in Java. Below is the given project description :" />
 <meta property="og:description" content="For a school related project, I had to design an application combining multiple Design Patterns and implement it in Java. Below is the given project description :" />
-<link rel="canonical" href="http://localhost:4000/2019/Combining-Multiple-Design-Patterns-in-Java/" />
-<meta property="og:url" content="http://localhost:4000/2019/Combining-Multiple-Design-Patterns-in-Java/" />
+<link rel="canonical" href="https://ruysal.com/2019/Combining-Multiple-Design-Patterns-in-Java/" />
+<meta property="og:url" content="https://ruysal.com/2019/Combining-Multiple-Design-Patterns-in-Java/" />
 <meta property="og:site_name" content="Blog" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2019-01-23T19:15:02+03:00" />
+<meta property="article:published_time" content="2019-01-23T17:15:02+01:00" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:site" content="@https://twitter.com/taitlex" />
 <script type="application/ld+json">
-{"description":"For a school related project, I had to design an application combining multiple Design Patterns and implement it in Java. Below is the given project description :","@type":"BlogPosting","url":"http://localhost:4000/2019/Combining-Multiple-Design-Patterns-in-Java/","headline":"Combining Multiple Design Patterns in Java","dateModified":"2019-01-23T19:15:02+03:00","datePublished":"2019-01-23T19:15:02+03:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/Combining-Multiple-Design-Patterns-in-Java/"},"@context":"http://schema.org"}</script>
+{"description":"For a school related project, I had to design an application combining multiple Design Patterns and implement it in Java. Below is the given project description :","@type":"BlogPosting","url":"https://ruysal.com/2019/Combining-Multiple-Design-Patterns-in-Java/","headline":"Combining Multiple Design Patterns in Java","dateModified":"2019-01-23T17:15:02+01:00","datePublished":"2019-01-23T17:15:02+01:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://ruysal.com/2019/Combining-Multiple-Design-Patterns-in-Java/"},"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
   
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/feed.xml">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="https://ruysal.com/feed.xml">
   <link rel="stylesheet" href="/assets/css/nangka.css">
 
   
@@ -85,7 +85,7 @@
   <header class="post-header">
     <h1 class="post-title" itemprop="name headline">Combining Multiple Design Patterns in Java</h1>
     <p class="post-meta">
-       <time datetime="2019-01-23T19:15:02+03:00" itemprop="datePublished">
+       <time datetime="2019-01-23T17:15:02+01:00" itemprop="datePublished">
           Jan 23, 2019
        </time>
        
@@ -98,7 +98,7 @@
   <div class="post-content" itemprop="articleBody">
     <p>For a school related project, I had to design an application combining multiple Design Patterns and implement it in Java. Below is the given project description :</p>
 
-<p><img src="http://localhost:4000/assets/img/desc.png" alt="Project Description"></p>
+<p><img src="https://ruysal.com/assets/img/desc.png" alt="Project Description"></p>
 
 <p>So, first of all we have to infer which design patterns we are supposed to use from the given text.</p>
 <ul>
@@ -166,7 +166,7 @@
 
 <p>Now we can move on to the next line, creating the factory and the sensors. Let’s see it in the class diagram first.</p>
 
-<p><img src="http://localhost:4000/assets/img/factory.png" alt="Abstract Factory Class Diagram"></p>
+<p><img src="https://ruysal.com/assets/img/factory.png" alt="Abstract Factory Class Diagram"></p>
 
 <p>Let’s start with implementing the interface first, then we will write the concrete classes.</p>
 
@@ -207,7 +207,7 @@
 
 <p>Now let’s take a look at the class diagram for the sensors.</p>
 
-<p><img src="http://localhost:4000/assets/img/sensors.png" alt="Sensors"></p>
+<p><img src="https://ruysal.com/assets/img/sensors.png" alt="Sensors"></p>
 
 <p>SensorListener class is not of our concern right now, we will deal with it later when we implement the Observer Pattern. Again, let’s start with the interfaces first, then move on to the concrete classes.</p>
 
@@ -279,7 +279,7 @@
 
 <p>Now that we have the Abstract Factory implemented, we get a better picture of how the sensors will work. And like I mentioned earlier, Adapter Pattern was not called in Main, but in the sensors. Let’s see how the Adapter pattern is implemented in.</p>
 
-<p><img src="http://localhost:4000/assets/img/sms.png" alt="SMS class diagram"></p>
+<p><img src="https://ruysal.com/assets/img/sms.png" alt="SMS class diagram"></p>
 
 <p>Interface first:</p>
 
@@ -380,7 +380,7 @@
     <span class="n">remote</span><span class="o">.</span><span class="na">buttonPressed</span><span class="o">();</span></code></pre></figure>
 
 <p>The class diagram:
-<img src="http://localhost:4000/assets/img/command.png" alt="Command Pattern Class Diagram"></p>
+<img src="https://ruysal.com/assets/img/command.png" alt="Command Pattern Class Diagram"></p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Command</span> <span class="o">{</span>  
         <span class="kd">public</span> <span class="kt">void</span> <span class="nf">execute</span><span class="o">();</span>  
@@ -489,13 +489,13 @@
     <span class="o">}</span></code></pre></figure>
 
 <p>And with the command pattern finished, we are done with the program. Here is the final class diagram:
-<img src="http://localhost:4000/assets/img/uml.png" alt="Final class diagram"></p>
+<img src="https://ruysal.com/assets/img/uml.png" alt="Final class diagram"></p>
 
 <p>I would’ve preferred to put down a references/resources list, but unfortunately I did not keep track of that. But it was all in pretty much the first page results for related pattern name searches.</p>
 
 <p>I’ve used simpleUML to generate the UML class diagrams.</p>
 
-<p>You can check the  <a href="http://localhost:4000/assets/DesignPatternsCode/DesignPatternsCode.zip">Github Repo</a> for the whole code.
+<p>You can check the  <a href="https://ruysal.com/assets/DesignPatternsCode/DesignPatternsCode.zip">Github Repo</a> for the whole code.
 That’s it for this post, and feel free to reach out for adjustments/improvements on the post.</p>
 
 <p>BTW, I fuckin hate Java, just sayin’</p>
@@ -507,13 +507,13 @@ That’s it for this post, and feel free to reach out for adjustments/improvemen
     <ul class="sharebutton">
       <li class="share">Share :</li>
       <li class="linkedin">
-        <a href="http://www.linkedin.com/cws/share?url=http://localhost:4000/2019/Combining-Multiple-Design-Patterns-in-Java/" onclick='window.open(this.href,"popupwindow","status=0,height=500,width=700,resizable=0,top=50,left=100");return false;' target="_blank" title="Share on Linkedin">Linkedin</a>
+        <a href="http://www.linkedin.com/cws/share?url=https://ruysal.com/2019/Combining-Multiple-Design-Patterns-in-Java/" onclick='window.open(this.href,"popupwindow","status=0,height=500,width=700,resizable=0,top=50,left=100");return false;' target="_blank" title="Share on Linkedin">Linkedin</a>
       </li>
       <li class="twitter">
-        <a href="https://twitter.com/intent/tweet?text=http://localhost:4000/2019/Combining-Multiple-Design-Patterns-in-Java/%20-%20Combining%20Multiple%20Design%20Patterns%20in%20Java%20by%20@https://twitter.com/taitlex" target="_blank" title="Share to Twitter">Twitter</a>
+        <a href="https://twitter.com/intent/tweet?text=https://ruysal.com/2019/Combining-Multiple-Design-Patterns-in-Java/%20-%20Combining%20Multiple%20Design%20Patterns%20in%20Java%20by%20@https://twitter.com/taitlex" target="_blank" title="Share to Twitter">Twitter</a>
       </li>
       <li class="gplus">
-        <a href="https://plus.google.com/share?url=http://localhost:4000/2019/Combining-Multiple-Design-Patterns-in-Java/" onclick='window.open(this.href,"popupwindow","status=0,height=500,width=700,resizable=0,top=50,left=100");return false;' target="_blank" title="Share on Google Plus">Google+</a>
+        <a href="https://plus.google.com/share?url=https://ruysal.com/2019/Combining-Multiple-Design-Patterns-in-Java/" onclick='window.open(this.href,"popupwindow","status=0,height=500,width=700,resizable=0,top=50,left=100");return false;' target="_blank" title="Share on Google Plus">Google+</a>
     </li>
 </ul>
 
