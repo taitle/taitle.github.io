@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on /proc/self</title>
+    <link>https://ruysal.com/tags/</link>
+    <description>Recent content in Tags on /proc/self</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 26 Nov 2020 19:15:02 +0000</lastBuildDate><atom:link href="https://ruysal.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Malware Analysis</title>
+      <link>https://ruysal.com/tags/Malware-Analysis/</link>
+      <pubDate>Thu, 26 Nov 2020 19:15:02 +0000</pubDate>
+      
+      <guid>https://ruysal.com/tags/Malware-Analysis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Reverse Engineering</title>
+      <link>https://ruysal.com/tags/Reverse-Engineering/</link>
+      <pubDate>Thu, 26 Nov 2020 19:15:02 +0000</pubDate>
+      
+      <guid>https://ruysal.com/tags/Reverse-Engineering/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Design Patterns</title>
+      <link>https://ruysal.com/tags/Design-Patterns/</link>
+      <pubDate>Wed, 23 Jan 2019 19:15:02 +0000</pubDate>
+      
+      <guid>https://ruysal.com/tags/Design-Patterns/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Java</title>
+      <link>https://ruysal.com/tags/Java/</link>
+      <pubDate>Wed, 23 Jan 2019 19:15:02 +0000</pubDate>
+      
+      <guid>https://ruysal.com/tags/Java/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>UML</title>
+      <link>https://ruysal.com/tags/UML/</link>
+      <pubDate>Wed, 23 Jan 2019 19:15:02 +0000</pubDate>
+      
+      <guid>https://ruysal.com/tags/UML/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>C</title>
+      <link>https://ruysal.com/tags/C/</link>
+      <pubDate>Sun, 19 Nov 2017 02:15:02 +0000</pubDate>
+      
+      <guid>https://ruysal.com/tags/C/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>OS</title>
+      <link>https://ruysal.com/tags/OS/</link>
+      <pubDate>Sun, 19 Nov 2017 02:15:02 +0000</pubDate>
+      
+      <guid>https://ruysal.com/tags/OS/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Xv6</title>
+      <link>https://ruysal.com/tags/Xv6/</link>
+      <pubDate>Sun, 19 Nov 2017 02:15:02 +0000</pubDate>
+      
+      <guid>https://ruysal.com/tags/Xv6/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
