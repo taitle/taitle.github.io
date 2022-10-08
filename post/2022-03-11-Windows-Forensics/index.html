@@ -1,0 +1,1905 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Windows Dead Box (Disk Image) Forensics | </title>
+<meta name="keywords" content="Malware Analysis, Incident Reponse, Forensics Analysis, Windows Forensics" />
+<meta name="description" content="TL;DR: If you are responding to an active incident
+There is simply A LOT to analyze in terms of forensic artifacts on Windows systems. The process can take a long time, and slow down the IR process. Below are some of the artifacts that yields consistent, robust, and quick results.
+Make sure to switch to offline disk analysis on these tools and point them to the right disk!
+WinLogOnView: Which account was logged into?">
+<meta name="author" content="">
+<link rel="canonical" href="https://ruysal.com/post/2022-03-11-Windows-Forensics/" />
+<link crossorigin="anonymous" href="/assets/css/stylesheet.min.9f8e3ed56c0635e6e28d42eb7af576afe27c0395f1638f4539914b897ff327ac.css" integrity="sha256-n44&#43;1WwGNebijULrevV2r&#43;J8A5XxY49FOZFLiX/zJ6w=" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.min.b95bacdc39e37a332a9f883b1e78be4abc1fdca2bc1f2641f55e3cd3dabd4d61.js" integrity="sha256-uVus3DnjejMqn4g7Hni&#43;Srwf3KK8HyZB9V4809q9TWE="
+    onload="hljs.initHighlightingOnLoad();"></script>
+<link rel="icon" href="https://ruysal.com/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://ruysal.com/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://ruysal.com/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://ruysal.com/apple-touch-icon.png">
+<link rel="mask-icon" href="https://ruysal.com/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript><meta property="og:title" content="Windows Dead Box (Disk Image) Forensics" />
+<meta property="og:description" content="TL;DR: If you are responding to an active incident
+There is simply A LOT to analyze in terms of forensic artifacts on Windows systems. The process can take a long time, and slow down the IR process. Below are some of the artifacts that yields consistent, robust, and quick results.
+Make sure to switch to offline disk analysis on these tools and point them to the right disk!
+WinLogOnView: Which account was logged into?" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ruysal.com/post/2022-03-11-Windows-Forensics/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-03-11T15:48:37&#43;01:00" />
+<meta property="article:modified_time" content="2022-03-11T15:48:37&#43;01:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Windows Dead Box (Disk Image) Forensics"/>
+<meta name="twitter:description" content="TL;DR: If you are responding to an active incident
+There is simply A LOT to analyze in terms of forensic artifacts on Windows systems. The process can take a long time, and slow down the IR process. Below are some of the artifacts that yields consistent, robust, and quick results.
+Make sure to switch to offline disk analysis on these tools and point them to the right disk!
+WinLogOnView: Which account was logged into?"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Posts",
+      "item": "https://ruysal.com/post/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Windows Dead Box (Disk Image) Forensics",
+      "item": "https://ruysal.com/post/2022-03-11-Windows-Forensics/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Windows Dead Box (Disk Image) Forensics",
+  "name": "Windows Dead Box (Disk Image) Forensics",
+  "description": "TL;DR: If you are responding to an active incident\nThere is simply A LOT to analyze in terms of forensic artifacts on Windows systems. The process can take a long time, and slow down the IR process. Below are some of the artifacts that yields consistent, robust, and quick results.\nMake sure to switch to offline disk analysis on these tools and point them to the right disk!\nWinLogOnView: Which account was logged into?",
+  "keywords": [
+    "Malware Analysis", "Incident Reponse", "Forensics Analysis", "Windows Forensics"
+  ],
+  "articleBody": "TL;DR: If you are responding to an active incident\nThere is simply A LOT to analyze in terms of forensic artifacts on Windows systems. The process can take a long time, and slow down the IR process. Below are some of the artifacts that yields consistent, robust, and quick results.\nMake sure to switch to offline disk analysis on these tools and point them to the right disk!\nWinLogOnView: Which account was logged into? From what IP? For how long? When?\nAutoruns: List out all the persistence mechanisms in place\nDo not forget to target the disk you are analyzing with Analyze Offline System Shimcache (AppCompatCache): List of executed programs with date\nAMcache: Another list of programs executed on the system\nFiles created in the past 7 days:\nGet-ChildItem -Force -Path D:\\ -Recurse -ea silentlycontinue| ? {$_.CreationTime -gt (Get-Date).AddDays(-7)} What to expect, if you have no experience with Windows forensics: On Unix-like systems, everything is a file. This means that even live processes will have a file corresponding to their relevant operations. For instance an environ file under the /proc pseudo-filesystem having the environment variables specific to that process. This provides an easy access to a lot of valuable information from a forensics perspective.\nUnfortunately for us, Windows does not have the same mindset. Even when certain information sources have a file storing a copy of the same thing, they are usually in a binary format and the information is only accessible via special tools that are able to parse them.\nThis makes forensics analysis of an offline disk rather more challenging for us for several reasons. One is the availability of the tools. Second is the not guaranteed backwards-compatibility of the tools and the artifacts’ existence itself. And third, is the lower probability to grep through an entire filesystem for a known IOC and get a hit, due to the binary formats.\nTherefore it was necessary to compile this page with the locations of relevant artifacts and the tools to parse them. I’ve manually tested each of the artifacts and the related tools mentioned in this page on Win10 systems.\nBefore You Begin This guide assumes your forensic host runs Windows OS\nAre the disk(s) mounted with correct options?\nDisk must be mounted in Read-Only\nThis can be ensured the following way:\nSwitch off automount by running mountvol.exe /N\nConnect disk to Windows (do not mount the disk)\nRun diskpart\nEnter list volume\nEnter select volume X (where X is the correct volume number from the previous command)\nEnter att vol set readonly\nEnter detail vol and ensure the read-only bit is set\nNow you can mount the volume and it will be read-only\nEnter assign letter d to mount the volume to drive d\nIs the forensic host using UTC? (it should be, but double-check)\nOn Forensic Host: Open up the command line\nDisplay current timezone with: tzutil /g\nSet the current timezone to UTC: tzutil /s \"UTC\"\nIt can also be set from the GUI by executing timedate.cpl\nMake sure your PowerShell session is opened with Administrator privileges\nHow was the machine used (as far as you know)?\nIs there a Web server, DB, or some other application being served? Those applications probably have their own separate logging somewhere. Make sure to take advantage of those. The essentials Load the Registry\nWindows registry holds a wealth of valuable information\nThe first order of business before any analysis should be to make the registry of the victim host available for analysis\nYou can use the Registry Explorer tool to load offline registry hives from the disk.\nLoad the following files with Registry Explorer:\nD:\\Windows\\System32\\config\\SAM: HKEY_LOCAL_MACHINE\nD:\\Windows\\System32\\config\\SECURITY: HKEY_LOCAL_MACHINE\nD:\\Windows\\System32\\config\\SYSTEM: HKEY_LOCAL_MACHINE\nD:\\Windows\\System32\\Config\\SOFTWARE: HKEY_LOCAL_MACHINE\nD:\\Windows\\System32\\Config\\DEFAULT: HKEY_LOCAL_MACHINE\nD:\\Users\\\\NTUSER.DAT: HKEY_CURRENT_USER\nIf anything is missing, you might find the backups at: D:\\Windows\\System32\\config\\RegBack\\\nRegistry Explorer Tip:\nIt has a Bookmarks section that contains shortcuts to valuable registry hives. But it is triggered separately for each of the registry files that is loaded.\nTo utilize it; first select the hive that you want to explore, then check the relevant bookmarks:\nBasic Information on Windows Registry Quoting from my copy of the Windows Internals with a dusty cover:\nAlthough most people think of the registry as static data stored on the hard disk, as you’ll see in this section, the registry is also a window into various in-memory structures maintained by the Windows executive and kernel.\nWindows registry follows pretty much the same structure as filesystem hierarchies. There are 5 root folders:\nHKEY_CLASSES_ROOT (HKCR)\nStores data to associate file extensions with programs, and COM class registration information such as ProgIDs, CLSIDs. HKEY_CURRENT_USER (HKCU)\nA subkey of HKEY_USERS\nIt contains configuration information for Windows and software specific to the currently logged in user. Things such as Control Panel settings can be found here.\nHKEY_LOCAL_MACHINE (HKLM)\nContains configuration information particular to the computer (for any user).\nHKLM is actually maintained in memory by the kernel in order to map all other subkeys. Applications cannot create any additional subkeys.\nThis hive contains four keys;\nSAM: contains local user account and local group membership information, including their passwords, last login dates etc.\nSECURITY: stores systemwide security policies, and while that sounds important, you’ll most likely won’t be able to get anything useful out of here.\nSYSTEM: Stores systemwide configuration necessary to boot the system, like mounted drives, driver database, keyboard layout etc.\nSOFTWARE: Software specific configuration keys are stored here.\nThese are loaded at boot time from their respective files located under the D:\\Windows\\System32\\config\\ folder.\nHKEY_USERS (HKU)\nContains all the actively loaded user profiles on the computer. HKEY_CURRENT_CONFIG (HKCC)\nContains information about the hardware profile that is used by the local computer at system startup. Hardware profiles are no longer supported, so this is mostly legacy stuff. For more information: MSDN-windows-registry-advanced-users\nHostname and Domain\nSelect System registry hive from Registry Explorer.\nSelect ComputerName from the bookmarks.\nOr go to the following key manually: System\\ControlSet001\\Control\\ComputerName\\ComputerName Select SECURITY registry hive from Registry Explorer.\nSelect Domain Name from the bookmarks.\nManually go to D:\\Windows\\System32\\config\\SECURITY:Policy\\PolDnDDN Alternative:\nCheck SYSTEM\\ControlSet001\\Services\\Tcpip\\Parameters\nContains Domains, DHCP server information, Hostname etc. Timezone\nSelect SYSTEM registry hive from Registry Explorer.\nSelect TimeZoneInformation from the bookmarks\nManually: SYSTEM\\ControlSet001\\Control\\TimeZoneInformation Usernames and SIDs\nSelect SAM registry hive from Registry Explorer.\nSelect Users from the bookmarks.\nCheck Names key, or V values name\nManually you can check SAM\\Domains\\Account\\Users Mapping SIDs to Usernames:\nWindows stores Security identifiers (SIDs) under the following registry key: HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList\nThe Hive key corresponds to the SID. ProfileImagePath value name contains the username.\nLast Login Date, Account Information, Login Count\nIf you are only interested in last login date for each user, download RegRipper from this link\nUnzip and execute rr.exe (GUI version)\nFor input, enter D:\\Windows\\System32\\config\\SAM, and specify any location for output\nLet it rip, and the output file will contain relevant login information for each user\nExample output: Last Login Date, Login Method, Session Length, and IP Address for Remote Connections\nFirst, learn the location of Event Logs\nBy default it resides at: D:\\Windows\\system32\\winevt\\Logs\\Application.evtx\nIf not, check the following registry key\nSYSTEM:ControlSet001\\Services\\EventLog\\Application\\File\nRegistry Explorer already has a bookmark of this location\nSelect SYSTEM hive, and from the Bookmarks menu select EventLog\nDownload WinLogOnView from the link\nClick on Options → Advanced Options\nChange Data Source to External Disk\nEnter the evtx folder that you’ve determined in the previous step\nYou will get an output like the following: Persistence There are dozens of different ways persistence can be achieved on Windows systems\nChecking them manually is a cumbersome process\nLuckily, Autoruns from SysInternals handles this very well, including for offline disks\nDownload Autoruns from this link\nIf you are using the GUI:\nClick on File and select Analyze Offline System\nEnter D:\\Windows as the System Root path\nIt should automatically detect the Default profile and start to list out persistence mechanisms\nYou can specify the user profile you want to work on too If you want, you can try to speed up your analysis process:\nClick on Options and select Scan Options\nCheck the Check VirusTotal.com\nDO NOT check the Submit Unknown Images\nIf you are dealing with an APT, this would alert them that their sample has been discovered Now you can filter out all the clean, known Microsoft images\nIf you are using the CLI:\nautorunsc.exe -a * -c -h -s '*' -z D:\\Windows D:\\Users\\Default -nobanner Autoruns already checks the locations below.\nBut if for some reason manual inspection is necessary, below are the most common places. Scheduled Tasks\nEach Scheduled Task can be found as a separate file under:\nD:\\Windows\\System32\\Tasks or D:\\Windows\\SysWow64\\Tasks StartupInfo\nLocated under: D:\\Windows\\System32\\WDI\\LogFiles\\StartupInfo\\, in the following format: /StartupInfo.xml\nThere could be up to 5 per user account. They contain a list of processes that were executed within the first 90 seconds from the time the user logged in.\nThe info includes start time, the full command line and the parent process info, among other things.\nExplorerStartupLog\nCreated when the system boots up, and located at:\nD:\\Users\\Administrator\\AppData\\Local\\Microsoft\\Windows\\Explorer\\ExplorerStartupLog.etl Can be opened with Event Viewer\nRun Keys\nProbably the most commonly utilised persistence mechanism\nAny program under Run key will be executed at each start-up\nWhereas RunOnce executes it once, and deletes the key\nThese keys can be found at:\nHKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\nHKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce\nHKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\nHKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce\nRegistry Explorer can used to access them easily\nJust select Software, and from the bookmarks go to Run or RunOnce Start Menu\nWindows uses this folder to store shortcuts to programs to be executed on startup\nFiles are located under:\nFor All Users:\nD:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp For Current User:\nD:\\Users\\Administrator\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup Web Server XAMPP Logs:\nD:\\xampp\\apache\\logs IIS:\nD:\\inetpub\\logs\\LogFiles\\W3SVC1\nNote: replace 1 with the number for your IIS website ID D:\\Windows\\System32\\LogFiles\\W3SVC1\nD:\\Windows\\System32\\LogFiles\\HTTPERR\nIn case the logs are not found in the folders above, you can check the following config:\nD:\\Windows\\system32\\inetsrv\\config\\ApplicationHost.config If there is suspicion of a backdoor/webshell artifact, you can do searches such as:\ngrep.exe -Er \"(ShellExecute|FromBase64String|StartInfo\\.FileName|eval)\" D:\\inetpub\\\nGet-ChildItem -Force -Path D:\\inetpub\\ -recurse -ea silentlycontinue | Select-String -Pattern \"FromBase64String\"\nIn case there is suspicion of a backdoor in the form of IIS modules:\nA native IIS module is a dynamic-link library (DLL) written using the IIS C++ API.\nNative modules are located in the D:\\Windows\\system32\\inetsrv\\ folder on the server and can be configured for some, or for all, applications hosted by the server.\nCheck %windir%\\system32\\inetsrv\\config\\ApplicationHost.configfor the existence of these.\nReference Paper: Blackhat-us-21-Anatomy-Of-Native-Iis-Malware-wp.pdf\nExchange Web Server:\nBy default located under:\n$exinstall\\Logging\\Ews At least 14 days of Exchange Control Panel (ECP) logs, located at Program Files\\Microsoft\\Exchange Server\\v15\\Logging\\ECP\\Server\nGeneral Logs and Windows Event Logs Windows Event Logs\nBy default, Windows Event Logs are located under this folder:\nD:\\Windows\\System32\\winevt\\Logs\nIf not, the location can be confirmed from:\nSYSTEM:ControlSet001\\Services\\EventLog\\Application\\File Registry Explorer already has a bookmark of this location\nSelect SYSTEM hive, and from the Bookmarks menu select EventLog\nThe log files can then be loaded in with Event Viewer tool of Windows itself\nRun Event Viewer\nFrom the Action menu on top right, select Open Saved Log\nLoad the desired log file from the folder you’ve located\nAlternatively, you can just double click on the log files and they will be loaded automatically\nWindows PowerShell, Microsoft-Windows-PowerShell%4Operational, System, Microsoft-Windows-TerminalServices-RemoteConnectionManager%4Operational log files might be particularly useful\nRDP Logs\nWindows Event Logs also contain RDP related logs Successful RDP Logon:\nEvent id: 1149 Description: User authentication succeeded. Path: %SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TerminalServices-RemoteConnectionManager%4Operational.evtx Event id: 4624 Description: An account was successfully logged on. Path: %SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx Event id: 21 Description: Remote Desktop Services: Session login succeeded. Path: %SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx Event id: 22 Description: Remote Desktop Services: Shell start notification received. Path: %SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx Unsuccessful RDP Logon:\nEvent id: 1149 Description: User authentication succeeded (Network connection, which occurs prior to the user authentication). Path: %SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TerminalServices-RemoteConnectionManager%4Operational.evtx Event id: 4625 Description: An account failed to log on. Path: %SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx RDP Session Disconnect (windows close by the user):\nEvent id: 24 Description: Remote Desktop Services: Session has been disconnected. Path: %SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx Event id: 40 Description: Session XXX has been disconnected, reason code YYY. Path: %SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx Event id: 4779 Description: A session was disconnected from a windows station. Path: %SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx Event id: 4634 Description: An account was logged off. Path: %SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx RDP Session Disconnect (Start -\u003e Disconnect):\nEvent id: 24 Description: Remote Desktop Services: Session has been disconnected. Path: %SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx Event id: 39 Description: Session XXX has been disconnected, by session YYY. Path: %SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx Event id: 40 Description: Session XXX has been disconnected, reason code YYY. Path: %SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx Event id: 4779 Description: A session was disconnected from a window station. Path: %SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx Event id: 4634 Description: An account was logged off. Path: %SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx RDP Session Reconnect:\nEvent id: 1149 Description: User authentication succeeded. Path: %SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TerminalServices-RemoteConnectionManager%4Operational.evtx Event id: 4624 Description: An account was successfully logged on. Path: %SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx Event id: 25 Description: Remote Desktop Services: Session reconnection succeeded. Path: %SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx Event id: 40 Description: Session XXX has been disconnected, reason code YYY. Path: %SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx Event id: 4778 Description: A session was reconnected from a window station. Path: %SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx RDP Session Logoff :\nEvent id: 23 Description: Remote Desktop Services: Session logoff disconnected. Path: %SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx Event id: 4634 Description: An account was logged off. Path: %SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx Event id: 4647 Description: User-initiated logoff. Path: %SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx Event id: 9009 Description: The Desktop Window Manager has exited with code XXX. Path: %SystemRoot%\\System32\\Winevt\\Logs\\System.evtx Reference: RDP Forensics - Logging, Detection and Forensics\nRDP Cache\nmstsc.exe is the built-in client that allows connecting to remote computers via RDP\nIt stores an RDP cache with the aim to speed up the connection\nThis cache contains screenshots of the parts of the screen that does not change much\nThrough this cache, you may be able to find out if the victim host was used to connect to other hosts via RDP\nD:\\Users\\\\AppData\\Local\\Microsoft\\Terminal Server Client\\Cache\nbmc-tools can be used to extract images from the bin file\nUser Access Logging\nIt was discovered and documented by DFIR team of KPMG:\nThe UAL can be found on Windows Servers (2012 and up) and is a local data aggregation feature, recording client usage by role and product on each system providing the resource.\nAccording to Microsoft's documentation these logs will:\nKeep a tally of user requests for local servers, physical or virtual\nKeep a tally of user requests for local software products on these servers\nPull statistics from Hyper-V, regarding high and low periods of demand for resources\nPull UAL data from remote servers\nLogs are located under D:\\Windows\\System32\\LogFiles\\Sum\nInstructions on how to examine the UAL data: Windows User Access Logs (UAL)\nKStrike can be used to parse the data as well\nDeposited Files \u0026 Filesystem Artifacts LOLBIN Downloaded Files\nLOLBINs such as certutil are frequently leveraged by attackers to download next stages\nA list of its capabilities for attackers: LOLBAS-Certutil Files downloaded with certutil have a copy of them stored in some of the following locations:\nMetaData folder holds the URL of the each file downloaded, while Content folder holds the files themselves.\nSo if you are unsure where a file came from, just open the corresponding file in MetaData folder with strings.exe, or notepad.exe.\nD:\\Windows\\SysWOW64\\config\\systemprofile\\AppData\\LocalLow\\Microsoft\\CryptnetUrlCache\\Content\\ D:\\Windows\\SysWOW64\\config\\systemprofile\\AppData\\LocalLow\\Microsoft\\CryptnetUrlCache\\MetaData\\ D:\\Windows\\System32\\config\\systemprofile\\AppData\\LocalLow\\Microsoft\\CryptnetUrlCache\\Content\\ D:\\Windows\\System32\\config\\systemprofile\\AppData\\LocalLow\\Microsoft\\CryptnetUrlCache\\MetaData\\ D:\\Users\\%USERNAME%\\AppData\\LocalLow\\Microsoft\\CryptnetUrlCache\\Content\\ D:\\Users\\%USERNAME%\\AppData\\LocalLow\\Microsoft\\CryptnetUrlCache\\MetaData\\ Further reading: thinkdfir-certutil-download-artefacts\nDeleted Files\nD:\\$Recycle.Bin folder contains folders with each users’ SID\nUnder the users’ SID there are files which begin with $I and $R\nWhen a file is deleted two files are created:\n$R file contains the actual file that was deleted\n$I file contains the metadata of the deleted file\nMalicious Hosts Entries\nHosts file can be used to hijack traffic to malicious websites\nIt takes precedence over DNS queries\nIt is located at:\nD:\\Windows\\System32\\drivers\\etc\\hosts\nD:\\Windows\\System32\\drivers\\etc\\lmhosts.sam\nRecently Accessed, Created, and Modified Files Files modified within the past 7 days\nGet-ChildItem -Force -Path D:\\ -Recurse -ea silentlycontinue| ? {$_.LastWriteTime -gt (Get-Date).AddDays(-7)} Files accessed within the past 7 days\nGet-ChildItem -Force -Path D:\\ -Recurse -ea silentlycontinue| ? {$_.LastAccessTime -gt (Get-Date).AddDays(-7)} Files created within the past 7 days\nGet-ChildItem -Force -Path D:\\ -Recurse -ea silentlycontinue| ? {$_.CreationTime -gt (Get-Date).AddDays(-7)} Evidence of Program Execution UserAssist A registry key under NTUSER.DAT hive\nIt provides a list of GUI based programs launched from the desktop\nTo examine the data:\nFirst navigate to\nNTUSER.DAT: Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\UserAssist{}\\Count\nRegistry Explorer has a bookmark of this location already\nJust click on NTUSER.DAT, and select UserAssist from the bookmarks menu Pick the items with a Count greater than 0\nThe contents are encoded with ROT13\nFor instance, the value below is decoded to:\n{0139Q44R-6NSR-49S2-8690-3QNSPNR6SSO8}\\Npprffbevrf\\Favccvat Gbby.yax\n{0139D44E-6AFE-49F2-8690-3DAFCAE6FFB8}\\Accessories\\Snipping Tool.lnk\nAlternatively, you can use RegRipper to do these steps automatically\nDownload RegRipper\nUnzip and execute rr.exe (GUI version)\nFor input, enter D:\\Users\\\\NTUSER.DAT, and specify any location for output\nLet it rip, and the output file will contain relevant execution history\nSearch for UserAssist in the output file\nPrefetch Prefetching is a system that helps systems boot up and run faster by caching needed files ahead of time\nPrefetch can be very valuable, as it contains the following data:\nName of the executable ran\nUnicode list of DLLs used by that executable\nCount of how many times the executable has been run\nTimestamp indicating the last time the program was executed\nPrefetch logs are located at D:\\Windows\\Prefetch\nWinPrefetchView can be used to view them, and it supports loading them from an external disk for forensic analysis: nirsoft-win_prefetch_view.html\nAlternatively, PECmd from the Zimmerman-Tools can be used as well\nSimply run the following in the directory that the tools are installed in:\n.\\PECmd.exe -d D:\\Windows\\Prefetch --html \"C:\\Users\\Administrator\\Desktop\\output\" SuperPrefetch Pretty much the same as Prefetch, but it is not a substitution for it\nGenerates the database files at:\nD:\\Windows\\Prefetch\\Ag*.db You can use CrowdResponse to parse the data\nStartupInfo Mentioned earlier for detecting persistence, it gives a glimpse of executed programs\nLocated under: D:\\Windows\\System32\\WDI\\LogFiles\\StartupInfo\\, in the following format: /StartupInfo.xml\nThere could be up to 5 per user account. They contain a list of processes that were executed within the first 90 seconds from the time the user logged in.\nThe info includes start time, the full command line and the parent process info, among other things.\nCrash Dumps Minidumps\nWhen your computer crashes, Windows generates a Minidump that can be examined to determine the root cause\nThese minidump files are placed under:\nD:\\Windows\\Minidump To analyze, refer to the official guide: MSDN-read-small-memory-dump-file\nCrash Dumps\nCrash dumps are generated automatically if certain Registry keys are set\nAnalyzing these is not such a straightforward, trivial task, and therefore skipped in this guide\nThese are located under\nD:\\Users\\[username]\\AppData\\Local\\CrashDumps\nD:\\Users\\[username]\\AppData\\Local\\Microsoft\\Windows\\WER\\\nWMI CCM_Recently_Used_Apps Windows Management Instrumentation(WMI) is a built-in tool\nAllows admins to manage different Windows environments, including remote systems\nIt is a frequently used LOLBIN: LOLBAS-Wmic\nThe WMI Repository is a database that stores meta-information and definitions for WMI classes\nThe logging occurs on the endpoints regardless of the settings that are configured on the SCCM server\nCan record the path, name, size, associated user name, last used time, launch count, and PE metadata of executed files\nLocated at D:\\windows\\system32\\wbem\\repository\\\nCan be parsed with: github-CCM_RUA_Finder.py\nSimply run CCM_RUA_Finder.py -i D:\\windows\\system32\\wbem\\repository\\OBJECTS.DATA -o path\\to\\output.xls\nIf the forensic host does not have Python installed, you can exfiltrate the files to your own workstation\nThe Microsoft Remote Desktop tool used for RDP connections on MacOS devices supports copy-paste\nFurther reading: netsecninja-wmi-forensics\nComprehensive guide: mandiant-windows-management-instrumentation-wmi-offense-defense-and-forensics\nShimcache (AppCompatCache) Windows Application Compatibility Database is used by Windows to identify possible application compatibility challenges with executables.\nIt tracks the executables’ file name, file size, last modified time.\nLast 1024 programs executed can be found here:\nSYSTEM\\CurrentControlSet\\Control\\Session Manager\\AppCompatCache\nRegistry Explorer has a bookmark of this location\nSelect SYSTEM, and from the bookmarks menu, go to AppCompatCache Alternatively, github-mandiant-ShimCacheParser can be used to parse the data\nJust export the whole SYSTEM registry hive, or the AppCompatCache as a standalone .reg file\nRegistry Explorer can be used to export the key Use the -i, or -r option respectively\nOutput will be as follows:\nAMcache ProgramDataUpdater (a task associated with the Application Experience Service) uses the registry file Amcache.hve to store data during process creation\nThis registry stores the first execution of a program on the system, including portable programs executed from an external storage.\nIt is located at:\nD:\\Windows\\AppCompat\\Programs\\Amcache.hve To analyze, use RegRipper\nLoad the Amcache.hve file\nSelect an output destination, and Rip\nYou will get an output like the following:\nBackground Activity Moderator The Background Activity Moderator (BAM) is a Windows service that Controls activity of background applications. This service exists in Windows 10 only.\nFor each user separately, it provides:\nFull path of the executable file\nLast execution date/time in UTC\nIt is located under the following keys:\nHKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\bam\\UserSettings\\*\\*\nHKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\bam\\State\\UserSettings\\*\\*\nRegistry Explorer has a bookmark for it\nSelect SYSTEM hive\nFrom the Bookmarks menu, select BAM (Background Activity Monitor)\nTools Registry Explorer One of the Zimmerman tools, but a particularly useful one that it deserves its own space.\nIt is able to explore both Live system registry hives, and offline ones\nHas a Bookmarks tab with shortcuts to keys with valuable forensic artifacts\nCan be downloaded from: ericzimmerman.github.io\nZimmerman Tools Eric Zimmerman has written plenty of tools and scripts to perform offline disk analysis.\nTo install them all, follow the instructions at: ericzimmerman.github.io\nUse backblazeb2-Get-ZimmermanTools.zip to download all programs at once and to keep your toolset up-to-date\nUse -Dest to control where the tools ends up, else things end up in same directory as the script (recommended!) Power Forensics It is an all-inclusive forensics framework written in PowerShell\nSupports NTFS and FAT filesystems\nAlthough not utilised in this page for any of the artifacts, it is particularly useful for filesystem forensics\nDocumentation with available tools: powerforensics.readthedocs.io\nRegRipper It is a powerful and easy to use tool to parse out various information from registry files.\nIt comes with a bunch of plugins to parse data from hives such as SAM, SOFTWARE, NTUSER etc.\nBoth GUI and CLI versions are available.\nDownload from: github.com/keydet89/RegRipper3.0\nAutoruns It is a Sysinternals tools, officially developed and supported by Microsoft\nIt is able to enumerate tons of different persistence mechanisms on Windows\nIt can be executed both via CLI and GUI\nIt is able to perform analysis on offline systems and disks as well\nDownload and manual link: MSDN-sysinternals-autoruns\nWinLogOnView A simple and concise tool by Nirsoft with one goal:\nAnalyses the security event log of Windows operating system, and detects the date/time that users logged on and logged off. For every time that a user log on/log off to your system, the following information is displayed: Logon ID, User Name, Domain, Computer, Logon Time, Logoff Time, Duration, and network address.\nDownload from: nirsoft-windows_log_on_times_view.html\nTHOR THOR lite can scan both a live system or an offline mounted disk for IOCs. THOR already comes equipped with its own list of IOCs to scan for. But you can add your own stuff too -if your license allows to it-.\nIf you have a Forensic Lab License:\nThor Lite can be used on a disk thor64-lite.exe --fsonly -p D:\\ If you are using the LITE -free- version: thor-manual-forensic-lab-license\nthor64.exe -a Filescan --intense --norescontrol --nosoft --cross-platform --alldrives -p D:\\ In my experience, THOR gave quite some FPs. For instance, on a default installation it said some files masquerade as JPGs and that they are not actually JPGs:\n``` java MESSAGE: Suspicious file found FILE: D:\\Windows\\servicing\\LCU\\Package_for_RollupFix~31bf3856ad364e35~amd64~~17763.2565.1.7\\amd64_microsoft-windows-f..toragereportservice_31bf3856ad364e35_10.0.17763.1697_none_7825694087316827\\f\\warning.jpg REASON_1: YARA rule Cloaked_as_JPG / Detects a non-JPEG file cloaked as ``` ",
+  "wordCount" : "3848",
+  "inLanguage": "en",
+  "datePublished": "2022-03-11T15:48:37+01:00",
+  "dateModified": "2022-03-11T15:48:37+01:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://ruysal.com/post/2022-03-11-Windows-Forensics/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://ruysal.com/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <span class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" text>
+                    
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>Dark/Light
+                </button>
+            </span>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://ruysal.com/" title="Home">
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://ruysal.com/about" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title">
+      Windows Dead Box (Disk Image) Forensics
+    </h1>
+    <div class="post-meta"><span title='2022-03-11 15:48:37 +0100 CET'>March 11, 2022</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul><ul><ul>
+                <li>
+                    <a href="#what-to-expect-if-you-have-no-experience-with-windows-forensics" aria-label="What to expect, if you have no experience with Windows forensics:">What to expect, if you have no experience with Windows forensics:</a></li></ul>
+                    </ul>
+                    
+                <li>
+                    <a href="#before-you-begin" aria-label="Before You Begin">Before You Begin</a></li>
+                <li>
+                    <a href="#the-essentials" aria-label="The essentials">The essentials</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#basic-information-on-windows-registry" aria-label="Basic Information on Windows Registry">Basic Information on Windows Registry</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#persistence" aria-label="Persistence">Persistence</a></li>
+                <li>
+                    <a href="#web-server" aria-label="Web Server">Web Server</a></li>
+                <li>
+                    <a href="#general-logs-and-windows-event-logs" aria-label="General Logs and Windows Event Logs">General Logs and Windows Event Logs</a></li>
+                <li>
+                    <a href="#deposited-files--filesystem-artifacts" aria-label="Deposited Files &amp;amp; Filesystem Artifacts">Deposited Files &amp; Filesystem Artifacts</a><ul>
+                        
+                <li>
+                    <a href="#recently-accessed-created-and-modified-files" aria-label="Recently Accessed, Created, and Modified Files">Recently Accessed, Created, and Modified Files</a></li></ul>
+                </li>
+                <li>
+                    <a href="#evidence-of-program-execution" aria-label="Evidence of Program Execution">Evidence of Program Execution</a><ul>
+                        
+                <li>
+                    <a href="#userassist" aria-label="UserAssist">UserAssist</a></li>
+                <li>
+                    <a href="#prefetch" aria-label="Prefetch">Prefetch</a></li>
+                <li>
+                    <a href="#superprefetch" aria-label="SuperPrefetch">SuperPrefetch</a></li>
+                <li>
+                    <a href="#startupinfo" aria-label="StartupInfo">StartupInfo</a></li>
+                <li>
+                    <a href="#crash-dumps" aria-label="Crash Dumps">Crash Dumps</a></li>
+                <li>
+                    <a href="#wmi-ccm_recently_used_apps" aria-label="WMI CCM_Recently_Used_Apps">WMI CCM_Recently_Used_Apps</a></li>
+                <li>
+                    <a href="#shimcache-appcompatcache" aria-label="Shimcache (AppCompatCache)">Shimcache (AppCompatCache)</a></li>
+                <li>
+                    <a href="#amcache" aria-label="AMcache">AMcache</a></li>
+                <li>
+                    <a href="#background-activity-moderator" aria-label="Background Activity Moderator">Background Activity Moderator</a></li></ul>
+                </li>
+                <li>
+                    <a href="#tools" aria-label="Tools">Tools</a><ul>
+                        
+                <li>
+                    <a href="#registry-explorer" aria-label="Registry Explorer">Registry Explorer</a></li>
+                <li>
+                    <a href="#zimmerman-tools" aria-label="Zimmerman Tools">Zimmerman Tools</a></li>
+                <li>
+                    <a href="#power-forensics" aria-label="Power Forensics">Power Forensics</a></li>
+                <li>
+                    <a href="#regripper" aria-label="RegRipper">RegRipper</a></li>
+                <li>
+                    <a href="#autoruns" aria-label="Autoruns">Autoruns</a></li>
+                <li>
+                    <a href="#winlogonview" aria-label="WinLogOnView">WinLogOnView</a></li>
+                <li>
+                    <a href="#thor" aria-label="THOR">THOR</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p><strong>TL;DR: If you are responding to an active incident</strong></p>
+<blockquote>
+<p>There is simply <em>A LOT</em> to analyze in terms of forensic artifacts on
+Windows systems. The process can take a long time, and slow down the IR
+process. Below are some of the artifacts that yields consistent, robust, and quick results.</p>
+<p><strong>Make sure to switch to offline disk analysis on these tools and point them to the right disk!</strong></p>
+<ul>
+<li>
+<p><a href="#winlogonview">WinLogOnView</a>: Which
+account was logged into? From what IP? For how long? When?</p>
+</li>
+<li>
+<p><a href="#autoruns">Autoruns</a>: List out all the
+persistence mechanisms in place</p>
+<ul>
+<li>Do not forget to target the disk you are analyzing with <code>Analyze Offline System</code></li>
+</ul>
+</li>
+<li>
+<p><a href="#shimcache-appcompatcache">Shimcache (AppCompatCache)</a>: List of
+executed programs with date</p>
+</li>
+<li>
+<p><a href="#amcache">AMcache</a>: Another list of
+programs executed on the system</p>
+</li>
+<li>
+<p>Files created in the past 7 days:</p>
+<ul>
+<li><code>Get-ChildItem -Force -Path D:\ -Recurse -ea silentlycontinue| ? {$_.CreationTime -gt (Get-Date).AddDays(-7)}</code></li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<hr>
+<h4 id="what-to-expect-if-you-have-no-experience-with-windows-forensics">What to expect, if you have no experience with Windows forensics:<a hidden class="anchor" aria-hidden="true" href="#what-to-expect-if-you-have-no-experience-with-windows-forensics">#</a></h4>
+<blockquote>
+<p>On Unix-like systems, <a href="https://en.wikipedia.org/wiki/Everything_is_a_file">everything is a file</a>. This means that even live processes will have a file corresponding to their relevant operations. For instance an <code>environ</code> file under the <code>/proc</code> pseudo-filesystem having the environment variables specific to that process. This provides an easy access to a lot of valuable information from a forensics perspective.</p>
+<p>Unfortunately for us, Windows does not have the same mindset. Even when
+certain information sources have a file storing a copy of the same thing, they are usually in a binary format and the information is only accessible via special tools that are able to parse them.</p>
+<p>This makes forensics analysis of an offline disk rather more challenging for us for several reasons. One is the availability of the tools. Second is the not guaranteed backwards-compatibility of the tools and the artifacts&rsquo; existence itself. And third, is the lower probability to <code>grep</code> through an entire filesystem for a known IOC and get a hit, due to the binary formats.</p>
+<p>Therefore it was necessary to compile this page with the locations of
+relevant artifacts and the tools to parse them. I’ve manually tested
+each of the artifacts and the related tools mentioned in this page on Win10 systems.</p>
+</blockquote>
+<h2 id="before-you-begin">Before You Begin<a hidden class="anchor" aria-hidden="true" href="#before-you-begin">#</a></h2>
+<ul>
+<li>
+<p><strong>This guide assumes your forensic host runs Windows OS</strong></p>
+</li>
+<li>
+<p><strong>Are the disk(s) mounted with correct options?</strong></p>
+<ul>
+<li>
+<p><strong>Disk must be mounted in</strong> <code>Read-Only</code></p>
+</li>
+<li>
+<p><strong>This can be ensured the following way:</strong></p>
+<ul>
+<li>
+<p>Switch off <code>automount</code> by running <code>mountvol.exe /N</code></p>
+</li>
+<li>
+<p>Connect disk to Windows (do not mount the disk)</p>
+</li>
+<li>
+<p>Run <code>diskpart</code></p>
+</li>
+<li>
+<p>Enter <code>list volume</code></p>
+</li>
+<li>
+<p>Enter <code>select volume X</code> (where X is the correct volume
+number from the previous command)</p>
+</li>
+<li>
+<p>Enter <code>att vol set readonly</code></p>
+</li>
+<li>
+<p>Enter <code>detail vol</code> and ensure the read-only bit is set</p>
+</li>
+<li>
+<p>Now you can mount the volume and it will be read-only</p>
+</li>
+<li>
+<p>Enter <code>assign letter d</code> to mount the volume to drive <code>d</code></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Is the forensic host using UTC? (it should be, but double-check)</strong></p>
+<ul>
+<li><strong>On Forensic Host:</strong>
+<ul>
+<li>
+<p>Open up the command line</p>
+<ul>
+<li>
+<p>Display current timezone with: <code>tzutil /g</code></p>
+</li>
+<li>
+<p>Set the current timezone to UTC: <code>tzutil /s &quot;UTC&quot;</code></p>
+</li>
+</ul>
+</li>
+<li>
+<p>It can also be set from the GUI by executing <code>timedate.cpl</code></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Make sure your PowerShell session is opened with Administrator
+privileges</strong></p>
+</li>
+<li>
+<p><strong>How was the machine used (as far as you know)?</strong></p>
+<ul>
+<li>Is there a Web server, DB, or some other application being
+served? Those applications probably have their own separate logging somewhere. Make sure to take advantage of those.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="the-essentials">The essentials<a hidden class="anchor" aria-hidden="true" href="#the-essentials">#</a></h2>
+<ul>
+<li>
+<p><strong>Load the Registry</strong></p>
+<ul>
+<li>
+<p>Windows registry holds a wealth of valuable information</p>
+</li>
+<li>
+<p>The first order of business before any analysis should be to
+make the registry of the victim host available for analysis</p>
+</li>
+<li>
+<p>You can use the
+<!-- raw HTML omitted -->Registry Explorer<!-- raw HTML omitted -->
+tool to load offline registry hives from the disk.</p>
+</li>
+<li>
+<p>Load the following files with Registry Explorer:</p>
+<ul>
+<li>
+<p><code>D:\Windows\System32\config\SAM</code>: <code>HKEY_LOCAL_MACHINE</code></p>
+</li>
+<li>
+<p><code>D:\Windows\System32\config\SECURITY</code>: <code>HKEY_LOCAL_MACHINE</code></p>
+</li>
+<li>
+<p><code>D:\Windows\System32\config\SYSTEM</code>: <code>HKEY_LOCAL_MACHINE</code></p>
+</li>
+<li>
+<p><code>D:\Windows\System32\Config\SOFTWARE</code>: <code>HKEY_LOCAL_MACHINE</code></p>
+</li>
+<li>
+<p><code>D:\Windows\System32\Config\DEFAULT</code>: <code>HKEY_LOCAL_MACHINE</code></p>
+</li>
+<li>
+<p><code>D:\Users\&lt;USERNAME&gt;\NTUSER.DAT</code>: <code>HKEY_CURRENT_USER</code></p>
+</li>
+<li>
+<p>If anything is missing, you might find the backups at:
+<code>D:\Windows\System32\config\RegBack\</code></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Registry Explorer Tip:</strong></p>
+<ul>
+<li>
+<p>It has a <code>Bookmarks</code> section that contains shortcuts to valuable
+registry hives. But it is triggered separately for each of the
+registry files that is loaded.</p>
+</li>
+<li>
+<p>To utilize it; first select the hive that you want to explore,
+then check the relevant bookmarks:</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><img loading="lazy" src="/assets/img/windows-forensics/1575501416.png" alt="image-20220228-121924.png"  />
+</p>
+<hr>
+<h4 id="basic-information-on-windows-registry">Basic Information on Windows Registry<a hidden class="anchor" aria-hidden="true" href="#basic-information-on-windows-registry">#</a></h4>
+<p>Quoting from my copy of the <a href="https://docs.microsoft.com/en-us/sysinternals/resources/windows-internals">Windows Internals</a> with a dusty cover:</p>
+<blockquote>
+<p>Although most people think of the registry as static data stored on the hard disk, as you&rsquo;ll see in this section, the registry is also a window into various in-memory structures maintained by the Windows executive and kernel.</p>
+</blockquote>
+<p>Windows registry follows pretty much the same structure as filesystem
+hierarchies. There are 5 root folders:</p>
+<ul>
+<li>
+<p><a href="https://docs.microsoft.com/en-us/windows/win32/sysinfo/hkey-classes-root-key"><strong>HKEY_CLASSES_ROOT (HKCR)</strong></a></p>
+<ul>
+<li>Stores data to associate file extensions with programs, and COM class registration information such as ProgIDs, CLSIDs.</li>
+</ul>
+</li>
+<li>
+<p><strong>HKEY_CURRENT_USER (HKCU)</strong></p>
+<ul>
+<li>
+<p>A subkey of <code>HKEY_USERS</code></p>
+</li>
+<li>
+<p>It contains configuration information for Windows and software
+specific to the currently logged in user. Things such as Control Panel settings can be found here.</p>
+</li>
+</ul>
+</li>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/Windows_Registry#HKEY_LOCAL_MACHINE_(HKLM)"><strong>HKEY_LOCAL_MACHINE (HKLM)</strong></a></p>
+<ul>
+<li>
+<p>Contains configuration information particular to the computer
+(for any user).</p>
+</li>
+<li>
+<p>HKLM is actually maintained in memory by the kernel in order to
+map all other subkeys. Applications cannot create any additional
+subkeys.</p>
+</li>
+<li>
+<p>This hive contains four keys;</p>
+<ul>
+<li>
+<p><code>SAM</code>: contains local user account and local group
+membership information, including their passwords, last
+login dates etc.</p>
+</li>
+<li>
+<p><code>SECURITY</code>: stores systemwide security policies, and while that sounds important, you&rsquo;ll most likely won&rsquo;t be able to get anything useful out of here.</p>
+</li>
+<li>
+<p><code>SYSTEM</code>: Stores systemwide configuration necessary to boot the system, like mounted drives, driver database, keyboard layout etc.</p>
+</li>
+<li>
+<p><code>SOFTWARE</code>: Software specific configuration keys are stored
+here.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>These are loaded at boot time from their respective files
+located under the <code>D:\Windows\System32\config\</code> folder.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>HKEY_USERS (HKU)</p>
+<ul>
+<li>Contains all the actively loaded user profiles on the computer.</li>
+</ul>
+</li>
+<li>
+<p>HKEY_CURRENT_CONFIG (HKCC)</p>
+<ul>
+<li>Contains information about the hardware profile that is used by
+the local computer at system startup. Hardware profiles are no longer supported, so this is mostly legacy stuff.</li>
+</ul>
+</li>
+</ul>
+<p>For more information: <a href="https://docs.microsoft.com/en-us/troubleshoot/windows-server/performance/windows-registry-advanced-users">MSDN-windows-registry-advanced-users</a></p>
+<hr>
+<ul>
+<li>
+<p><strong>Hostname and Domain</strong></p>
+<ul>
+<li>
+<p>Select <code>System</code> registry hive from Registry Explorer.</p>
+</li>
+<li>
+<p>Select <code>ComputerName</code> from the bookmarks.</p>
+<ul>
+<li>Or go to the following key manually:
+<code>System\ControlSet001\Control\ComputerName\ComputerName</code></li>
+</ul>
+</li>
+<li>
+<p>Select <code>SECURITY</code> registry hive from Registry Explorer.</p>
+</li>
+<li>
+<p>Select <code>Domain Name</code> from the bookmarks.</p>
+<ul>
+<li>Manually go to
+<code>D:\Windows\System32\config\SECURITY:Policy\PolDnDDN</code></li>
+</ul>
+</li>
+<li>
+<p>Alternative:</p>
+<ul>
+<li>
+<p>Check <code>SYSTEM\ControlSet001\Services\Tcpip\Parameters</code></p>
+<ul>
+<li>Contains <code>Domains</code>, <code>DHCP</code> server information,
+<code>Hostname</code> etc.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Timezone</strong></p>
+<ul>
+<li>
+<p>Select <code>SYSTEM</code> registry hive from Registry Explorer.</p>
+</li>
+<li>
+<p>Select <code>TimeZoneInformation</code> from the bookmarks</p>
+<ul>
+<li>Manually: <code>SYSTEM\ControlSet001\Control\TimeZoneInformation</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Usernames and SIDs</strong></p>
+<ul>
+<li>
+<p>Select <code>SAM</code> registry hive from Registry Explorer.</p>
+</li>
+<li>
+<p>Select <code>Users</code> from the bookmarks.</p>
+</li>
+<li>
+<p>Check <code>Names</code> key, or <code>V</code> values name</p>
+<ul>
+<li>Manually you can check <code>SAM\Domains\Account\Users</code></li>
+</ul>
+</li>
+<li>
+<p>Mapping SIDs to Usernames:</p>
+<ul>
+<li>
+<p>Windows stores Security identifiers (SIDs) under the
+following registry key:
+<code>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList</code></p>
+</li>
+<li>
+<p>The Hive key corresponds to the SID. <code>ProfileImagePath</code>
+value name contains the username.</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Last Login Date, Account Information, Login Count</strong></p>
+<ul>
+<li>
+<p>If you are only interested in last login date for each user,
+download <a href="https://github.com/keydet89/RegRipper3.0">RegRipper from this link</a></p>
+</li>
+<li>
+<p>Unzip and execute <code>rr.exe</code> (GUI version)</p>
+</li>
+<li>
+<p>For input, enter <code>D:\Windows\System32\config\SAM</code>, and specify
+any location for output</p>
+</li>
+<li>
+<p>Let it rip, and the output file will contain relevant login
+information for each user</p>
+</li>
+<li>
+<p>Example output:
+<img loading="lazy" src="/assets/img/windows-forensics/1575501413.png" alt="image-20220228-121924.png"  />
+</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Last Login Date, Login Method, Session Length, and IP Address for
+Remote Connections</strong></p>
+<ul>
+<li>
+<p>First, learn the location of <code>Event Logs</code></p>
+<ul>
+<li>
+<p>By default it resides at:
+<code>D:\Windows\system32\winevt\Logs\Application.evtx</code></p>
+</li>
+<li>
+<p>If not, check the following registry key</p>
+<ul>
+<li>
+<p><code>SYSTEM:ControlSet001\Services\EventLog\Application\File</code></p>
+</li>
+<li>
+<p>Registry Explorer already has a bookmark of this
+location</p>
+</li>
+<li>
+<p>Select <code>SYSTEM</code> hive, and from the <code>Bookmarks</code> menu
+select <code>EventLog</code></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Download <a href="https://www.nirsoft.net/utils/windows_log_on_times_view.html">WinLogOnView from the link</a></p>
+<ul>
+<li>
+<p>Click on <code>Options</code> → <code>Advanced Options</code></p>
+</li>
+<li>
+<p>Change <code>Data Source</code> to <code>External Disk</code></p>
+</li>
+<li>
+<p>Enter the <code>evtx</code> folder that you’ve determined in the
+previous step</p>
+</li>
+<li>
+<p>You will get an output like the following:
+<img loading="lazy" src="/assets/img/windows-forensics/1575501410.png" alt="image-20220228-121924.png"  />
+</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="persistence">Persistence<a hidden class="anchor" aria-hidden="true" href="#persistence">#</a></h2>
+<ul>
+<li>
+<p>There are dozens of different ways persistence can be achieved on
+Windows systems</p>
+</li>
+<li>
+<p>Checking them manually is a cumbersome process</p>
+</li>
+<li>
+<p>Luckily, <code>Autoruns</code> from SysInternals handles this very well,
+including for offline disks</p>
+</li>
+<li>
+<p><strong>Download</strong> <a href="https://docs.microsoft.com/en-us/sysinternals/downloads/autoruns">Autoruns from this link</a></p>
+<ul>
+<li>
+<p>If you are using the <code>GUI</code>:</p>
+<ul>
+<li>
+<p>Click on <code>File</code> and select <code>Analyze Offline System</code></p>
+</li>
+<li>
+<p>Enter <code>D:\Windows</code> as the <code>System Root</code> path</p>
+</li>
+<li>
+<p>It should automatically detect the <code>Default</code> profile and
+start to list out persistence mechanisms</p>
+<ul>
+<li>You can specify the user profile you want to work on too</li>
+</ul>
+</li>
+<li>
+<p>If you want, you can try to speed up your analysis process:</p>
+<ul>
+<li>
+<p>Click on <code>Options</code> and select <code>Scan Options</code></p>
+</li>
+<li>
+<p>Check the <code>Check VirusTotal.com</code></p>
+</li>
+<li>
+<p><strong>DO NOT</strong> check the <code>Submit Unknown Images</code></p>
+<ul>
+<li>If you are dealing with an APT, this would alert them
+that their sample has been discovered</li>
+</ul>
+</li>
+<li>
+<p>Now you can filter out all the clean, known Microsoft
+images</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>If you are using the <code>CLI</code>:</p>
+<ul>
+<li><code>autorunsc.exe -a * -c -h -s '*' -z D:\Windows D:\Users\Default -nobanner</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<ul>
+<li>
+<p><strong>Autoruns already checks the locations below.</strong></p>
+<ul>
+<li>But if for some reason manual inspection is necessary, below are the most common places.</li>
+</ul>
+</li>
+<li>
+<p><strong>Scheduled Tasks</strong></p>
+<ul>
+<li>
+<p>Each <code>Scheduled Task</code> can be found as a separate file under:</p>
+<ul>
+<li><code>D:\Windows\System32\Tasks</code> or <code>D:\Windows\SysWow64\Tasks</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>StartupInfo</strong></p>
+<ul>
+<li>
+<p>Located under: <code>D:\Windows\System32\WDI\LogFiles\StartupInfo\</code>,
+in the following format: <code>&lt;USER_SID&gt;/StartupInfo&lt;NUMBER&gt;.xml</code></p>
+</li>
+<li>
+<p>There could be up to 5 per user account. They contain a list of
+processes that were executed within the first 90 seconds from
+the time the user logged in.</p>
+</li>
+<li>
+<p>The info includes start time, the full command line and the
+parent process info, among other things.</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>ExplorerStartupLog</strong></p>
+<ul>
+<li>
+<p>Created when the system boots up, and located at:</p>
+<ul>
+<li><code>D:\Users\Administrator\AppData\Local\Microsoft\Windows\Explorer\ExplorerStartupLog.etl</code></li>
+</ul>
+</li>
+<li>
+<p>Can be opened with <code>Event Viewer</code></p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Run Keys</strong></p>
+<ul>
+<li>
+<p>Probably the most commonly utilised persistence mechanism</p>
+</li>
+<li>
+<p>Any program under <code>Run</code> key will be executed at each start-up</p>
+</li>
+<li>
+<p>Whereas <code>RunOnce</code> executes it once, and deletes the key</p>
+</li>
+<li>
+<p>These keys can be found at:</p>
+<ul>
+<li>
+<p><code>HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run</code></p>
+</li>
+<li>
+<p><code>HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce</code></p>
+</li>
+<li>
+<p><code>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run</code></p>
+</li>
+<li>
+<p><code>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\RunOnce</code></p>
+</li>
+</ul>
+</li>
+<li>
+<p><code>Registry Explorer</code> can used to access them easily</p>
+<ul>
+<li>Just select <code>Software</code>, and from the bookmarks go to <code>Run</code>
+or <code>RunOnce</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Start Menu</strong></p>
+<ul>
+<li>
+<p>Windows uses this folder to store shortcuts to programs to be
+executed on startup</p>
+</li>
+<li>
+<p>Files are located under:</p>
+<ul>
+<li>
+<p>For <code>All Users</code>:</p>
+<ul>
+<li><code>D:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp</code></li>
+</ul>
+</li>
+<li>
+<p>For <code>Current User</code>:</p>
+<ul>
+<li><code>D:\Users\Administrator\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="web-server">Web Server<a hidden class="anchor" aria-hidden="true" href="#web-server">#</a></h2>
+<ul>
+<li>
+<p><strong>XAMPP Logs:</strong></p>
+<ul>
+<li><code>D:\xampp\apache\logs</code></li>
+</ul>
+</li>
+<li>
+<p><strong>IIS:</strong></p>
+<ul>
+<li>
+<p><code>D:\inetpub\logs\LogFiles\W3SVC1</code></p>
+<ul>
+<li>Note: replace 1 with the number for your IIS website ID</li>
+</ul>
+</li>
+<li>
+<p><code>D:\Windows\System32\LogFiles\W3SVC1</code></p>
+</li>
+<li>
+<p><code>D:\Windows\System32\LogFiles\HTTPERR</code></p>
+</li>
+<li>
+<p>In case the logs are not found in the folders above, you can
+check the following config:</p>
+<ul>
+<li><code>D:\Windows\system32\inetsrv\config\ApplicationHost.config</code></li>
+</ul>
+</li>
+<li>
+<p>If there is suspicion of a backdoor/webshell artifact, you can
+do searches such as:</p>
+<ul>
+<li>
+<p><code>grep.exe -Er &quot;(ShellExecute|FromBase64String|StartInfo\.FileName|eval)&quot; D:\inetpub\</code></p>
+</li>
+<li>
+<p><code>Get-ChildItem -Force -Path D:\inetpub\ -recurse -ea silentlycontinue |  Select-String -Pattern &quot;FromBase64String&quot;</code></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>In case there is suspicion of a backdoor in the form of IIS
+modules:</p>
+<ul>
+<li>
+<p>A native IIS module is a dynamic-link library (DLL) written
+using the IIS C++ API.</p>
+<ul>
+<li>
+<p>Native modules are located in the
+<code>D:\Windows\system32\inetsrv\</code> folder on the server and can
+be configured for some, or for all, applications hosted by
+the server.</p>
+</li>
+<li>
+<p>Check
+<code>%windir%\system32\inetsrv\config\ApplicationHost.config</code>for the existence of these.</p>
+</li>
+<li>
+<p>Reference Paper: <a href="https://i.blackhat.com/USA21/Wednesday-Handouts/us-21-Anatomy-Of-Native-Iis-Malware-wp.pdf">Blackhat-us-21-Anatomy-Of-Native-Iis-Malware-wp.pdf</a></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Exchange Web Server:</strong></p>
+<ul>
+<li>
+<p>By default located under:</p>
+<ul>
+<li><code>$exinstall\Logging\Ews</code></li>
+</ul>
+</li>
+<li>
+<p>At least 14 days of Exchange Control Panel (ECP) logs, located
+at <code>Program Files\Microsoft\Exchange Server\v15\Logging\ECP\Server</code></p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="general-logs-and-windows-event-logs">General Logs and Windows Event Logs<a hidden class="anchor" aria-hidden="true" href="#general-logs-and-windows-event-logs">#</a></h2>
+<ul>
+<li>
+<p><strong>Windows Event Logs</strong></p>
+<ul>
+<li>
+<p>By default, Windows Event Logs are located under this folder:</p>
+<ul>
+<li>
+<p><code>D:\Windows\System32\winevt\Logs</code></p>
+</li>
+<li>
+<p>If not, the location can be confirmed from:</p>
+<ul>
+<li><code>SYSTEM:ControlSet001\Services\EventLog\Application\File</code></li>
+</ul>
+</li>
+<li>
+<p><!-- raw HTML omitted -->Registry Explorer<!-- raw HTML omitted -->
+already has a bookmark of this location</p>
+</li>
+<li>
+<p>Select <code>SYSTEM</code> hive, and from the <code>Bookmarks</code> menu select
+<code>EventLog</code></p>
+</li>
+</ul>
+</li>
+<li>
+<p>The log files can then be loaded in with <code>Event Viewer</code> tool of
+Windows itself</p>
+<ul>
+<li>
+<p>Run <code>Event Viewer</code></p>
+</li>
+<li>
+<p>From the <code>Action</code> menu on top right, select <code>Open Saved Log</code></p>
+</li>
+<li>
+<p>Load the desired log file from the folder you’ve located</p>
+</li>
+<li>
+<p>Alternatively, you can just double click on the log files
+and they will be loaded automatically</p>
+</li>
+<li>
+<p><code>Windows PowerShell</code>, <code>Microsoft-Windows-PowerShell%4Operational</code>, <code>System</code>, <code>Microsoft-Windows-TerminalServices-RemoteConnectionManager%4Operational</code> log files might be particularly useful</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>RDP Logs</strong></p>
+<ul>
+<li>Windows Event Logs also contain RDP related logs</li>
+</ul>
+</li>
+</ul>
+<hr>
+<ul>
+<li>
+<p>Successful RDP Logon:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-YAML" data-lang="YAML"><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">1149</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>:  <span style="color:#ae81ff">User authentication succeeded.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-RemoteConnectionManager%4Operational.evtx</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">4624</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">An account was successfully logged on.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">21</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description: Remote Desktop Services</span>: <span style="color:#ae81ff">Session login succeeded.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">22</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description: Remote Desktop Services</span>: <span style="color:#ae81ff">Shell start notification received.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span>
+</span></span></code></pre></div></li>
+<li>
+<p>Unsuccessful RDP Logon:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-YAML" data-lang="YAML"><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">1149</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>:  <span style="color:#ae81ff">User authentication succeeded (Network connection, which occurs prior to the user authentication).</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-RemoteConnectionManager%4Operational.evtx</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">4625</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">An account failed to log on.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span>
+</span></span></code></pre></div></li>
+<li>
+<p>RDP Session Disconnect (windows close by the user):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-YAML" data-lang="YAML"><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">24</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description:  Remote Desktop Services</span>: <span style="color:#ae81ff">Session has been disconnected.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">40</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">Session XXX has been disconnected, reason code YYY.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">4779</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">A session was disconnected from a windows station.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">4634</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">An account was logged off.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span>
+</span></span></code></pre></div></li>
+<li>
+<p>RDP Session Disconnect (Start -&gt; Disconnect):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-YAML" data-lang="YAML"><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">24</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description:  Remote Desktop Services</span>: <span style="color:#ae81ff">Session has been disconnected.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">39</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">Session XXX has been disconnected, by session YYY.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">40</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">Session XXX has been disconnected, reason code YYY.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">4779</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">A session was disconnected from a window station.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">4634</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">An account was logged off.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span>
+</span></span></code></pre></div></li>
+<li>
+<p>RDP Session Reconnect:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-YAML" data-lang="YAML"><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">1149</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>:  <span style="color:#ae81ff">User authentication succeeded.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-RemoteConnectionManager%4Operational.evtx</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">4624</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">An account was successfully logged on.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">25</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description: Remote Desktop Services</span>: <span style="color:#ae81ff">Session reconnection succeeded.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">40</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">Session XXX has been disconnected, reason code YYY.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">4778</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">A session was reconnected from a window station.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span>
+</span></span></code></pre></div></li>
+<li>
+<p>RDP Session Logoff :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-YAML" data-lang="YAML"><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">23</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description:  Remote Desktop Services</span>: <span style="color:#ae81ff">Session logoff disconnected.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">4634</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">An account was logged off.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">4647</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">User-initiated logoff.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">9009</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">The Desktop Window Manager has exited with code XXX.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\System.evtx</span>
+</span></span></code></pre></div></li>
+<li>
+<p>Reference: <a href="https://www.security-hive.com/post/rdp-forensics-logging-detection-and-forensics">RDP Forensics - Logging, Detection and Forensics</a></p>
+</li>
+</ul>
+<hr>
+<ul>
+<li>
+<p><strong>RDP Cache</strong></p>
+<ul>
+<li>
+<p><code>mstsc.exe</code> is the built-in client that allows connecting to
+remote computers via RDP</p>
+</li>
+<li>
+<p>It stores an RDP cache with the aim to speed up the connection</p>
+</li>
+<li>
+<p>This cache contains screenshots of the parts of the screen that
+does not change much</p>
+</li>
+<li>
+<p>Through this cache, you may be able to find out if the victim
+host was used to connect to other hosts via RDP</p>
+<ul>
+<li>
+<p><code>D:\Users\&lt;username&gt;\AppData\Local\Microsoft\Terminal Server Client\Cache</code></p>
+</li>
+<li>
+<p><a href="https://github.com/ANSSI-FR/bmc-tools">bmc-tools</a> can be used to extract images from the bin file</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>User Access Logging</strong></p>
+<ul>
+<li>
+<p><a href="https://advisory.kpmg.us/blog/2021/digital-forensics-incident-response.html">It was discovered and documented by DFIR team of KPMG</a>:</p>
+<ul>
+<li>
+<p><code>The UAL can be found on Windows Servers (2012 and up) and is a local data aggregation feature, recording client usage by role and product on each system providing the resource.</code></p>
+</li>
+<li>
+<p><code>According to Microsoft's documentation these logs will:</code></p>
+<ul>
+<li>
+<p>Keep a tally of user requests for local servers,
+physical or virtual</p>
+</li>
+<li>
+<p>Keep a tally of user requests for local software
+products on these servers</p>
+</li>
+<li>
+<p>Pull statistics from Hyper-V, regarding high and low
+periods of demand for resources</p>
+</li>
+<li>
+<p>Pull UAL data from remote servers</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Logs are located under <code>D:\Windows\System32\LogFiles\Sum</code></p>
+</li>
+<li>
+<p>Instructions on how to examine the UAL data: <a href="https://svch0st.medium.com/windows-user-access-logs-ual-9580f1100635">Windows User Access Logs (UAL)</a></p>
+</li>
+<li>
+<p><a href="https://github.com/brimorlabs/KStrike">KStrike</a> can be used to parse the data as well</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="deposited-files--filesystem-artifacts">Deposited Files &amp; Filesystem Artifacts<a hidden class="anchor" aria-hidden="true" href="#deposited-files--filesystem-artifacts">#</a></h2>
+<ul>
+<li>
+<p><strong>LOLBIN Downloaded Files</strong></p>
+<ul>
+<li>
+<p><code>LOLBINs</code> such as <code>certutil</code> are frequently leveraged by
+attackers to download next stages</p>
+<ul>
+<li>A list of its capabilities for attackers: <a href="https://lolbas-project.github.io/lolbas/Binaries/Certutil/">LOLBAS-Certutil</a></li>
+</ul>
+</li>
+<li>
+<p>Files downloaded with <code>certutil</code> have a copy of them stored in
+some of the following locations:</p>
+<ul>
+<li>
+<p><code>MetaData</code> folder holds the URL of the each file downloaded,
+while <code>Content</code> folder holds the files themselves.</p>
+</li>
+<li>
+<p>So if you are unsure where a file came from, just open the
+corresponding file in MetaData folder with <code>strings.exe</code>, or
+<code>notepad.exe</code>.</p>
+</li>
+</ul>
+</li>
+<li>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#ae81ff">D:\Windows\SysWOW64\config\systemprofile\AppData\LocalLow\Microsoft\CryptnetUrlCache\Content\</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">D:\Windows\SysWOW64\config\systemprofile\AppData\LocalLow\Microsoft\CryptnetUrlCache\MetaData\</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">D:\Windows\System32\config\systemprofile\AppData\LocalLow\Microsoft\CryptnetUrlCache\Content\</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">D:\Windows\System32\config\systemprofile\AppData\LocalLow\Microsoft\CryptnetUrlCache\MetaData\</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">D:\Users\%USERNAME%\AppData\LocalLow\Microsoft\CryptnetUrlCache\Content\</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">D:\Users\%USERNAME%\AppData\LocalLow\Microsoft\CryptnetUrlCache\MetaData\</span>
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+</li>
+<li>
+<p>Further reading: <a href="https://thinkdfir.com/2020/07/30/certutil-download-artefacts/amp/">thinkdfir-certutil-download-artefacts</a></p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Deleted Files</strong></p>
+<ul>
+<li>
+<p><code>D:\$Recycle.Bin</code> folder contains folders with each users’ <code>SID</code></p>
+<ul>
+<li>
+<p>Under the users’ SID there are files which begin with <code>$I</code>
+and <code>$R</code></p>
+</li>
+<li>
+<p>When a file is deleted two files are created:</p>
+<ul>
+<li>
+<p><code>$R</code> file contains the actual file that was deleted</p>
+</li>
+<li>
+<p><code>$I</code> file contains the metadata of the deleted file</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Malicious Hosts Entries</strong></p>
+<ul>
+<li>
+<p><code>Hosts</code> file can be used to hijack traffic to malicious websites</p>
+</li>
+<li>
+<p>It takes precedence over DNS queries</p>
+</li>
+<li>
+<p>It is located at:</p>
+<ul>
+<li>
+<p><code>D:\Windows\System32\drivers\etc\hosts</code></p>
+</li>
+<li>
+<p><code>D:\Windows\System32\drivers\etc\lmhosts.sam</code></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="recently-accessed-created-and-modified-files">Recently Accessed, Created, and Modified Files<a hidden class="anchor" aria-hidden="true" href="#recently-accessed-created-and-modified-files">#</a></h3>
+<ul>
+<li>
+<p><strong>Files modified within the past 7 days</strong></p>
+<ul>
+<li><code>Get-ChildItem -Force -Path D:\ -Recurse -ea silentlycontinue| ? {$_.LastWriteTime -gt (Get-Date).AddDays(-7)}</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Files accessed within the past 7 days</strong></p>
+<ul>
+<li><code>Get-ChildItem -Force -Path D:\ -Recurse -ea silentlycontinue| ? {$_.LastAccessTime -gt (Get-Date).AddDays(-7)}</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Files created within the past 7 days</strong></p>
+<ul>
+<li><code>Get-ChildItem -Force -Path D:\ -Recurse -ea silentlycontinue| ? {$_.CreationTime -gt (Get-Date).AddDays(-7)}</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="evidence-of-program-execution">Evidence of Program Execution<a hidden class="anchor" aria-hidden="true" href="#evidence-of-program-execution">#</a></h2>
+<h3 id="userassist">UserAssist<a hidden class="anchor" aria-hidden="true" href="#userassist">#</a></h3>
+<ul>
+<li>
+<p>A registry key under <code>NTUSER.DAT</code> hive</p>
+</li>
+<li>
+<p>It provides a list of <strong>GUI based programs</strong> launched from the
+desktop</p>
+</li>
+<li>
+<p>To examine the data:</p>
+<ul>
+<li>
+<p>First navigate to</p>
+<ul>
+<li>
+<p><code>NTUSER.DAT: Software\Microsoft\Windows\CurrentVersion\Explorer\UserAssist{&lt;GUID&gt;}\Count</code></p>
+</li>
+<li>
+<p><code>Registry Explorer</code> has a bookmark of this location already</p>
+<ul>
+<li>Just click on <code>NTUSER.DAT</code>, and select <code>UserAssist</code> from
+the bookmarks menu</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Pick the items with a <code>Count</code> greater than <code>0</code></p>
+</li>
+<li>
+<p>The contents are encoded with <code>ROT13</code></p>
+<ul>
+<li>
+<p>For instance, the value below is decoded to:</p>
+<ul>
+<li>
+<p><code>{0139Q44R-6NSR-49S2-8690-3QNSPNR6SSO8}\Npprffbevrf\Favccvat Gbby.yax</code></p>
+</li>
+<li>
+<p><code>{0139D44E-6AFE-49F2-8690-3DAFCAE6FFB8}\Accessories\Snipping Tool.lnk</code></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Alternatively, you can use <code>RegRipper</code> to do these steps
+automatically</p>
+<ul>
+<li>
+<p>Download <!-- raw HTML omitted -->RegRipper<!-- raw HTML omitted --></p>
+</li>
+<li>
+<p>Unzip and execute <code>rr.exe</code> (GUI version)</p>
+</li>
+<li>
+<p>For input, enter <code>D:\Users\&lt;username&gt;\NTUSER.DAT</code>, and
+specify any location for output</p>
+</li>
+<li>
+<p>Let it rip, and the output file will contain relevant
+execution history</p>
+</li>
+<li>
+<p>Search for <code>UserAssist</code> in the output file</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="prefetch">Prefetch<a hidden class="anchor" aria-hidden="true" href="#prefetch">#</a></h3>
+<ul>
+<li>
+<p>Prefetching is a system that helps systems boot up and run faster by
+caching needed files ahead of time</p>
+</li>
+<li>
+<p>Prefetch can be very valuable, as it contains the following data:</p>
+<ul>
+<li>
+<p>Name of the executable ran</p>
+</li>
+<li>
+<p>Unicode list of DLLs used by that executable</p>
+</li>
+<li>
+<p>Count of how many times the executable has been run</p>
+</li>
+<li>
+<p>Timestamp indicating the last time the program was executed</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Prefetch logs are located at <code>D:\Windows\Prefetch</code></p>
+</li>
+<li>
+<p><code>WinPrefetchView</code> can be used to view them, and it supports loading
+them from an external disk for forensic analysis: <a href="https://www.nirsoft.net/utils/win_prefetch_view.html">nirsoft-win_prefetch_view.html</a></p>
+</li>
+<li>
+<p>Alternatively, <code>PECmd</code> from the <a href="#zimmerman-tools">Zimmerman-Tools</a> can be
+used as well</p>
+<ul>
+<li>
+<p>Simply run the following in the directory that the tools are
+installed in:</p>
+<ul>
+<li><code>.\PECmd.exe -d D:\Windows\Prefetch --html &quot;C:\Users\Administrator\Desktop\output&quot;</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="superprefetch">SuperPrefetch<a hidden class="anchor" aria-hidden="true" href="#superprefetch">#</a></h3>
+<ul>
+<li>
+<p>Pretty much the same as <code>Prefetch</code>, but it is not a substitution for
+it</p>
+</li>
+<li>
+<p>Generates the database files at:</p>
+<ul>
+<li><code>D:\Windows\Prefetch\Ag*.db</code></li>
+</ul>
+</li>
+<li>
+<p>You can use <a href="https://www.crowdstrike.com/resources/community-tools/crowdresponse/">CrowdResponse</a> to parse the data</p>
+</li>
+</ul>
+<h3 id="startupinfo">StartupInfo<a hidden class="anchor" aria-hidden="true" href="#startupinfo">#</a></h3>
+<ul>
+<li>
+<p>Mentioned earlier for detecting persistence, it gives a glimpse of executed programs</p>
+</li>
+<li>
+<p>Located under: <code>D:\Windows\System32\WDI\LogFiles\StartupInfo\</code>,
+in the following format: <code>&lt;USER_SID&gt;/StartupInfo&lt;NUMBER&gt;.xml</code></p>
+</li>
+<li>
+<p>There could be up to 5 per user account. They contain a list of
+processes that were executed within the first 90 seconds from
+the time the user logged in.</p>
+</li>
+<li>
+<p>The info includes start time, the full command line and the
+parent process info, among other things.</p>
+</li>
+</ul>
+<h3 id="crash-dumps">Crash Dumps<a hidden class="anchor" aria-hidden="true" href="#crash-dumps">#</a></h3>
+<ul>
+<li>
+<p><strong>Minidumps</strong></p>
+<ul>
+<li>
+<p>When your computer crashes, Windows generates a <code>Minidump</code> that
+can be examined to determine the root cause</p>
+</li>
+<li>
+<p>These minidump files are placed under:</p>
+<ul>
+<li><code>D:\Windows\Minidump</code></li>
+</ul>
+</li>
+<li>
+<p>To analyze, refer to the official guide: <a href="https://docs.microsoft.com/en-us/troubleshoot/windows-client/performance/read-small-memory-dump-file">MSDN-read-small-memory-dump-file</a></p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Crash Dumps</strong></p>
+<ul>
+<li>
+<p>Crash dumps are generated automatically if certain Registry keys
+are set</p>
+</li>
+<li>
+<p>Analyzing these is not such a straightforward, trivial task, and therefore skipped
+in this guide</p>
+</li>
+<li>
+<p>These are located under</p>
+<ul>
+<li>
+<p><code>D:\Users\[username]\AppData\Local\CrashDumps</code></p>
+</li>
+<li>
+<p><code>D:\Users\[username]\AppData\Local\Microsoft\Windows\WER\</code></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="wmi-ccm_recently_used_apps">WMI CCM_Recently_Used_Apps<a hidden class="anchor" aria-hidden="true" href="#wmi-ccm_recently_used_apps">#</a></h3>
+<ul>
+<li>
+<p><a href="http://technet.microsoft.com/en-us/library/cc753534.aspx">Windows Management Instrumentation</a>(WMI) is a built-in tool</p>
+</li>
+<li>
+<p>Allows admins to manage different Windows environments, including
+remote systems</p>
+</li>
+<li>
+<p>It is a frequently used <code>LOLBIN</code>: <a href="https://lolbas-project.github.io/lolbas/Binaries/Wmic/">LOLBAS-Wmic</a></p>
+</li>
+<li>
+<p>The WMI Repository is a database that stores meta-information and definitions for WMI classes</p>
+<ul>
+<li>
+<p>The logging occurs on the endpoints regardless of the settings
+that are configured on the SCCM server</p>
+</li>
+<li>
+<p>Can record the path, name, size, associated user name, last used
+time, launch count, and PE metadata of executed files</p>
+</li>
+<li>
+<p>Located at <code>D:\windows\system32\wbem\repository\</code></p>
+</li>
+<li>
+<p>Can be parsed with: <a href="https://github.com/davidpany/WMI_Forensics/blob/master/CCM_RUA_Finder.py">github-CCM_RUA_Finder.py</a></p>
+<ul>
+<li>
+<p>Simply run
+<code>CCM_RUA_Finder.py -i D:\windows\system32\wbem\repository\OBJECTS.DATA -o path\to\output.xls</code></p>
+<ul>
+<li>
+<p>If the forensic host does not have Python installed, you
+can exfiltrate the files to your own workstation</p>
+</li>
+<li>
+<p>The <code>Microsoft Remote Desktop</code> tool used for RDP
+connections on MacOS devices supports copy-paste</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Further reading: <a href="https://netsecninja.github.io/dfir-notes/wmi-forensics/">netsecninja-wmi-forensics</a></p>
+</li>
+<li>
+<p>Comprehensive guide: <a href="https://www.mandiant.com/resources/windows-management-instrumentation-wmi-offense-defense-and-forensics">mandiant-windows-management-instrumentation-wmi-offense-defense-and-forensics</a></p>
+</li>
+</ul>
+<h3 id="shimcache-appcompatcache">Shimcache (AppCompatCache)<a hidden class="anchor" aria-hidden="true" href="#shimcache-appcompatcache">#</a></h3>
+<ul>
+<li>
+<p><code>Windows Application Compatibility Database</code> is used by Windows to
+identify possible application compatibility challenges with
+executables.</p>
+</li>
+<li>
+<p>It tracks the executables’ file name, file size, last modified time.</p>
+</li>
+<li>
+<p>Last 1024 programs executed can be found here:</p>
+<ul>
+<li>
+<p><code>SYSTEM\CurrentControlSet\Control\Session Manager\AppCompatCache</code></p>
+</li>
+<li>
+<p><code>Registry Explorer</code> has a bookmark of this location</p>
+<ul>
+<li>Select <code>SYSTEM</code>, and from the bookmarks menu, go to
+<code>AppCompatCache</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Alternatively, <a href="https://github.com/mandiant/ShimCacheParser">github-mandiant-ShimCacheParser</a> can
+be used to parse the data</p>
+<ul>
+<li>
+<p>Just export the whole <code>SYSTEM</code> registry hive, or the
+<code>AppCompatCache</code> as a standalone <code>.reg</code> file</p>
+<ul>
+<li><code>Registry Explorer</code> can be used to export the key</li>
+</ul>
+</li>
+<li>
+<p>Use the <code>-i</code>, or <code>-r</code> option respectively</p>
+</li>
+<li>
+<p>Output will be as follows:</p>
+</li>
+<li>
+<p><img loading="lazy" src="/assets/img/windows-forensics/1575501404.png" alt="image-forensics-shimcache.png"  />
+</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="amcache">AMcache<a hidden class="anchor" aria-hidden="true" href="#amcache">#</a></h3>
+<ul>
+<li>
+<p><code>ProgramDataUpdater</code> (a task associated with the Application
+Experience Service) uses the registry file <code>Amcache.hve</code> to store
+data during process creation</p>
+</li>
+<li>
+<p>This registry stores the first execution of a program on the system,
+including portable programs executed from an external storage.</p>
+</li>
+<li>
+<p>It is located at:</p>
+<ul>
+<li><code>D:\Windows\AppCompat\Programs\Amcache.hve</code></li>
+</ul>
+</li>
+<li>
+<p>To analyze, use <a href="#regripper">RegRipper</a></p>
+<ul>
+<li>
+<p>Load the <code>Amcache.hve</code> file</p>
+</li>
+<li>
+<p>Select an output destination, and <code>Rip</code></p>
+</li>
+<li>
+<p>You will get an output like the following:</p>
+</li>
+<li>
+<p><img loading="lazy" src="/assets/img/windows-forensics/1575501401.png" alt="image-forensics-amcache.png"  />
+</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="background-activity-moderator">Background Activity Moderator<a hidden class="anchor" aria-hidden="true" href="#background-activity-moderator">#</a></h3>
+<ul>
+<li>
+<p>The Background Activity Moderator (BAM) is a Windows service that
+Controls activity of background applications. This service exists in
+Windows 10 only.</p>
+</li>
+<li>
+<p>For each user separately, it provides:</p>
+<ul>
+<li>
+<p>Full path of the executable file</p>
+</li>
+<li>
+<p>Last execution date/time in UTC</p>
+</li>
+</ul>
+</li>
+<li>
+<p>It is located under the following keys:</p>
+<ul>
+<li>
+<p><code>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\bam\UserSettings\*\*</code></p>
+</li>
+<li>
+<p><code>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\bam\State\UserSettings\*\*</code></p>
+</li>
+<li>
+<p><code>Registry Explorer</code> has a bookmark for it</p>
+<ul>
+<li>
+<p>Select <code>SYSTEM</code> hive</p>
+</li>
+<li>
+<p>From the <code>Bookmarks</code> menu, select
+<code>BAM (Background Activity Monitor)</code></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="tools">Tools<a hidden class="anchor" aria-hidden="true" href="#tools">#</a></h2>
+<h3 id="registry-explorer">Registry Explorer<a hidden class="anchor" aria-hidden="true" href="#registry-explorer">#</a></h3>
+<p>One of the Zimmerman tools, but a particularly useful one that it
+deserves its own space.</p>
+<ul>
+<li>
+<p>It is able to explore both Live system registry hives, and offline
+ones</p>
+</li>
+<li>
+<p>Has a <code>Bookmarks</code> tab with shortcuts to keys with valuable forensic
+artifacts</p>
+</li>
+<li>
+<p>Can be downloaded from: <a href="https://ericzimmerman.github.io/#!index.md">ericzimmerman.github.io</a></p>
+</li>
+</ul>
+<h3 id="zimmerman-tools">Zimmerman Tools<a hidden class="anchor" aria-hidden="true" href="#zimmerman-tools">#</a></h3>
+<p>Eric Zimmerman has written plenty of tools and scripts to perform offline
+disk analysis.</p>
+<ul>
+<li>
+<p>To install them all, follow the instructions at: <a href="https://ericzimmerman.github.io/#!index.md">ericzimmerman.github.io</a></p>
+<ul>
+<li>
+<p>Use <a href="https://f001.backblazeb2.com/file/EricZimmermanTools/Get-ZimmermanTools.zip">backblazeb2-Get-ZimmermanTools.zip</a> to download all programs at once and to keep your toolset up-to-date</p>
+<ul>
+<li>Use <strong>-Dest</strong> to control where the tools ends up, else
+things end up in same directory as the script (recommended!)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="power-forensics">Power Forensics<a hidden class="anchor" aria-hidden="true" href="#power-forensics">#</a></h3>
+<ul>
+<li>
+<p>It is an all-inclusive forensics framework written in PowerShell</p>
+</li>
+<li>
+<p>Supports <code>NTFS</code> and <code>FAT</code> filesystems</p>
+</li>
+<li>
+<p>Although not utilised in this page for any of the artifacts, it is particularly useful for
+filesystem forensics</p>
+</li>
+<li>
+<p>Documentation with available tools: <a href="https://powerforensics.readthedocs.io/en/latest/">powerforensics.readthedocs.io</a></p>
+</li>
+</ul>
+<h3 id="regripper">RegRipper<a hidden class="anchor" aria-hidden="true" href="#regripper">#</a></h3>
+<ul>
+<li>
+<p>It is a powerful and easy to use tool to parse out various
+information from registry files.</p>
+</li>
+<li>
+<p>It comes with a bunch of plugins to parse data from hives such as
+<code>SAM</code>, <code>SOFTWARE</code>, <code>NTUSER</code> etc.</p>
+</li>
+<li>
+<p>Both GUI and CLI versions are available.</p>
+</li>
+<li>
+<p>Download from: <a href="https://github.com/keydet89/RegRipper3.0">github.com/keydet89/RegRipper3.0</a></p>
+</li>
+</ul>
+<h3 id="autoruns">Autoruns<a hidden class="anchor" aria-hidden="true" href="#autoruns">#</a></h3>
+<ul>
+<li>
+<p>It is a Sysinternals tools, officially developed and
+supported by Microsoft</p>
+</li>
+<li>
+<p>It is able to enumerate tons of different persistence mechanisms on Windows</p>
+</li>
+<li>
+<p>It can be executed both via CLI and GUI</p>
+</li>
+<li>
+<p>It is able to perform analysis on offline systems and disks as well</p>
+</li>
+<li>
+<p>Download and manual link: <a href="https://docs.microsoft.com/en-us/sysinternals/downloads/autoruns">MSDN-sysinternals-autoruns</a></p>
+</li>
+</ul>
+<h3 id="winlogonview">WinLogOnView<a hidden class="anchor" aria-hidden="true" href="#winlogonview">#</a></h3>
+<ul>
+<li>
+<p>A simple and concise tool by Nirsoft with one goal:</p>
+</li>
+<li>
+<p><code>Analyses the security event log of Windows operating system, and detects the date/time that users logged on and logged off. For every time that a user log on/log off to your system, the following information is displayed: Logon ID, User Name, Domain, Computer, Logon Time, Logoff Time, Duration, and network address.</code></p>
+</li>
+<li>
+<p>Download from: <a href="https://www.nirsoft.net/utils/windows_log_on_times_view.html">nirsoft-windows_log_on_times_view.html</a></p>
+</li>
+</ul>
+<h3 id="thor">THOR<a hidden class="anchor" aria-hidden="true" href="#thor">#</a></h3>
+<ul>
+<li>
+<p>THOR lite can scan both a live system or an offline mounted disk for
+IOCs. THOR already comes equipped with its own list of IOCs to scan
+for. But you can add your own stuff too -if your license allows to it-.</p>
+</li>
+<li>
+<p>If you have a <code>Forensic Lab License</code>:</p>
+<ul>
+<li>Thor Lite can be used on a disk
+<code>thor64-lite.exe --fsonly -p D:\</code></li>
+</ul>
+</li>
+<li>
+<p>If you are using the <code>LITE</code> -free- version: <a href="https://thor-manual.nextron-systems.com/en/latest/usage/special-scan-modes.html#forensic-lab-license">thor-manual-forensic-lab-license</a></p>
+<ul>
+<li><code>thor64.exe -a Filescan --intense --norescontrol --nosoft --cross-platform --alldrives -p D:\</code></li>
+</ul>
+</li>
+<li>
+<p>In my experience, THOR gave quite some FPs. For instance, on a
+default installation it said some files masquerade as JPGs and that
+they are not actually JPGs:</p>
+<pre><code>``` java
+MESSAGE: Suspicious file found
+FILE: D:\Windows\servicing\LCU\Package_for_RollupFix~31bf3856ad364e35~amd64~~17763.2565.1.7\amd64_microsoft-windows-f..toragereportservice_31bf3856ad364e35_10.0.17763.1697_none_7825694087316827\f\warning.jpg
+REASON_1: YARA rule Cloaked_as_JPG / Detects a non-JPEG file cloaked as
+```
+</code></pre>
+</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://ruysal.com/tags/Malware-Analysis/">Malware Analysis</a></li>
+      <li><a href="https://ruysal.com/tags/Incident-Reponse/">Incident Reponse</a></li>
+      <li><a href="https://ruysal.com/tags/Forensics-Analysis/">Forensics Analysis</a></li>
+      <li><a href="https://ruysal.com/tags/Windows-Forensics/">Windows Forensics</a></li>
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+    <span>&copy; 2022 <a href="https://ruysal.com"></a></span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://git.io/hugopapermod" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

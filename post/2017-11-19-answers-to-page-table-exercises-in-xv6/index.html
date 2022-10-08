@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Page Tables, Implementing Shebang, and Integer Overflow in Xv6 | </title>
+<meta name="keywords" content="Xv6, OS, C" />
+<meta name="description" content="xv6 is a reimplementation of UNIXv6 for x86 architecture, created by MIT to be used in their Operating System courses. I found it to be an absolutely great course and learned a lot from it. Hence, I wanted to write about it.
+In this post, I will explain some of my solutions for the exercise questions posed in Chapter 2 of the booklet, namely the chapter Page Tables. Since the subject is presented extensively in the book, I won&rsquo;t re-write every detail about it.">
+<meta name="author" content="">
+<link rel="canonical" href="https://ruysal.com/post/2017-11-19-answers-to-page-table-exercises-in-xv6/" />
+<link crossorigin="anonymous" href="/assets/css/stylesheet.min.9f8e3ed56c0635e6e28d42eb7af576afe27c0395f1638f4539914b897ff327ac.css" integrity="sha256-n44&#43;1WwGNebijULrevV2r&#43;J8A5XxY49FOZFLiX/zJ6w=" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.min.b95bacdc39e37a332a9f883b1e78be4abc1fdca2bc1f2641f55e3cd3dabd4d61.js" integrity="sha256-uVus3DnjejMqn4g7Hni&#43;Srwf3KK8HyZB9V4809q9TWE="
+    onload="hljs.initHighlightingOnLoad();"></script>
+<link rel="icon" href="https://ruysal.com/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://ruysal.com/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://ruysal.com/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://ruysal.com/apple-touch-icon.png">
+<link rel="mask-icon" href="https://ruysal.com/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript><meta property="og:title" content="Page Tables, Implementing Shebang, and Integer Overflow in Xv6" />
+<meta property="og:description" content="xv6 is a reimplementation of UNIXv6 for x86 architecture, created by MIT to be used in their Operating System courses. I found it to be an absolutely great course and learned a lot from it. Hence, I wanted to write about it.
+In this post, I will explain some of my solutions for the exercise questions posed in Chapter 2 of the booklet, namely the chapter Page Tables. Since the subject is presented extensively in the book, I won&rsquo;t re-write every detail about it." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ruysal.com/post/2017-11-19-answers-to-page-table-exercises-in-xv6/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2017-11-19T02:15:02&#43;00:00" />
+<meta property="article:modified_time" content="2017-11-19T02:15:02&#43;00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Page Tables, Implementing Shebang, and Integer Overflow in Xv6"/>
+<meta name="twitter:description" content="xv6 is a reimplementation of UNIXv6 for x86 architecture, created by MIT to be used in their Operating System courses. I found it to be an absolutely great course and learned a lot from it. Hence, I wanted to write about it.
+In this post, I will explain some of my solutions for the exercise questions posed in Chapter 2 of the booklet, namely the chapter Page Tables. Since the subject is presented extensively in the book, I won&rsquo;t re-write every detail about it."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Posts",
+      "item": "https://ruysal.com/post/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Page Tables, Implementing Shebang, and Integer Overflow in Xv6",
+      "item": "https://ruysal.com/post/2017-11-19-answers-to-page-table-exercises-in-xv6/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Page Tables, Implementing Shebang, and Integer Overflow in Xv6",
+  "name": "Page Tables, Implementing Shebang, and Integer Overflow in Xv6",
+  "description": "xv6 is a reimplementation of UNIXv6 for x86 architecture, created by MIT to be used in their Operating System courses. I found it to be an absolutely great course and learned a lot from it. Hence, I wanted to write about it.\nIn this post, I will explain some of my solutions for the exercise questions posed in Chapter 2 of the booklet, namely the chapter Page Tables. Since the subject is presented extensively in the book, I won\u0026rsquo;t re-write every detail about it.",
+  "keywords": [
+    "Xv6", "OS", "C"
+  ],
+  "articleBody": "xv6 is a reimplementation of UNIXv6 for x86 architecture, created by MIT to be used in their Operating System courses. I found it to be an absolutely great course and learned a lot from it. Hence, I wanted to write about it.\nIn this post, I will explain some of my solutions for the exercise questions posed in Chapter 2 of the booklet, namely the chapter Page Tables. Since the subject is presented extensively in the book, I won’t re-write every detail about it. Since xv6 is used as an actual course in many universities, I won’t be posting answers to the homework assignments, but only to the Exercise questions. For the record, I am referring to the Revision 10 of the booklet.\nThe contents of this post will explain:\nHow to implement a syscall to traverse a page table How to implement a Shebang interpreter for Exec to handle scripts And how an Integer Overflow might be exploited to takeover kernel Let’s get started.\n1. Look at real operating systems to see how they size memory.\nThis question is answered thoroughly in the famous OSDev wiki. As it was stated in xv6, this really is a tricky thing to do in x86. Basically, our safest bet is to get the information from the BIOS. But how do we access to BIOS in protected mode, while the OS is running?\nhttp://wiki.osdev.org/Detecting_Memory_(x86)\n3. Write a user program that grows its address space with 1 byte by calling sbrk(1). Run the program and investigate the page table for the program before the call to sbrk and after the call to sbrk. How much space has the kernel allocated? What does the pte for the new memory contain?\nTo be able to investigate the page table easily, I wrote a system call which prints the page directory of the current process. Also, to understand some other problems I was curious about, I added a parameter to the system call, which acts like a switch and if it is set to 1, it prints the KERNEL pages, and if it is set to 0, it prints the USER pages. Here is the code:\n//sysproc.c int sys_traverse(void){ struct proc *p = myproc(); pde_t *pgtab; int i, k, argument, flag = 0; if(argint(0, \u0026argument) \u003c 0){ cprintf(\"no argument passed.\\n\"); return -1; } cprintf(\"p-\u003ename: %s\\n\", p-\u003ename); cprintf(\"p-\u003epgdir: %x\\n\\n\", p-\u003epgdir); cprintf(\"argument: %d\\n\", argument); for( i = 0; i \u003c 1024; i++ ){ if( (p-\u003epgdir)[i] \u0026 PTE_P ){ //(a == 1) ? 20: 30 flag = 0; pgtab = (pte_t*)P2V(PTE_ADDR( (p-\u003epgdir)[i] )); for( k = 0; k \u003c 1024; k ++){ if( pgtab[k] \u0026 PTE_P \u0026\u0026 pgtab[k] \u0026 ( (argument == 0) ? PTE_U: ( (pgtab[k] \u0026 PTE_U) == 0) ) ){ if(flag == 0){ cprintf(\"\u0026p-\u003epgdir[%d]: %x, p-\u003epgdir[%d]: %x\\n\", i, \u0026(p-\u003epgdir)[i], i, (p-\u003epgdir)[i] ); cprintf(\"\\tpgtab starts at: %x and contains these entries:\\n\", pgtab); flag = 1; } cprintf(\"\\t\\t\u0026pgtab[%d]: %x, pgtab[%d]: %x\\n\", k, \u0026pgtab[k], k, pgtab[k]); } } } } return 0; } xv6 Does not set the PTE_U bit in Page Directory Entries. That means, we cannot check whether the table belongs to USER or KERNEL in PDEs. So, I had to check this in PTEs. Hence, I summoned this ugly creature from the one-liner hell. Lesson learned: Don’t hesitate to use nested ifs, this is much uglier.\nif( pgtab[k] \u0026 PTE_P \u0026\u0026 pgtab[k] \u0026 ( (argument == 0) ? PTE_U: ( (pgtab[k] \u0026 PTE_U) == 0) ) ){ The first condition checks whether the PTE is present, the second condition checks if the argument asks for USER pages (i.e 0). If we are looking for USER pages, we do bitwise and on pgtab[k] with PTE_U. Otherwise, we check whether the PGTAB contains PTE_U bit and negate it by checking against 0.\nImplementing the rest of the system call is unrelated to this post, so I will skip it. You can find some other blog posts detailing the necessary steps.\nNow that we have a system call to traverse the page table, we can answer the question. xv6 Allocates another page for a 1 byte sbrk call. You can see it in the screenshot below.\n5. Unix implementations of exec traditionally include special handling for shell scripts. If the file to execute begins with the text #!, then the first line is taken to be a program to run to interpret the file. For example, if exec is called to run myprog arg1 and myprog’s first line is #!/interp, then exec runs /interp with command line /interp myprog arg1. Implement support for this convention in xv6.\nBefore we get into the implementation of this, we need a script with a shebang line (#!/interp) so that it will be interpreted and we will be able to debug easily as we implement the code. In xv6’s main directory, I executed this to have a simple script with a visible result.\ncat \u003e script #!/sh echo hello; ls; Then, we need to modify the MAKEFILE so that this script is included in xv6’s filesystem. Find the following line and modify it as shown below:\nfs.img: mkfs README $(UPROGS) script ./mkfs fs.img README $(UPROGS) script Great. Now when we compile xv6, we will see a file named “script” in xv6’s filesystem.\nImplementing a shebang consists of two parts. First, we need to have this functionality present in our kernel. Only after that, user level programs can benefit from it and interpret the contents of the script. Since xv6 is a small system, only our beloved “sh” has the capability to interpret the script. To implement the functionality in the kernel, “exec.c” is our first stop.\n//exec.c char shebang[3]; char interp_path[16]; //16 is for historical reasons. if(readi(ip, (char*)\u0026shebang, 0, sizeof(shebang)) != sizeof(shebang)) goto bad; shebang[2] = '\\0'; if( shebang[0] == '#' \u0026\u0026 shebang[1] == '!' ){ //cprintf(\"shebang: %s\\n\", shebang); readi(ip, (char*)\u0026interp_path, 2, sizeof(interp_path)); //cprintf(\"interp_path: %s\\n\", interp_path); for(i = 0; i \u003c sizeof(interp_path); i++){ if(interp_path[i] == 0xa){ interp_path[i] = '\\0'; break; } } exec(interp_path, argv); } The code is pretty much self-explanatory. We read the first 3 bytes of the file into a buffer and check whether the file starts with “#!”.\nYou might say “Hey, how do you know the file actually has 3 bytes? Won’t this cause some problems?” The answer is no because this functionality is implemented in “exec.c”, so we expect that the files that come here are either ELF files, whose header size is already bigger than 3 bytes, or script files, which start with “#!” bytes anyway.\nLater, we read the first 16 bytes into interp_path variable, starting from the second byte into the file. Again, you might ask “Why 16 bytes? The interpreter path might be longer!” That is correct. However, xv6 is a remake of the legendary UNIX v6, and traditionally, interpreter path was assumed as 16 bytes in the first implementations. You can check the history of it from here:\nhttps://www.in-ulm.de/~mascheck/various/shebang/\nOne last thing, “0xa” is the newline in xv6, so it is used to separate commands from the shebang line. After that, we are done in “exec.c”, so we call “exec.c” itself, with interpreter path as the file to be executed, and the script as the argument. Since interpreter path is the first argument, which is what ip points to, first two bytes will not be “#!”, instead it will be the interpreter’s ELF binary.\nNow that we are done, let’s see the code we need to write in “sh.c” in order to interpret the actual script content.\n//sh.c if( (argc == 1) \u0026 strcmp(argv[0], \"sh\") ){ fd = open(argv[0], O_RDONLY); if( fd \u003c 0) printf(1, \"sh could not open: %s\\n\", argv[0]); read_bytes = read(fd, buf, sizeof(buf)); script_start = strchr(buf, 0xa); if( buf[read_bytes -1] == 0xa ) buf[read_bytes -1] = '\\0'; if(fork1() == 0) runcmd(parsecmd(script_start)); wait(); exit(); } At first line, we are checking whether the program has only one arguments and whether it is “sh”, shell’s name itself. If it is, we don’t have any arguments, so this condition will not be met and sh will continue executing normally. Otherwise, we have an argument which needs to be interpreted. We just read the file and since the rest of the functionality we need is actually implemented in xv6 itself, we just copy it from there.\nOne thing that I should mention is that I haven’t copied the code related to the “cd” command. If you want, you can copy it and modify the variables yourself.\nAnd this is all we need. Let’s just compile and run the script. The result is:\n6. Delete the check if(ph.vaddr + ph.memsz \u003c ph.vaddr) in exec.c, and con- struct a user program that exploits that the check is missing.\nEven though this is the easiest question of all, I really liked this one. It perfectly demonstrates how an innocent looking integer overflow can be used to takeover the whole kernel. For this question, I used “ls” binary as the subject. To inspect how the program headers look lie on a normal “ls” binary, we can use “readelf -l _ls” in xv6’s main directory. The result is:\nSo, on an innocent program, obviously (ph.vaddr + ph.memsz) will never be smaller than ph.vaddr. However, if we craft a program header like below, and the check does not exist, the address can be anything we want, including kernel’s addresses. That way, we can overwrite kernel’s pages, effectively taking over the system.\nYou can modify the program header by opening it with a simple hex editor. I will not be showing how it is done, as there are already more than enough resources on that.\nThis post has already turned out to be longer than I anticipated, but just a quick shout out to the people at MIT for preparing such a great content and making it available to the public. Also, much thanks to the UNIX gods for this amazing OS + and the almighty C :)\nHope this post was as useful to you as it was to me. See you in another one.\nSome references and useful resources:\nhttp://wiki.osdev.org/Detecting_Memory_(x86)\nhttps://github.com/YehudaShapira/xv6-explained/blob/master/xv6%20Code%20Explained.md\nhttp://www.fotiskoutoulakis.com/2014/04/28/introduction-to-xv6-adding-a-new-system-call.html\n",
+  "wordCount" : "1672",
+  "inLanguage": "en",
+  "datePublished": "2017-11-19T02:15:02Z",
+  "dateModified": "2017-11-19T02:15:02Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://ruysal.com/post/2017-11-19-answers-to-page-table-exercises-in-xv6/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://ruysal.com/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <span class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" text>
+                    
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>Dark/Light
+                </button>
+            </span>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://ruysal.com/" title="Home">
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://ruysal.com/about" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title">
+      Page Tables, Implementing Shebang, and Integer Overflow in Xv6
+    </h1>
+    <div class="post-meta"><span title='2017-11-19 02:15:02 +0000 UTC'>November 19, 2017</span>
+
+</div>
+  </header> 
+
+  <div class="post-content"><p>xv6 is a reimplementation of UNIXv6 for x86 architecture, created by MIT to be used in their Operating System courses. I found it to be an absolutely great course and learned a lot from it. Hence, I wanted to write about it.</p>
+<p>In this post, I will explain some of my solutions for the exercise questions posed in Chapter 2 of the booklet, namely the chapter Page Tables. Since the subject is presented extensively in the book, I won&rsquo;t re-write every detail about it. Since xv6 is used as an actual course in many universities, I won&rsquo;t be posting answers to the homework assignments, but only to the Exercise questions. For the record, I am referring to the Revision 10 of the booklet.</p>
+<p>The contents of this post will explain:</p>
+<ul>
+<li>How to implement a <code>syscall</code> to traverse a page table</li>
+<li>How to implement a <code>Shebang</code> interpreter for <code>Exec</code> to handle scripts</li>
+<li>And how an <code>Integer Overflow</code> might be exploited to takeover kernel</li>
+</ul>
+<p>Let&rsquo;s get started.</p>
+<blockquote>
+<p><strong>1. Look at real operating systems to see how they size memory.</strong></p>
+</blockquote>
+<p>This question is answered thoroughly in the famous OSDev wiki.  As it was stated in xv6, this really is a tricky thing to do in x86. Basically, our safest bet is to get the information from the BIOS. But how do we access to BIOS in protected mode, while the OS is running?</p>
+<p><a href="http://wiki.osdev.org/Detecting_Memory_%28x86%29">http://wiki.osdev.org/Detecting_Memory_(x86)</a></p>
+<blockquote>
+<p><strong>3. Write a user program that grows its address space with 1 byte by calling sbrk(1). Run the program and investigate the page table for the program before the call to sbrk and after the call to sbrk. How much space has the kernel allocated? What does the pte for the new memory contain?</strong></p>
+</blockquote>
+<p>To be able to investigate the page table easily, I wrote a system call which prints the page directory of the current process. Also, to understand some other problems I was curious about, I added a parameter to the system call, which acts like a switch and if it is set to 1, it prints the KERNEL pages, and if it is set to 0, it prints the USER pages. Here is the code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>    <span style="color:#75715e">//sysproc.c
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">sys_traverse</span>(<span style="color:#66d9ef">void</span>){
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">struct</span> proc <span style="color:#f92672">*</span>p <span style="color:#f92672">=</span> myproc();
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	pde_t <span style="color:#f92672">*</span>pgtab;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> i, k, argument, flag <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(argint(<span style="color:#ae81ff">0</span>, <span style="color:#f92672">&amp;</span>argument) <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>){
+</span></span><span style="display:flex;"><span>		cprintf(<span style="color:#e6db74">&#34;no argument passed.</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	cprintf(<span style="color:#e6db74">&#34;p-&gt;name: %s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, p<span style="color:#f92672">-&gt;</span>name);
+</span></span><span style="display:flex;"><span>	cprintf(<span style="color:#e6db74">&#34;p-&gt;pgdir: %x</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74">&#34;</span>, p<span style="color:#f92672">-&gt;</span>pgdir);
+</span></span><span style="display:flex;"><span>	cprintf(<span style="color:#e6db74">&#34;argument: %d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, argument);
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span>( i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1024</span>; i<span style="color:#f92672">++</span> ){
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span>( (p<span style="color:#f92672">-&gt;</span>pgdir)[i] <span style="color:#f92672">&amp;</span> PTE_P ){ <span style="color:#75715e">//(a == 1) ? 20: 30
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>			flag <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>			pgtab <span style="color:#f92672">=</span> (pte_t<span style="color:#f92672">*</span>)P2V(PTE_ADDR( (p<span style="color:#f92672">-&gt;</span>pgdir)[i] ));
+</span></span><span style="display:flex;"><span>			
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">for</span>( k <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; k <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1024</span>; k <span style="color:#f92672">++</span>){
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">if</span>( pgtab[k] <span style="color:#f92672">&amp;</span> PTE_P <span style="color:#f92672">&amp;&amp;</span> pgtab[k] <span style="color:#f92672">&amp;</span> ( (argument <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) <span style="color:#f92672">?</span> PTE_U: ( (pgtab[k] <span style="color:#f92672">&amp;</span> PTE_U) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) ) ){
+</span></span><span style="display:flex;"><span>					<span style="color:#66d9ef">if</span>(flag <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>){
+</span></span><span style="display:flex;"><span>						cprintf(<span style="color:#e6db74">&#34;&amp;p-&gt;pgdir[%d]: %x, p-&gt;pgdir[%d]: %x</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, i, <span style="color:#f92672">&amp;</span>(p<span style="color:#f92672">-&gt;</span>pgdir)[i], i, (p<span style="color:#f92672">-&gt;</span>pgdir)[i] );
+</span></span><span style="display:flex;"><span>						cprintf(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">pgtab starts at: %x and contains these entries:</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, pgtab);
+</span></span><span style="display:flex;"><span>						flag <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>					}
+</span></span><span style="display:flex;"><span>					cprintf(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t\t</span><span style="color:#e6db74">&amp;pgtab[%d]: %x, pgtab[%d]: %x</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, k, <span style="color:#f92672">&amp;</span>pgtab[k], k, pgtab[k]);
+</span></span><span style="display:flex;"><span>				}
+</span></span><span style="display:flex;"><span>			} 
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
+<p>xv6 Does not set the PTE_U bit in Page Directory Entries. That means, we cannot check whether the table belongs to USER or KERNEL in PDEs. So, I had to check this in PTEs. Hence, I summoned this ugly creature from the one-liner hell. Lesson learned: Don&rsquo;t hesitate to use nested ifs, this is much  uglier.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>( pgtab[k] <span style="color:#f92672">&amp;</span> PTE_P <span style="color:#f92672">&amp;&amp;</span> pgtab[k] <span style="color:#f92672">&amp;</span> ( (argument <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) <span style="color:#f92672">?</span> PTE_U: ( (pgtab[k] <span style="color:#f92672">&amp;</span> PTE_U) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) ) ){</span></span></code></pre></div>
+<p>The first condition checks whether the PTE is present, the second condition checks if the argument asks for USER pages (i.e 0). If we are looking for USER pages, we do bitwise and on pgtab[k] with PTE_U. Otherwise, we check whether the PGTAB contains PTE_U bit and negate it by checking against 0.</p>
+<p>Implementing the rest of the system call is unrelated to this post, so I will skip it. You can find some other blog posts detailing the necessary steps.</p>
+<p>Now that we have a system call to traverse the page table, we can answer the question. xv6 Allocates another page for a 1 byte sbrk call. You can see it in the screenshot below.</p>
+<p><img loading="lazy" src="/assets/img/xv6/pgtable.png" alt="Exercise 3"  />
+</p>
+<blockquote>
+<p><strong>5. Unix implementations of exec traditionally include special handling for shell scripts. If the file to execute begins with the text #!, then the first line is taken to be a program to run to interpret the file. For example, if exec is called to run myprog arg1 and myprog’s first line is #!/interp, then exec runs /interp with command line /interp myprog arg1. Implement support for this convention in xv6.</strong></p>
+</blockquote>
+<p>Before we get into the implementation of this, we need a script with a shebang line (#!/interp) so that it will be interpreted and we will be able to debug easily as we implement the code. In xv6&rsquo;s main directory, I executed this to have a simple script with a visible result.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>    cat &gt; script
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#!/sh</span>
+</span></span><span style="display:flex;"><span>    echo hello;
+</span></span><span style="display:flex;"><span>    ls;</span></span></code></pre></div>
+<p>Then, we need to modify the MAKEFILE so that this script is included in xv6&rsquo;s filesystem. Find the following line and modify it as shown below:</p>
+<pre><code>fs.img: mkfs README $(UPROGS) script
+./mkfs fs.img README $(UPROGS) script
+</code></pre>
+<p>Great. Now when we compile xv6, we will see a file named &ldquo;script&rdquo; in xv6&rsquo;s filesystem.</p>
+<p>Implementing a shebang consists of two parts. First, we need to have this functionality present in our kernel. Only after that, user level programs can benefit from it and interpret the contents of the script. Since xv6 is a small system, only our beloved &ldquo;sh&rdquo; has the capability to interpret the script. To implement the functionality in the kernel, &ldquo;exec.c&rdquo; is our first stop.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>    <span style="color:#75715e">//exec.c
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">char</span> shebang[<span style="color:#ae81ff">3</span>];
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> interp_path[<span style="color:#ae81ff">16</span>]; <span style="color:#75715e">//16 is for historical reasons. 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(readi(ip, (<span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>shebang, <span style="color:#ae81ff">0</span>, <span style="color:#66d9ef">sizeof</span>(shebang)) <span style="color:#f92672">!=</span> <span style="color:#66d9ef">sizeof</span>(shebang)) 
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">goto</span> bad;
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>    shebang[<span style="color:#ae81ff">2</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;\0&#39;</span>;
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>( shebang[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;#&#39;</span> <span style="color:#f92672">&amp;&amp;</span> shebang[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;!&#39;</span> ){
+</span></span><span style="display:flex;"><span>	  <span style="color:#75715e">//cprintf(&#34;shebang: %s\n&#34;, shebang);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	  
+</span></span><span style="display:flex;"><span>	  readi(ip, (<span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>interp_path, <span style="color:#ae81ff">2</span>, <span style="color:#66d9ef">sizeof</span>(interp_path));
+</span></span><span style="display:flex;"><span>	  <span style="color:#75715e">//cprintf(&#34;interp_path: %s\n&#34;, interp_path);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	  <span style="color:#66d9ef">for</span>(i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#66d9ef">sizeof</span>(interp_path); i<span style="color:#f92672">++</span>){
+</span></span><span style="display:flex;"><span>		  <span style="color:#66d9ef">if</span>(interp_path[i] <span style="color:#f92672">==</span> <span style="color:#ae81ff">0xa</span>){
+</span></span><span style="display:flex;"><span>			interp_path[i] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;\0&#39;</span>;
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>		  }
+</span></span><span style="display:flex;"><span>	  }
+</span></span><span style="display:flex;"><span>	  exec(interp_path, argv);
+</span></span><span style="display:flex;"><span>    }</span></span></code></pre></div>
+<p>The code is pretty much self-explanatory. We read the first 3 bytes of the file into a buffer and check whether the file starts with &ldquo;#!&rdquo;.</p>
+<p>You might say &ldquo;Hey, how do you know the file actually has 3 bytes? Won&rsquo;t this cause some problems?&rdquo; The answer is no because this functionality is implemented in &ldquo;exec.c&rdquo;, so we expect that the files that come here are either ELF files, whose header size is already bigger than 3 bytes, or script files, which start with &ldquo;#!&rdquo; bytes anyway.</p>
+<p>Later, we read the first 16 bytes into interp_path variable, starting from the second byte into the file. Again, you might ask &ldquo;Why 16 bytes? The interpreter path might be longer!&rdquo; That is correct. However, xv6 is a remake of the legendary UNIX v6, and traditionally, interpreter path was assumed as 16 bytes in the first implementations. You can check the history of it from here:</p>
+<p><a href="https://www.in-ulm.de/~mascheck/various/shebang/">https://www.in-ulm.de/~mascheck/various/shebang/</a></p>
+<p>One last thing, &ldquo;0xa&rdquo; is the newline in xv6, so it is used to separate commands from the shebang line. After that, we are done in &ldquo;exec.c&rdquo;, so we call &ldquo;exec.c&rdquo; itself, with interpreter path as the file to be executed, and the script as the argument. Since interpreter path is the first argument, which is what ip points to, first two bytes will not be &ldquo;#!&rdquo;, instead it will be the interpreter&rsquo;s ELF binary.</p>
+<p>Now that we are done, let&rsquo;s see the code we need to write in &ldquo;sh.c&rdquo; in order to interpret the actual script content.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>    <span style="color:#75715e">//sh.c
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span>( (argc <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">&amp;</span> strcmp(argv[<span style="color:#ae81ff">0</span>], <span style="color:#e6db74">&#34;sh&#34;</span>) ){
+</span></span><span style="display:flex;"><span>	fd <span style="color:#f92672">=</span> open(argv[<span style="color:#ae81ff">0</span>], O_RDONLY);
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>( fd <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>		printf(<span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#34;sh could not open: %s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, argv[<span style="color:#ae81ff">0</span>]);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	read_bytes <span style="color:#f92672">=</span> read(fd, buf, <span style="color:#66d9ef">sizeof</span>(buf));
+</span></span><span style="display:flex;"><span>	script_start <span style="color:#f92672">=</span> strchr(buf, <span style="color:#ae81ff">0xa</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>( buf[read_bytes <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">==</span> <span style="color:#ae81ff">0xa</span> )
+</span></span><span style="display:flex;"><span>		buf[read_bytes <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;\0&#39;</span>;
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(fork1() <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>      runcmd(parsecmd(script_start));
+</span></span><span style="display:flex;"><span>    wait();
+</span></span><span style="display:flex;"><span>    exit();
+</span></span><span style="display:flex;"><span>    }</span></span></code></pre></div>
+<p>At first line, we are checking whether the program has only one arguments and whether it is &ldquo;sh&rdquo;, shell&rsquo;s name itself. If it is, we don&rsquo;t have any arguments, so this condition will not be met and sh will continue executing normally. Otherwise, we have an argument which needs to be interpreted. We just read the file and since the rest of the functionality we need is actually implemented in xv6 itself, we just copy it from there.</p>
+<p>One thing that I should mention is that I haven&rsquo;t copied the code related to the &ldquo;cd&rdquo; command. If you want, you can copy it and modify the variables yourself.</p>
+<p>And this is all we need. Let&rsquo;s just compile and run the script. The result is:</p>
+<p><img loading="lazy" src="/assets/img/xv6/page-2.png" alt="xv6shebang"  />
+</p>
+<blockquote>
+<p><strong>6. Delete the check if(ph.vaddr + ph.memsz &lt; ph.vaddr) in exec.c, and con- struct a user program that exploits that the check is missing.</strong></p>
+</blockquote>
+<p>Even though this is the easiest question of all, I really liked this one. It perfectly demonstrates how an innocent looking integer overflow can be used to takeover the whole kernel. For this question, I used &ldquo;ls&rdquo; binary as the subject. To inspect how the program headers look lie on a normal &ldquo;ls&rdquo; binary, we can use &ldquo;readelf -l _ls&rdquo; in xv6&rsquo;s main directory. The result is:</p>
+<p><img loading="lazy" src="/assets/img/xv6/overflow1.png" alt="innocent ls"  />
+</p>
+<p>So, on an innocent program, obviously (ph.vaddr + ph.memsz) will never be smaller than ph.vaddr. However, if we craft a program header like below, and the check does not exist, the address can be anything we want, including kernel&rsquo;s addresses. That way, we can overwrite kernel&rsquo;s pages, effectively taking over the system.</p>
+<p><img loading="lazy" src="/assets/img/xv6/overflow2.png" alt="evil ls"  />
+</p>
+<p>You can modify the program header by opening it with a simple hex editor. I will not be showing how it is done, as there are already more than enough resources on that.</p>
+<p>This post has already turned out to be longer than I anticipated, but just a quick shout out to the people at MIT for preparing such a great content and making it available to the public. Also, much thanks to the UNIX gods for this amazing OS  + and the almighty C :)</p>
+<p>Hope this post was as useful to you as it was to me. See you in another one.</p>
+<p>Some references and useful resources:</p>
+<p><a href="http://wiki.osdev.org/Detecting_Memory_%28x86%29">http://wiki.osdev.org/Detecting_Memory_(x86)</a></p>
+<p><a href="https://github.com/YehudaShapira/xv6-explained/blob/master/xv6%20Code%20Explained.md">https://github.com/YehudaShapira/xv6-explained/blob/master/xv6%20Code%20Explained.md</a></p>
+<p><a href="http://www.fotiskoutoulakis.com/2014/04/28/introduction-to-xv6-adding-a-new-system-call.html">http://www.fotiskoutoulakis.com/2014/04/28/introduction-to-xv6-adding-a-new-system-call.html</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://ruysal.com/tags/Xv6/">Xv6</a></li>
+      <li><a href="https://ruysal.com/tags/OS/">OS</a></li>
+      <li><a href="https://ruysal.com/tags/C/">C</a></li>
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+    <span>&copy; 2022 <a href="https://ruysal.com"></a></span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://git.io/hugopapermod" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
