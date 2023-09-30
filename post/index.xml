@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<<<<<<< HEAD
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-=======
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
->>>>>>> ba300a9fac39a59e840e1321461fb1b1413b651f
   <channel>
     <title>Posts on </title>
     <link>https://ruysal.com/post/</link>
@@ -17,23 +13,14 @@
       <pubDate>Fri, 11 Mar 2022 15:48:37 +0100</pubDate>
       
       <guid>https://ruysal.com/post/2022-03-11-Windows-Forensics/</guid>
-<<<<<<< HEAD
       <description>TL;DR: In case you are responding to an active incident:
 There is simply A LOT to analyze in terms of forensic artifacts on Windows systems. The process can take a long time, and slow down the IR process. Below are some of the artifacts that tends to yield quick results.
-=======
-      <description>TL;DR: If you are responding to an active incident
-There is simply A LOT to analyze in terms of forensic artifacts on Windows systems. The process can take a long time, and slow down the IR process. Below are some of the artifacts that yields consistent, robust, and quick results.
->>>>>>> ba300a9fac39a59e840e1321461fb1b1413b651f
 Make sure to switch to offline disk analysis on these tools and point them to the right disk!
 WinLogOnView: Which account was logged into?</description>
     </item>
     
     <item>
-<<<<<<< HEAD
       <title>Reverse Engineering: Malware Analysis of Ursnif</title>
-=======
-      <title>Analysis of Ursnif Malware</title>
->>>>>>> ba300a9fac39a59e840e1321461fb1b1413b651f
       <link>https://ruysal.com/post/2020-11-26-Analysis-of-Ursnif-Malware/</link>
       <pubDate>Thu, 26 Nov 2020 19:15:02 +0000</pubDate>
       
@@ -49,11 +36,7 @@ Dynamically importing functions from libraries Storing things encrypted Process 
       <pubDate>Wed, 23 Jan 2019 19:15:02 +0000</pubDate>
       
       <guid>https://ruysal.com/post/2019-01-23-Combining-Multiple-Design-Patterns-in-Java/</guid>
-<<<<<<< HEAD
       <description>For my designs patterns course, I had to design an application combining multiple Design Patterns and implement it in Java. Below is the given project description :
-=======
-      <description>For a school project, I had to design an application combining multiple Design Patterns and implement it in Java. Below is the given project description :
->>>>>>> ba300a9fac39a59e840e1321461fb1b1413b651f
 So, first of all we have to infer which design patterns we are supposed to use from the given text.
 First sentence indicates we should use Observer Pattern &amp;ldquo;Family of sensors&amp;rdquo; manufactured by different factories, so Abstract Factory Pattern it is Adaptability for SMS, so Adapter Pattern will be used Different commands will be executed, so Command Pattern should be used Single object creation, so Singleton Pattern will be used So, we are gonna have to combine 5 patterns to implement the application.</description>
     </item>
@@ -64,11 +47,7 @@ First sentence indicates we should use Observer Pattern &amp;ldquo;Family of sen
       <pubDate>Sun, 19 Nov 2017 02:15:02 +0000</pubDate>
       
       <guid>https://ruysal.com/post/2017-11-19-answers-to-page-table-exercises-in-xv6/</guid>
-<<<<<<< HEAD
       <description>Introduction xv6 is a reimplementation of UNIXv6 for x86 architecture, created by MIT to be used in their Operating System courses. I found it to be an absolutely great course and learned a lot from it. Hence, I wanted to write about it.
-=======
-      <description>xv6 is a reimplementation of UNIXv6 for x86 architecture, created by MIT to be used in their Operating System courses. I found it to be an absolutely great course and learned a lot from it. Hence, I wanted to write about it.
->>>>>>> ba300a9fac39a59e840e1321461fb1b1413b651f
 In this post, I will explain some of my solutions for the exercise questions posed in Chapter 2 of the booklet, namely the chapter Page Tables. Since the subject is presented extensively in the book, I won&amp;rsquo;t re-write every detail about it.</description>
     </item>
     

@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<<<<<<< HEAD
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-=======
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
->>>>>>> ba300a9fac39a59e840e1321461fb1b1413b651f
   <channel>
     <title>Categories on </title>
     <link>https://ruysal.com/categories/</link>
