@@ -2,9 +2,12 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+<<<<<<< HEAD
+=======
     <loc>https://ruysal.com/about/</loc>
     <lastmod>2022-10-08T12:15:02+00:00</lastmod>
   </url><url>
+>>>>>>> ba300a9fac39a59e840e1321461fb1b1413b651f
     <loc>https://ruysal.com/</loc>
     <lastmod>2022-03-11T15:48:37+01:00</lastmod>
   </url><url>
@@ -35,6 +38,15 @@
     <loc>https://ruysal.com/categories/windows-forensic-malware-incident-response/</loc>
     <lastmod>2022-03-11T15:48:37+01:00</lastmod>
   </url><url>
+<<<<<<< HEAD
+    <loc>https://ruysal.com/categories/Malware/</loc>
+    <lastmod>2020-11-26T19:15:02+00:00</lastmod>
+  </url><url>
+    <loc>https://ruysal.com/tags/Reverse-Engineering/</loc>
+    <lastmod>2020-11-26T19:15:02+00:00</lastmod>
+  </url><url>
+    <loc>https://ruysal.com/post/2020-11-26-Analysis-of-Ursnif-Malware/</loc>
+=======
     <loc>https://ruysal.com/post/2020-11-26-Analysis-of-Ursnif-Malware/</loc>
     <lastmod>2020-11-26T19:15:02+00:00</lastmod>
   </url><url>
@@ -42,6 +54,7 @@
     <lastmod>2020-11-26T19:15:02+00:00</lastmod>
   </url><url>
     <loc>https://ruysal.com/tags/Reverse-Engineering/</loc>
+>>>>>>> ba300a9fac39a59e840e1321461fb1b1413b651f
     <lastmod>2020-11-26T19:15:02+00:00</lastmod>
   </url><url>
     <loc>https://ruysal.com/post/2019-01-23-Combining-Multiple-Design-Patterns-in-Java/</loc>
@@ -73,5 +86,11 @@
   </url><url>
     <loc>https://ruysal.com/tags/Xv6/</loc>
     <lastmod>2017-11-19T02:15:02+00:00</lastmod>
+<<<<<<< HEAD
+  </url><url>
+    <loc>https://ruysal.com/about/</loc>
+    <lastmod>0101-01-01T12:15:02+00:00</lastmod>
+=======
+>>>>>>> ba300a9fac39a59e840e1321461fb1b1413b651f
   </url>
 </urlset>
