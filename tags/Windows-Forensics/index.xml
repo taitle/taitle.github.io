@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Windows Forensics on </title>
-    <link>https://ruysal.com/tags/Windows-Forensics/</link>
-    <description>Recent content in Windows Forensics on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Fri, 11 Mar 2022 15:48:37 +0100</lastBuildDate><atom:link href="https://ruysal.com/tags/Windows-Forensics/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Windows Dead Box (Disk Image) Forensics</title>
-      <link>https://ruysal.com/post/2022-03-11-Windows-Forensics/</link>
-      <pubDate>Fri, 11 Mar 2022 15:48:37 +0100</pubDate>
-      
-      <guid>https://ruysal.com/post/2022-03-11-Windows-Forensics/</guid>
-      <description>TL;DR: In case you are responding to an active incident:
-There is simply A LOT to analyze in terms of forensic artifacts on Windows systems. The process can take a long time, and slow down the IR process. Below are some of the artifacts that tends to yield quick results.
-Make sure to switch to offline disk analysis on these tools and point them to the right disk!
-WinLogOnView: Which account was logged into?</description>
-    </item>
-    
-  </channel>
+	<channel>
+		<title>Windows Forensics on </title>
+		<link>https://ruysal.com/tags/Windows-Forensics/</link>
+		<description>Recent content in Windows Forensics on </description>
+		<generator>Hugo</generator>
+		<language>en-us</language>
+		
+		
+		
+		
+			<lastBuildDate>Fri, 11 Mar 2022 15:48:37 +0100</lastBuildDate>
+		
+			<atom:link href="https://ruysal.com/tags/Windows-Forensics/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>Windows Dead Box (Disk Image) Forensics</title>
+				<link>https://ruysal.com/post/2022-03-11-Windows-Forensics/</link>
+				<pubDate>Fri, 11 Mar 2022 15:48:37 +0100</pubDate>
+				<guid>https://ruysal.com/post/2022-03-11-Windows-Forensics/</guid>
+				<description>&lt;h2 id=&#34;tldr&#34;&gt;TL;DR:&lt;/h2&gt;&#xA;&lt;p&gt;&lt;strong&gt;In case you are responding to an active incident:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;There is simply &lt;em&gt;A LOT&lt;/em&gt; to analyze in terms of forensic artifacts on&#xA;Windows systems. The process can take a long time, and slow down the IR&#xA;process. Below are some of the artifacts that tends to yield quick results.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Make sure to switch to offline disk analysis on these tools and point them to the right disk!&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;&lt;a href=&#34;#winlogonview&#34;&gt;WinLogOnView&lt;/a&gt;: Which&#xA;account was logged into? From what IP? For how long? When?&lt;/p&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;&lt;a href=&#34;#autoruns&#34;&gt;Autoruns&lt;/a&gt;: List out all the&#xA;persistence mechanisms in place&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Do not forget to target the disk you are analyzing with &lt;code&gt;Analyze Offline System&lt;/code&gt;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;&lt;a href=&#34;#shimcache-appcompatcache&#34;&gt;Shimcache (AppCompatCache)&lt;/a&gt;: List of&#xA;executed programs with date&lt;/p&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;&lt;a href=&#34;#amcache&#34;&gt;AMcache&lt;/a&gt;: Another list of&#xA;programs executed on the system&lt;/p&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;Files created in the past 7 days:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;code&gt;Get-ChildItem -Force -Path D:\ -Recurse -ea silentlycontinue| ? {$_.CreationTime -gt (Get-Date).AddDays(-7)}&lt;/code&gt;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/blockquote&gt;</description>
+			</item>
+	</channel>
 </rss>

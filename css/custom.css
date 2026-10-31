@@ -1,0 +1,316 @@
+/* Custom layout polish. Loaded after the theme stylesheet (see themes/cactus/layouts/_default/baseof.html).
+   Uses translucent greys so it works in both light and dark mode. */
+
+:root {
+  --line: rgba(128, 128, 128, 0.28);
+  --tint: rgba(128, 128, 128, 0.10);
+}
+/* Colours: warm off-white / soft off-black, with higher text contrast than the stock theme
+   (body text ~11.5:1, accent >= 5:1). `data-theme` is set on <html> by the theme switch. */
+html[data-theme="light"] {
+  --bg: #e9e7e3;
+  --text: #2a2927;
+  --heading: #121212;
+  --accent: #b3265a;
+}
+html[data-theme="dark"] {
+  --bg: #1d1f21;
+  --text: #d9dadc;
+  --heading: #f4f4f5;
+  --accent: #ff80ab;
+}
+html { --accent: #b3265a; }                 /* fallback before the switch script runs */
+html[data-theme] body { background-color: var(--bg); }
+html[data-theme] article .content,
+html[data-theme] article .content p,
+html[data-theme] article .content li,
+html[data-theme] article .content blockquote,
+html[data-theme] article .content code,
+html[data-theme] article .content a { color: var(--text); }
+html[data-theme] article .content h1,
+html[data-theme] article .content h2,
+html[data-theme] article .content h3,
+html[data-theme] article .content h2 a,
+html[data-theme] article .content h3 a { color: var(--heading); }
+html[data-theme="light"] #header #nav ul a { color: var(--accent); }
+/* code blocks keep their own (syntax-highlight) colours: never recolour them with the text colour */
+html[data-theme] article .content pre,
+html[data-theme] article .content pre code { color: inherit; }
+/* plain (un-highlighted) blocks have no dark background: give them a soft tint and normal text colour */
+html[data-theme] article .content > pre {
+  background: var(--tint);
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+/* highlighted blocks: drop the theme's extra wrapper box so there is one clean block */
+article .content .highlight {
+  padding: 0;
+  background: none;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* ---------- page frame ---------- */
+body.max-width { max-width: 46rem; }
+article .content { line-height: 1.65; }
+
+/* .content is a flex column, so vertical margins do NOT collapse:
+   every gap below is the sum of both neighbours' margins. */
+
+/* ---------- headings ---------- */
+article .content h2 {
+  margin: 1.5rem 0 0.5rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--line);
+  line-height: 1.3;
+}
+article .content h2:before { display: none; }
+article .content h3 {
+  margin: 0.75rem 0 0.4rem;
+  line-height: 1.35;
+}
+article .content h2 + h3 { margin-top: 0.5rem; }
+article .content hr + h2,
+article .content hr + h3 { margin-top: 0; }
+
+/* ---------- paragraphs & lists ---------- */
+article .content p { margin: 0 0 0.75rem; }
+
+article .content ul,
+article .content ol {
+  margin: 0 0 0.75rem;
+  padding-left: 1.25rem;
+}
+article .content li {
+  margin: 0.15rem 0;
+  padding-left: 0.15rem;
+  line-height: 1.6;
+}
+article .content li > ul,
+article .content li > ol {
+  margin: 0.1rem 0 0.2rem;
+  padding-left: 1.25rem;
+}
+article .content li > p { margin: 0.15rem 0; }
+article .content li::marker { color: var(--accent); }
+
+/* ---------- table of contents ---------- */
+article .content nav#TableOfContents {
+  margin: 0.75rem 0 0.5rem;
+  padding: 0.6rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--tint);
+}
+article .content nav#TableOfContents ul { margin: 0; padding-left: 1.1rem; }
+article .content nav#TableOfContents > ul { padding-left: 0.4rem; }
+article .content nav#TableOfContents li { margin: 0.15rem 0; }
+article .content nav#TableOfContents a { background-image: none; }
+
+/* ---------- blockquotes ---------- */
+article .content blockquote {
+  margin: 1rem 0;
+  padding: 0.75rem 1.25rem;
+  border-left: 4px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  background: var(--tint);
+  color: inherit;
+  font-weight: normal;
+}
+article .content blockquote:before { display: none; }
+article .content blockquote > :first-child { margin-top: 0; }
+article .content blockquote > :last-child  { margin-bottom: 0; }
+article .content blockquote p { margin: 0 0 0.5rem; }
+article .content blockquote ul { margin-bottom: 0.5rem; }
+
+/* ---------- inline code ---------- */
+article .content code {
+  padding: 0.12em 0.4em;
+  border: 0;
+  border-radius: 4px;
+  background: var(--tint);
+  font-size: 0.9em;
+  word-break: break-word;
+}
+
+/* ---------- code blocks ---------- */
+article .content .highlight,
+article .content pre {
+  margin: 1rem 0;
+}
+article .content .highlight pre,
+article .content > pre {
+  margin: 0;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  line-height: 1.6;
+}
+article .content pre code {
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  font-size: 0.9em;
+  word-break: normal;
+}
+
+/* ---------- images ---------- */
+article .content img {
+  margin: 1rem auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+article .content a img { background-image: none; }
+
+/* ---------- rules ---------- */
+article .content hr {
+  margin: 1rem 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
+/* ---------- tables ---------- */
+article .content table {
+  width: 100%;
+  margin: 1.5rem 0;
+  border-collapse: collapse;
+}
+article .content th,
+article .content td {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+  text-align: left;
+}
+article .content th { background: var(--tint); }
+
+/* ---------- small screens ---------- */
+@media (max-width: 480px) {
+  article .content blockquote { padding: 0.75rem 1rem; }
+  article .content .highlight pre { padding: 0.75rem 1rem; }
+}
+
+/* ---------- sticky table of contents (>=1000px wide) ---------- */
+article .content h2,
+article .content h3 { scroll-margin-top: 1.5rem; }
+html { scroll-behavior: smooth; }
+
+@media (min-width: 1000px) {
+  /* TOC hugs the left edge; the column sits right after it (1.25rem + 15rem; 2rem body padding supplies the gap) */
+  body.max-width:has(#TableOfContents) {
+    margin-left: 16.25rem;
+    margin-right: auto;
+  }
+  article .content nav#TableOfContents {
+    position: fixed;
+    top: 66px;                 /* level with the top of the logo */
+    left: 1.25rem;
+    width: 15rem;
+    max-height: calc(100vh - 6rem);
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    font-size: 0.9rem;
+    line-height: 1.35;
+    scrollbar-width: none;
+  }
+  article .content nav#TableOfContents::-webkit-scrollbar { display: none; }
+  article .content nav#TableOfContents::before {
+    content: "On this page";
+    display: block;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    font-weight: bold;
+  }
+  article .content nav#TableOfContents ul,
+  article .content nav#TableOfContents > ul { margin: 0; padding-left: 0; list-style: none; }
+  article .content nav#TableOfContents li { margin: 0 0 0.2rem; padding: 0; }
+  article .content nav#TableOfContents li::marker { content: none; }
+  /* each entry carries its own tick on the left; the active one is highlighted */
+  article .content nav#TableOfContents a {
+    display: block;
+    padding: 0.4rem 0.5rem 0.4rem 0.9rem;
+    border-left: 2px solid var(--line);
+    color: inherit;
+    opacity: 0.75;
+    background-image: none;
+    transition: opacity 0.15s, border-color 0.15s;
+  }
+  article .content nav#TableOfContents a:hover { opacity: 1; }
+  article .content nav#TableOfContents a.active {
+    border-left-color: var(--accent);
+    color: var(--accent);
+    opacity: 1;
+  }
+  /* sub-sections: only the open section expands */
+  article .content nav#TableOfContents li > ul { display: none; margin-top: 0.2rem; }
+  article .content nav#TableOfContents li.open > ul { display: block; }
+  article .content nav#TableOfContents li li a {
+    padding-left: 1.8rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* ---------- header: menu row (logo removed) ---------- */
+#header { margin-bottom: 1.5rem; }
+#header #title { display: none; }          /* empty site-title node */
+#header #nav {
+  font-size: 1.1rem;
+  font-weight: normal;
+  letter-spacing: 0;
+}
+#header #nav ul {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  line-height: 1.4;
+}
+#header #nav ul li,
+#header #nav ul li:last-child {
+  margin: 0;
+  border: 0;                               /* drop the dotted separators */
+}
+#header #nav ul a { margin: 0; }
+
+/* ---------- theme switch: segmented Light | Dark ---------- */
+.theme-switch {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.theme-switch button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.65rem;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 0.85rem;
+  line-height: 1.3;
+  opacity: 0.6;
+  cursor: pointer;
+  transition: opacity 0.15s, background 0.15s;
+}
+.theme-switch button:hover { opacity: 1; }
+.theme-switch button.on {
+  background: var(--accent);
+  color: #fff;
+  opacity: 1;
+}
+.theme-switch svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

@@ -1,65 +1,52 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title></title>
-    <link>https://ruysal.com/</link>
-    <description>Recent content on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Fri, 11 Mar 2022 15:48:37 +0100</lastBuildDate><atom:link href="https://ruysal.com/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Windows Dead Box (Disk Image) Forensics</title>
-      <link>https://ruysal.com/post/2022-03-11-Windows-Forensics/</link>
-      <pubDate>Fri, 11 Mar 2022 15:48:37 +0100</pubDate>
-      
-      <guid>https://ruysal.com/post/2022-03-11-Windows-Forensics/</guid>
-      <description>TL;DR: In case you are responding to an active incident:
-There is simply A LOT to analyze in terms of forensic artifacts on Windows systems. The process can take a long time, and slow down the IR process. Below are some of the artifacts that tends to yield quick results.
-Make sure to switch to offline disk analysis on these tools and point them to the right disk!
-WinLogOnView: Which account was logged into?</description>
-    </item>
-    
-    <item>
-      <title>Reverse Engineering: Malware Analysis of Ursnif</title>
-      <link>https://ruysal.com/post/2020-11-26-Analysis-of-Ursnif-Malware/</link>
-      <pubDate>Thu, 26 Nov 2020 19:15:02 +0000</pubDate>
-      
-      <guid>https://ruysal.com/post/2020-11-26-Analysis-of-Ursnif-Malware/</guid>
-      <description>In this post, I will document my analysis of a malware sample from the Ursnif family. The analysis is only concerned with dissecting the DLL sample, and not the Delivery, and Weaponization procedures.
-Ursnif employs quite a few tricks to make the analysis more challenging and hide itself from intruding eyes, such as:
-Dynamically importing functions from libraries Storing things encrypted Process Injection Corrupted PE headers Using .rdata to store encrypted payloads encrypted C2 communication Let&amp;rsquo;s get started.</description>
-    </item>
-    
-    <item>
-      <title>Combining Multiple Design Patterns in Java</title>
-      <link>https://ruysal.com/post/2019-01-23-Combining-Multiple-Design-Patterns-in-Java/</link>
-      <pubDate>Wed, 23 Jan 2019 19:15:02 +0000</pubDate>
-      
-      <guid>https://ruysal.com/post/2019-01-23-Combining-Multiple-Design-Patterns-in-Java/</guid>
-      <description>For my designs patterns course, I had to design an application combining multiple Design Patterns and implement it in Java. Below is the given project description :
-So, first of all we have to infer which design patterns we are supposed to use from the given text.
-First sentence indicates we should use Observer Pattern &amp;ldquo;Family of sensors&amp;rdquo; manufactured by different factories, so Abstract Factory Pattern it is Adaptability for SMS, so Adapter Pattern will be used Different commands will be executed, so Command Pattern should be used Single object creation, so Singleton Pattern will be used So, we are gonna have to combine 5 patterns to implement the application.</description>
-    </item>
-    
-    <item>
-      <title>Page Tables, Implementing Shebang, and Integer Overflow in Xv6</title>
-      <link>https://ruysal.com/post/2017-11-19-answers-to-page-table-exercises-in-xv6/</link>
-      <pubDate>Sun, 19 Nov 2017 02:15:02 +0000</pubDate>
-      
-      <guid>https://ruysal.com/post/2017-11-19-answers-to-page-table-exercises-in-xv6/</guid>
-      <description>Introduction xv6 is a reimplementation of UNIXv6 for x86 architecture, created by MIT to be used in their Operating System courses. I found it to be an absolutely great course and learned a lot from it. Hence, I wanted to write about it.
-In this post, I will explain some of my solutions for the exercise questions posed in Chapter 2 of the booklet, namely the chapter Page Tables. Since the subject is presented extensively in the book, I won&amp;rsquo;t re-write every detail about it.</description>
-    </item>
-    
-    <item>
-      <title>About</title>
-      <link>https://ruysal.com/about/</link>
-      <pubDate>Sat, 01 Jan 0101 12:15:02 +0000</pubDate>
-      
-      <guid>https://ruysal.com/about/</guid>
-      <description>I&amp;rsquo;m currently based in Amsterdam and work on Incident Response &amp;amp; Security Engineering.
-You can check out my shitposts on twitter or contact me via LinkedIn.</description>
-    </item>
-    
-  </channel>
+	<channel>
+		<title></title>
+		<link>https://ruysal.com/</link>
+		<description>Recent content on </description>
+		<generator>Hugo</generator>
+		<language>en-us</language>
+		
+		
+		
+		
+			<lastBuildDate>Fri, 11 Mar 2022 15:48:37 +0100</lastBuildDate>
+		
+			<atom:link href="https://ruysal.com/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>Windows Dead Box (Disk Image) Forensics</title>
+				<link>https://ruysal.com/post/2022-03-11-Windows-Forensics/</link>
+				<pubDate>Fri, 11 Mar 2022 15:48:37 +0100</pubDate>
+				<guid>https://ruysal.com/post/2022-03-11-Windows-Forensics/</guid>
+				<description>&lt;h2 id=&#34;tldr&#34;&gt;TL;DR:&lt;/h2&gt;&#xA;&lt;p&gt;&lt;strong&gt;In case you are responding to an active incident:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;There is simply &lt;em&gt;A LOT&lt;/em&gt; to analyze in terms of forensic artifacts on&#xA;Windows systems. The process can take a long time, and slow down the IR&#xA;process. Below are some of the artifacts that tends to yield quick results.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Make sure to switch to offline disk analysis on these tools and point them to the right disk!&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;&lt;a href=&#34;#winlogonview&#34;&gt;WinLogOnView&lt;/a&gt;: Which&#xA;account was logged into? From what IP? For how long? When?&lt;/p&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;&lt;a href=&#34;#autoruns&#34;&gt;Autoruns&lt;/a&gt;: List out all the&#xA;persistence mechanisms in place&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Do not forget to target the disk you are analyzing with &lt;code&gt;Analyze Offline System&lt;/code&gt;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;&lt;a href=&#34;#shimcache-appcompatcache&#34;&gt;Shimcache (AppCompatCache)&lt;/a&gt;: List of&#xA;executed programs with date&lt;/p&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;&lt;a href=&#34;#amcache&#34;&gt;AMcache&lt;/a&gt;: Another list of&#xA;programs executed on the system&lt;/p&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;Files created in the past 7 days:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;code&gt;Get-ChildItem -Force -Path D:\ -Recurse -ea silentlycontinue| ? {$_.CreationTime -gt (Get-Date).AddDays(-7)}&lt;/code&gt;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/blockquote&gt;</description>
+			</item>
+			<item>
+				<title>Reverse Engineering: Malware Analysis of Ursnif</title>
+				<link>https://ruysal.com/post/2020-11-26-Analysis-of-Ursnif-Malware/</link>
+				<pubDate>Thu, 26 Nov 2020 19:15:02 +0000</pubDate>
+				<guid>https://ruysal.com/post/2020-11-26-Analysis-of-Ursnif-Malware/</guid>
+				<description>&lt;p&gt;In this post, I will document my analysis of a malware sample from the Ursnif family. The analysis is only concerned with dissecting the DLL sample, and not the &lt;code&gt;Delivery&lt;/code&gt;, and &lt;code&gt;Weaponization&lt;/code&gt; procedures.&lt;/p&gt;&#xA;&lt;p&gt;Ursnif employs quite a few tricks to make the analysis more challenging and hide itself from intruding eyes, such as:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Dynamically importing functions from libraries&lt;/li&gt;&#xA;&lt;li&gt;Storing things encrypted&lt;/li&gt;&#xA;&lt;li&gt;Process Injection&lt;/li&gt;&#xA;&lt;li&gt;Corrupted PE headers&lt;/li&gt;&#xA;&lt;li&gt;Using .rdata to store encrypted payloads&lt;/li&gt;&#xA;&lt;li&gt;encrypted C2 communication&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Let&amp;rsquo;s get started.&lt;/p&gt;</description>
+			</item>
+			<item>
+				<title>Combining Multiple Design Patterns in Java</title>
+				<link>https://ruysal.com/post/2019-01-23-Combining-Multiple-Design-Patterns-in-Java/</link>
+				<pubDate>Wed, 23 Jan 2019 19:15:02 +0000</pubDate>
+				<guid>https://ruysal.com/post/2019-01-23-Combining-Multiple-Design-Patterns-in-Java/</guid>
+				<description>&lt;p&gt;For my designs patterns course, I had to design an application combining multiple Design Patterns and implement it in Java. Below is the given project description :&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;https://ruysal.com/assets/img/design-patterns/desc.png&#34; alt=&#34;Project Description&#34;&gt;&lt;/p&gt;&#xA;&lt;p&gt;So, first of all we have to infer which design patterns we are supposed to use from the given text.&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;First sentence indicates we should use Observer Pattern&lt;/li&gt;&#xA;&lt;li&gt;&amp;ldquo;Family of sensors&amp;rdquo; manufactured by different factories, so Abstract Factory Pattern it is&lt;/li&gt;&#xA;&lt;li&gt;Adaptability for SMS, so Adapter Pattern will be used&lt;/li&gt;&#xA;&lt;li&gt;Different commands will be executed, so Command Pattern should be used&lt;/li&gt;&#xA;&lt;li&gt;Single object creation, so Singleton Pattern will be used&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;So, we are gonna have to combine 5 patterns to implement the application. First of all, let&amp;rsquo;s see what the final output of the program will be like, and how the main function is implemented.&lt;/p&gt;</description>
+			</item>
+			<item>
+				<title>Page Tables, Implementing Shebang, and Integer Overflow in Xv6</title>
+				<link>https://ruysal.com/post/2017-11-19-answers-to-page-table-exercises-in-xv6/</link>
+				<pubDate>Sun, 19 Nov 2017 02:15:02 +0000</pubDate>
+				<guid>https://ruysal.com/post/2017-11-19-answers-to-page-table-exercises-in-xv6/</guid>
+				<description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;&#xA;&lt;p&gt;xv6 is a reimplementation of UNIXv6 for x86 architecture, created by MIT to be used in their Operating System courses. I found it to be an absolutely great course and learned a lot from it. Hence, I wanted to write about it.&lt;/p&gt;&#xA;&lt;p&gt;In this post, I will explain some of my solutions for the exercise questions posed in Chapter 2 of the booklet, namely the chapter Page Tables. Since the subject is presented extensively in the book, I won&amp;rsquo;t re-write every detail about it. Since xv6 is used as an actual course in many universities, I won&amp;rsquo;t be posting answers to the homework assignments, but only to the Exercise questions. For the record, I am referring to the Revision 10 of the booklet.&lt;/p&gt;</description>
+			</item>
+			<item>
+				<title>About</title>
+				<link>https://ruysal.com/about/</link>
+				<pubDate>Sat, 01 Jan 0101 12:15:02 +0000</pubDate>
+				<guid>https://ruysal.com/about/</guid>
+				<description>&lt;p&gt;Hey, I&amp;rsquo;m Ramazan. I&amp;rsquo;ve been tinkering with technology and hacking since I was a kid, and this is my corner of the internet where I share some of that.&lt;/p&gt;&#xA;&lt;p&gt;I was born and raised in Turkey and went to college there, with a semester in California along the way. My first security job was an internship at NATO in Belgium, doing penetration testing. I then started my career in Amsterdam as a consultant in banking, pentesting web applications, before moving on to malware analysis and reverse engineering.&lt;/p&gt;</description>
+			</item>
+	</channel>
 </rss>
