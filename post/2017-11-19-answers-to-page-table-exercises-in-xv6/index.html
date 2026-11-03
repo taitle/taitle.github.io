@@ -1,119 +1,54 @@
 <!DOCTYPE html>
-<html lang="en-us">
+<html lang="en-us" data-theme="light">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title> Page Tables, Implementing Shebang, and Integer Overflow in Xv6 | </title>
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="all,follow">
-  <meta name="googlebot" content="index,follow,snippet,archive">
-  <meta property="og:url" content="https://ruysal.com/post/2017-11-19-answers-to-page-table-exercises-in-xv6/">
-	<meta property="og:title" content="Page Tables, Implementing Shebang, and Integer Overflow in Xv6">
-	<meta property="og:description" content="Introduction xv6 is a reimplementation of UNIXv6 for x86 architecture, created by MIT to be used in their Operating System courses. I found it to be an absolutely great course and learned a lot from it. Hence, I wanted to write about it.
-In this post, I will explain some of my solutions for the exercise questions posed in Chapter 2 of the booklet, namely the chapter Page Tables. Since the subject is presented extensively in the book, I won’t re-write every detail about it. Since xv6 is used as an actual course in many universities, I won’t be posting answers to the homework assignments, but only to the Exercise questions. For the record, I am referring to the Revision 10 of the booklet.">
-	<meta property="og:locale" content="en_us">
-	<meta property="og:type" content="article">
-		<meta property="article:section" content="post">
-		<meta property="article:published_time" content="2017-11-19T02:15:02+00:00">
-		<meta property="article:modified_time" content="2017-11-19T02:15:02+00:00">
-		<meta property="article:tag" content="Xv6">
-		<meta property="article:tag" content="OS">
-		<meta property="article:tag" content="C">
-
-  
-	<meta name="twitter:card" content="summary">
-	<meta name="twitter:title" content="Page Tables, Implementing Shebang, and Integer Overflow in Xv6">
-	<meta name="twitter:description" content="Introduction xv6 is a reimplementation of UNIXv6 for x86 architecture, created by MIT to be used in their Operating System courses. I found it to be an absolutely great course and learned a lot from it. Hence, I wanted to write about it.
-In this post, I will explain some of my solutions for the exercise questions posed in Chapter 2 of the booklet, namely the chapter Page Tables. Since the subject is presented extensively in the book, I won’t re-write every detail about it. Since xv6 is used as an actual course in many universities, I won’t be posting answers to the homework assignments, but only to the Exercise questions. For the record, I am referring to the Revision 10 of the booklet.">
-
-  
-  
-    
-  
-  
-  
-  
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-  
-
-  
-<link rel="icon" type="image/png" href="https://ruysal.com/images/favicon.ico" />
-
-  
-  
-  
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page Tables, Implementing Shebang, and Integer Overflow in Xv6 — ruysal.com</title>
+<meta name="description" content="Notes on page tables, shebang handling, and integer overflow exercises in the xv6 operating system.">
+<link rel="stylesheet" href="/css/editorial.css?v=0e5c4983f3e5daeb4fa5f0049542650c">
 </head>
+<body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header class="masthead">
+  <div class="bar">
+    <a class="home" href="/" aria-label="Home">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.4 12 3.6l8.5 6.8"/><path d="M5.8 9.4V20h12.4V9.4"/><path d="M10 20v-5.2h4V20"/></svg>
+      <span class="wordmark">ruysal<span>.com</span></span>
+    </a>
+    <nav class="nav" aria-label="Main navigation">
+      <a class="navlink" href="/about/">About</a>
+      <a class="navlink" href="/post/index.xml">RSS</a>
+      <div class="switch" role="group" aria-label="Colour theme">
+  <button type="button" data-theme-set="light" class="on" aria-pressed="true">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6"/></svg>
+    <span>Light</span>
+  </button>
+  <button type="button" data-theme-set="dark" aria-pressed="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.4A8.4 8.4 0 0 1 9.6 4a8.4 8.4 0 1 0 10.4 10.4Z"/></svg>
+    <span>Dark</span>
+  </button>
+</div>
 
-<body class="max-width mx-auto px3 ltr">
-  <div class="content index py4">
-
-    <header id="header">
-    <div id="title">
-    <h1></h1>
+    </nav>
   </div>
-  <div id="nav">
-    <ul>
-      <li class="icon">
-        <a href="#"><i class="fas fa-bars fa-2x"></i></a>
-      </li>
-      
-        <li><a href="/">Home</a></li>
-      
-        <li><a href="/about">About</a></li>
-      
-      <li>
-        <div class="theme-switch" role="group" aria-label="Color theme">
-          <button type="button" class="on" data-theme="light" aria-pressed="true">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Light
-          </button>
-          <button type="button" data-theme="dark" aria-pressed="false">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>Dark
-          </button>
-        </div>
-      </li>
-    </ul>
-  </div>
-
-<script>
-  
-  function setTheme(mode) {
-    var link = document.getElementById('theme-css');
-    if (!link) {
-      link = document.createElement('link');
-      link.id = 'theme-css';
-      link.rel = 'stylesheet';
-      document.head.appendChild(link);
-    }
-    link.href = '/css/style-' + mode + '.css';
-    document.documentElement.setAttribute('data-theme', mode);
-    document.querySelectorAll('.theme-switch button').forEach(function (b) {
-      var on = b.dataset.theme === mode;
-      b.classList.toggle('on', on);
-      b.setAttribute('aria-pressed', on);
-    });
-    if (mode === 'dark') localStorage.setItem('darkMode', 'true');
-    else localStorage.removeItem('darkMode');
-  }
-  document.querySelectorAll('.theme-switch button').forEach(function (b) {
-    b.addEventListener('click', function () { setTheme(b.dataset.theme); });
-  });
-  setTheme(localStorage.getItem('darkMode') ? 'dark' : 'light');
-</script>
 </header>
 
 
-    
-<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
-  <div class="content" itemprop="articleBody">
+
+
+
   
-    <h2><span><a href="https://ruysal.com/post/2017-11-19-answers-to-page-table-exercises-in-xv6/">Page Tables, Implementing Shebang, and Integer Overflow in Xv6</a></span></h2>
     
-        <nav id="TableOfContents">
+  
+  
+
+
+<div class="shell">
+  
+  <aside class="rail">
+    <span class="label">On this page</span>
+    <nav id="TableOfContents" aria-label="Article contents">
   <ul>
     <li><a href="#introduction">Introduction</a></li>
     <li><a href="#page-tables">Page Tables</a></li>
@@ -121,8 +56,28 @@ In this post, I will explain some of my solutions for the exercise questions pos
     <li><a href="#integer-overflow">Integer Overflow</a></li>
   </ul>
 </nav>
-    
-    <h2 id="introduction">Introduction</h2>
+  </aside>
+  
+  <main id="main-content">
+    <header class="head">
+      
+      <p class="kicker">
+        <span class="label label--accent">OS Development</span><span class="dot">·</span>
+        <span class="label">19 November 2017</span>
+        <span class="dot">·</span><span class="label">8 min read</span>
+      </p>
+      
+      <h1>Page Tables, Implementing Shebang, and Integer Overflow in Xv6</h1>
+    </header>
+    <details class="mobile-toc"><summary>On this page</summary><nav id="MobileTableOfContents" aria-label="Article contents">
+  <ul>
+    <li><a href="#introduction">Introduction</a></li>
+    <li><a href="#page-tables">Page Tables</a></li>
+    <li><a href="#implementing-the-shebang">Implementing the Shebang</a></li>
+    <li><a href="#integer-overflow">Integer Overflow</a></li>
+  </ul>
+</nav></details>
+    <article><h2 id="introduction">Introduction</h2>
 <p>xv6 is a reimplementation of UNIXv6 for x86 architecture, created by MIT to be used in their Operating System courses. I found it to be an absolutely great course and learned a lot from it. Hence, I wanted to write about it.</p>
 <p>In this post, I will explain some of my solutions for the exercise questions posed in Chapter 2 of the booklet, namely the chapter Page Tables. Since the subject is presented extensively in the book, I won&rsquo;t re-write every detail about it. Since xv6 is used as an actual course in many universities, I won&rsquo;t be posting answers to the homework assignments, but only to the Exercise questions. For the record, I am referring to the Revision 10 of the booklet.</p>
 <p>The contents of this post will explain:</p>
@@ -142,43 +97,43 @@ In this post, I will explain some of my solutions for the exercise questions pos
 <p><strong>3. Write a user program that grows its address space with 1 byte by calling sbrk(1). Run the program and investigate the page table for the program before the call to sbrk and after the call to sbrk. How much space has the kernel allocated? What does the pte for the new memory contain?</strong></p>
 </blockquote>
 <p>To be able to investigate the page table easily, I wrote a system call which prints the page directory of the current process. Also, to understand some other problems I was curious about, I added a parameter to the system call, which acts like a switch and if it is set to 1, it prints the KERNEL pages, and if it is set to 0, it prints the USER pages. Here is the code:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>    <span style="color:#75715e">//sysproc.c
-</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">sys_traverse</span>(<span style="color:#66d9ef">void</span>){
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">struct</span> proc <span style="color:#f92672">*</span>p <span style="color:#f92672">=</span> <span style="color:#a6e22e">myproc</span>();
-</span></span><span style="display:flex;"><span>	
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">pde_t</span> <span style="color:#f92672">*</span>pgtab;
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> i, k, argument, flag <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>	
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">argint</span>(<span style="color:#ae81ff">0</span>, <span style="color:#f92672">&amp;</span>argument) <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>){
-</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">cprintf</span>(<span style="color:#e6db74">&#34;no argument passed.</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
-</span></span><span style="display:flex;"><span>	}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">cprintf</span>(<span style="color:#e6db74">&#34;p-&gt;name: %s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, p<span style="color:#f92672">-&gt;</span>name);
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">cprintf</span>(<span style="color:#e6db74">&#34;p-&gt;pgdir: %x</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74">&#34;</span>, p<span style="color:#f92672">-&gt;</span>pgdir);
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">cprintf</span>(<span style="color:#e6db74">&#34;argument: %d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, argument);
-</span></span><span style="display:flex;"><span>	
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span>( i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1024</span>; i<span style="color:#f92672">++</span> ){
-</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span>( (p<span style="color:#f92672">-&gt;</span>pgdir)[i] <span style="color:#f92672">&amp;</span> PTE_P ){ <span style="color:#75715e">//(a == 1) ? 20: 30
-</span></span></span><span style="display:flex;"><span>			flag <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>			pgtab <span style="color:#f92672">=</span> (<span style="color:#66d9ef">pte_t</span><span style="color:#f92672">*</span>)<span style="color:#a6e22e">P2V</span>(<span style="color:#a6e22e">PTE_ADDR</span>( (p<span style="color:#f92672">-&gt;</span>pgdir)[i] ));
-</span></span><span style="display:flex;"><span>			
-</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">for</span>( k <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; k <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1024</span>; k <span style="color:#f92672">++</span>){
-</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">if</span>( pgtab[k] <span style="color:#f92672">&amp;</span> PTE_P <span style="color:#f92672">&amp;&amp;</span> pgtab[k] <span style="color:#f92672">&amp;</span> ( (argument <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) <span style="color:#f92672">?</span> PTE_U: ( (pgtab[k] <span style="color:#f92672">&amp;</span> PTE_U) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) ) ){
-</span></span><span style="display:flex;"><span>					<span style="color:#66d9ef">if</span>(flag <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>){
-</span></span><span style="display:flex;"><span>						<span style="color:#a6e22e">cprintf</span>(<span style="color:#e6db74">&#34;&amp;p-&gt;pgdir[%d]: %x, p-&gt;pgdir[%d]: %x</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, i, <span style="color:#f92672">&amp;</span>(p<span style="color:#f92672">-&gt;</span>pgdir)[i], i, (p<span style="color:#f92672">-&gt;</span>pgdir)[i] );
-</span></span><span style="display:flex;"><span>						<span style="color:#a6e22e">cprintf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">pgtab starts at: %x and contains these entries:</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, pgtab);
-</span></span><span style="display:flex;"><span>						flag <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
-</span></span><span style="display:flex;"><span>					}
-</span></span><span style="display:flex;"><span>					<span style="color:#a6e22e">cprintf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t\t</span><span style="color:#e6db74">&amp;pgtab[%d]: %x, pgtab[%d]: %x</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, k, <span style="color:#f92672">&amp;</span>pgtab[k], k, pgtab[k]);
-</span></span><span style="display:flex;"><span>				}
-</span></span><span style="display:flex;"><span>			} 
-</span></span><span style="display:flex;"><span>		}
-</span></span><span style="display:flex;"><span>	}
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl">    <span class="c1">//sysproc.c
+</span></span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="nf">sys_traverse</span><span class="p">(</span><span class="kt">void</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">proc</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="nf">myproc</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="kt">pde_t</span> <span class="o">*</span><span class="n">pgtab</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">argument</span><span class="p">,</span> <span class="n">flag</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="k">if</span><span class="p">(</span><span class="nf">argint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">argument</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">cprintf</span><span class="p">(</span><span class="s">&#34;no argument passed.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nf">cprintf</span><span class="p">(</span><span class="s">&#34;p-&gt;name: %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">cprintf</span><span class="p">(</span><span class="s">&#34;p-&gt;pgdir: %x</span><span class="se">\n\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">pgdir</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">cprintf</span><span class="p">(</span><span class="s">&#34;argument: %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">argument</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="k">for</span><span class="p">(</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">1024</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">){</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span><span class="p">(</span> <span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">pgdir</span><span class="p">)[</span><span class="n">i</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">PTE_P</span> <span class="p">){</span> <span class="c1">//(a == 1) ? 20: 30
+</span></span></span><span class="line"><span class="cl">			<span class="n">flag</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="n">pgtab</span> <span class="o">=</span> <span class="p">(</span><span class="kt">pte_t</span><span class="o">*</span><span class="p">)</span><span class="nf">P2V</span><span class="p">(</span><span class="nf">PTE_ADDR</span><span class="p">(</span> <span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">pgdir</span><span class="p">)[</span><span class="n">i</span><span class="p">]</span> <span class="p">));</span>
+</span></span><span class="line"><span class="cl">			
+</span></span><span class="line"><span class="cl">			<span class="k">for</span><span class="p">(</span> <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">1024</span><span class="p">;</span> <span class="n">k</span> <span class="o">++</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">				<span class="k">if</span><span class="p">(</span> <span class="n">pgtab</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">PTE_P</span> <span class="o">&amp;&amp;</span> <span class="n">pgtab</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&amp;</span> <span class="p">(</span> <span class="p">(</span><span class="n">argument</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">?</span> <span class="nl">PTE_U</span><span class="p">:</span> <span class="p">(</span> <span class="p">(</span><span class="n">pgtab</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">PTE_U</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">)</span> <span class="p">){</span>
+</span></span><span class="line"><span class="cl">					<span class="k">if</span><span class="p">(</span><span class="n">flag</span> <span class="o">==</span> <span class="mi">0</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">						<span class="nf">cprintf</span><span class="p">(</span><span class="s">&#34;&amp;p-&gt;pgdir[%d]: %x, p-&gt;pgdir[%d]: %x</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="o">&amp;</span><span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">pgdir</span><span class="p">)[</span><span class="n">i</span><span class="p">],</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">pgdir</span><span class="p">)[</span><span class="n">i</span><span class="p">]</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">						<span class="nf">cprintf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\t</span><span class="s">pgtab starts at: %x and contains these entries:</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">pgtab</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">						<span class="n">flag</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">					<span class="p">}</span>
+</span></span><span class="line"><span class="cl">					<span class="nf">cprintf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\t\t</span><span class="s">&amp;pgtab[%d]: %x, pgtab[%d]: %x</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pgtab</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">k</span><span class="p">,</span> <span class="n">pgtab</span><span class="p">[</span><span class="n">k</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">				<span class="p">}</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span> 
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p>xv6 Does not set the PTE_U bit in Page Directory Entries. That means, we cannot check whether the table belongs to USER or KERNEL in PDEs. So, I had to check this in PTEs. Hence, I summoned this ugly creature from the one-liner hell. Lesson learned: Don&rsquo;t hesitate to use nested ifs, this is much  uglier.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>( pgtab[k] <span style="color:#f92672">&amp;</span> PTE_P <span style="color:#f92672">&amp;&amp;</span> pgtab[k] <span style="color:#f92672">&amp;</span> ( (argument <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) <span style="color:#f92672">?</span> PTE_U: ( (pgtab[k] <span style="color:#f92672">&amp;</span> PTE_U) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) ) ){</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span> <span class="n">pgtab</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">PTE_P</span> <span class="o">&amp;&amp;</span> <span class="n">pgtab</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&amp;</span> <span class="p">(</span> <span class="p">(</span><span class="n">argument</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">?</span> <span class="nl">PTE_U</span><span class="p">:</span> <span class="p">(</span> <span class="p">(</span><span class="n">pgtab</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">PTE_U</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">)</span> <span class="p">){</span></span></span></code></pre></div>
 <p>The first condition checks whether the PTE is present, the second condition checks if the argument asks for USER pages (i.e 0). If we are looking for USER pages, we do bitwise and on pgtab[k] with PTE_U. Otherwise, we check whether the PGTAB contains PTE_U bit and negate it by checking against 0.</p>
 <p>Implementing the rest of the system call is unrelated to this post, so I will skip it. You can find some other blog posts detailing the necessary steps.</p>
 <p>Now that we have a system call to traverse the page table, we can answer the question. xv6 Allocates another page for a 1 byte sbrk call. You can see it in the screenshot below.</p>
@@ -188,61 +143,61 @@ In this post, I will explain some of my solutions for the exercise questions pos
 <p><strong>5. Unix implementations of exec traditionally include special handling for shell scripts. If the file to execute begins with the text #!, then the first line is taken to be a program to run to interpret the file. For example, if exec is called to run myprog arg1 and myprog’s first line is #!/interp, then exec runs /interp with command line /interp myprog arg1. Implement support for this convention in xv6.</strong></p>
 </blockquote>
 <p>Before we get into the implementation of this, we need a script with a shebang line (#!/interp) so that it will be interpreted and we will be able to debug easily as we implement the code. In xv6&rsquo;s main directory, I executed this to have a simple script with a visible result.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>    cat &gt; script
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#!/sh</span>
-</span></span><span style="display:flex;"><span>    echo hello;
-</span></span><span style="display:flex;"><span>    ls;</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">    cat &gt; script
+</span></span><span class="line"><span class="cl">    <span class="c1">#!/sh</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> hello<span class="p">;</span>
+</span></span><span class="line"><span class="cl">    ls<span class="p">;</span></span></span></code></pre></div>
 <p>Then, we need to modify the MAKEFILE so that this script is included in xv6&rsquo;s filesystem. Find the following line and modify it as shown below:</p>
 <pre><code>fs.img: mkfs README $(UPROGS) script
 ./mkfs fs.img README $(UPROGS) script
 </code></pre>
 <p>Great. Now when we compile xv6, we will see a file named &ldquo;script&rdquo; in xv6&rsquo;s filesystem.</p>
 <p>Implementing a shebang consists of two parts. First, we need to have this functionality present in our kernel. Only after that, user level programs can benefit from it and interpret the contents of the script. Since xv6 is a small system, only our beloved &ldquo;sh&rdquo; has the capability to interpret the script. To implement the functionality in the kernel, &ldquo;exec.c&rdquo; is our first stop.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>    <span style="color:#75715e">//exec.c
-</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> shebang[<span style="color:#ae81ff">3</span>];
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> interp_path[<span style="color:#ae81ff">16</span>]; <span style="color:#75715e">//16 is for historical reasons. 
-</span></span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">readi</span>(ip, (<span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>shebang, <span style="color:#ae81ff">0</span>, <span style="color:#66d9ef">sizeof</span>(shebang)) <span style="color:#f92672">!=</span> <span style="color:#66d9ef">sizeof</span>(shebang)) 
-</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">goto</span> bad;
-</span></span><span style="display:flex;"><span>	
-</span></span><span style="display:flex;"><span>    shebang[<span style="color:#ae81ff">2</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;\0&#39;</span>;
-</span></span><span style="display:flex;"><span>	
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>( shebang[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;#&#39;</span> <span style="color:#f92672">&amp;&amp;</span> shebang[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;!&#39;</span> ){
-</span></span><span style="display:flex;"><span>	  <span style="color:#75715e">//cprintf(&#34;shebang: %s\n&#34;, shebang);
-</span></span></span><span style="display:flex;"><span>	  
-</span></span><span style="display:flex;"><span>	  <span style="color:#a6e22e">readi</span>(ip, (<span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>interp_path, <span style="color:#ae81ff">2</span>, <span style="color:#66d9ef">sizeof</span>(interp_path));
-</span></span><span style="display:flex;"><span>	  <span style="color:#75715e">//cprintf(&#34;interp_path: %s\n&#34;, interp_path);
-</span></span></span><span style="display:flex;"><span>	  <span style="color:#66d9ef">for</span>(i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#66d9ef">sizeof</span>(interp_path); i<span style="color:#f92672">++</span>){
-</span></span><span style="display:flex;"><span>		  <span style="color:#66d9ef">if</span>(interp_path[i] <span style="color:#f92672">==</span> <span style="color:#ae81ff">0xa</span>){
-</span></span><span style="display:flex;"><span>			interp_path[i] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;\0&#39;</span>;
-</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">break</span>;
-</span></span><span style="display:flex;"><span>		  }
-</span></span><span style="display:flex;"><span>	  }
-</span></span><span style="display:flex;"><span>	  <span style="color:#a6e22e">exec</span>(interp_path, argv);
-</span></span><span style="display:flex;"><span>    }</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl">    <span class="c1">//exec.c
+</span></span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">shebang</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">interp_path</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span> <span class="c1">//16 is for historical reasons. 
+</span></span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="nf">readi</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">shebang</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">shebang</span><span class="p">))</span> <span class="o">!=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">shebang</span><span class="p">))</span> 
+</span></span><span class="line"><span class="cl">      <span class="k">goto</span> <span class="n">bad</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">    <span class="n">shebang</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span> <span class="n">shebang</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;#&#39;</span> <span class="o">&amp;&amp;</span> <span class="n">shebang</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;!&#39;</span> <span class="p">){</span>
+</span></span><span class="line"><span class="cl">	  <span class="c1">//cprintf(&#34;shebang: %s\n&#34;, shebang);
+</span></span></span><span class="line"><span class="cl">	  
+</span></span><span class="line"><span class="cl">	  <span class="nf">readi</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">interp_path</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">interp_path</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">	  <span class="c1">//cprintf(&#34;interp_path: %s\n&#34;, interp_path);
+</span></span></span><span class="line"><span class="cl">	  <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">interp_path</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">		  <span class="k">if</span><span class="p">(</span><span class="n">interp_path</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mh">0xa</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">			<span class="n">interp_path</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">	  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">	  <span class="nf">exec</span><span class="p">(</span><span class="n">interp_path</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span></span></span></code></pre></div>
 <p>The code is pretty much self-explanatory. We read the first 3 bytes of the file into a buffer and check whether the file starts with &ldquo;#!&rdquo;.</p>
 <p>You might say &ldquo;Hey, how do you know the file actually has 3 bytes? Won&rsquo;t this cause some problems?&rdquo; The answer is no because this functionality is implemented in &ldquo;exec.c&rdquo;, so we expect that the files that come here are either ELF files, whose header size is already bigger than 3 bytes, or script files, which start with &ldquo;#!&rdquo; bytes anyway.</p>
 <p>Later, we read the first 16 bytes into interp_path variable, starting from the second byte into the file. Again, you might ask &ldquo;Why 16 bytes? The interpreter path might be longer!&rdquo; That is correct. However, xv6 is a remake of the legendary UNIX v6, and traditionally, interpreter path was assumed as 16 bytes in the first implementations. You can check the history of it from here:</p>
 <p><a href="https://www.in-ulm.de/~mascheck/various/shebang/">https://www.in-ulm.de/~mascheck/various/shebang/</a></p>
 <p>One last thing, &ldquo;0xa&rdquo; is the newline in xv6, so it is used to separate commands from the shebang line. After that, we are done in &ldquo;exec.c&rdquo;, so we call &ldquo;exec.c&rdquo; itself, with interpreter path as the file to be executed, and the script as the argument. Since interpreter path is the first argument, which is what ip points to, first two bytes will not be &ldquo;#!&rdquo;, instead it will be the interpreter&rsquo;s ELF binary.</p>
 <p>Now that we are done, let&rsquo;s see the code we need to write in &ldquo;sh.c&rdquo; in order to interpret the actual script content.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>    <span style="color:#75715e">//sh.c
-</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>( (argc <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">&amp;</span> <span style="color:#a6e22e">strcmp</span>(argv[<span style="color:#ae81ff">0</span>], <span style="color:#e6db74">&#34;sh&#34;</span>) ){
-</span></span><span style="display:flex;"><span>	fd <span style="color:#f92672">=</span> <span style="color:#a6e22e">open</span>(argv[<span style="color:#ae81ff">0</span>], O_RDONLY);
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>( fd <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>)
-</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">printf</span>(<span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#34;sh could not open: %s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, argv[<span style="color:#ae81ff">0</span>]);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	read_bytes <span style="color:#f92672">=</span> <span style="color:#a6e22e">read</span>(fd, buf, <span style="color:#66d9ef">sizeof</span>(buf));
-</span></span><span style="display:flex;"><span>	script_start <span style="color:#f92672">=</span> <span style="color:#a6e22e">strchr</span>(buf, <span style="color:#ae81ff">0xa</span>);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>( buf[read_bytes <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">==</span> <span style="color:#ae81ff">0xa</span> )
-</span></span><span style="display:flex;"><span>		buf[read_bytes <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;\0&#39;</span>;
-</span></span><span style="display:flex;"><span>	
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">fork1</span>() <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">runcmd</span>(<span style="color:#a6e22e">parsecmd</span>(script_start));
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">wait</span>();
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">exit</span>();
-</span></span><span style="display:flex;"><span>    }</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl">    <span class="c1">//sh.c
+</span></span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span> <span class="p">(</span><span class="n">argc</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nf">strcmp</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#34;sh&#34;</span><span class="p">)</span> <span class="p">){</span>
+</span></span><span class="line"><span class="cl">	<span class="n">fd</span> <span class="o">=</span> <span class="nf">open</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">O_RDONLY</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span><span class="p">(</span> <span class="n">fd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">printf</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;sh could not open: %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="n">read_bytes</span> <span class="o">=</span> <span class="nf">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">	<span class="n">script_start</span> <span class="o">=</span> <span class="nf">strchr</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="mh">0xa</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">if</span><span class="p">(</span> <span class="n">buf</span><span class="p">[</span><span class="n">read_bytes</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mh">0xa</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="n">buf</span><span class="p">[</span><span class="n">read_bytes</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="nf">fork1</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="nf">runcmd</span><span class="p">(</span><span class="nf">parsecmd</span><span class="p">(</span><span class="n">script_start</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">wait</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">exit</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span></span></span></code></pre></div>
 <p>At first line, we are checking whether the program has only one arguments and whether it is &ldquo;sh&rdquo;, shell&rsquo;s name itself. If it is, we don&rsquo;t have any arguments, so this condition will not be met and sh will continue executing normally. Otherwise, we have an argument which needs to be interpreted. We just read the file and since the rest of the functionality we need is actually implemented in xv6 itself, we just copy it from there.</p>
 <p>One thing that I should mention is that I haven&rsquo;t copied the code related to the &ldquo;cd&rdquo; command. If you want, you can copy it and modify the variables yourself.</p>
 <p>And this is all we need. Let&rsquo;s just compile and run the script. The result is:</p>
@@ -262,20 +217,66 @@ In this post, I will explain some of my solutions for the exercise questions pos
 <p><a href="http://wiki.osdev.org/Detecting_Memory_%28x86%29">http://wiki.osdev.org/Detecting_Memory_(x86)</a></p>
 <p><a href="https://github.com/YehudaShapira/xv6-explained/blob/master/xv6%20Code%20Explained.md">https://github.com/YehudaShapira/xv6-explained/blob/master/xv6%20Code%20Explained.md</a></p>
 <p><a href="http://www.fotiskoutoulakis.com/2014/04/28/introduction-to-xv6-adding-a-new-system-call.html">http://www.fotiskoutoulakis.com/2014/04/28/introduction-to-xv6-adding-a-new-system-call.html</a></p>
-
-  
-  </div>
 </article>
+    <nav class="post-topics" aria-label="Post topics"><span class="label">Topics</span> <a href="/tags/Xv6/">Xv6</a><a href="/tags/OS/">OS</a><a href="/tags/C/">C</a></nav>
+  </main>
+</div>
 
+<footer>
+  <div class="bar">
+    <a class="home" href="/" aria-label="Home">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.4 12 3.6l8.5 6.8"/><path d="M5.8 9.4V20h12.4V9.4"/><path d="M10 20v-5.2h4V20"/></svg>
+      <span class="wordmark">ruysal<span>.com</span></span>
+    </a>
+    <nav class="nav" aria-label="Footer navigation">
+      <a class="navlink" href="/about/">About</a>
+      <a class="navlink" href="/post/index.xml">RSS</a>
+      <div class="switch" role="group" aria-label="Colour theme">
+  <button type="button" data-theme-set="light" class="on" aria-pressed="true">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6"/></svg>
+    <span>Light</span>
+  </button>
+  <button type="button" data-theme-set="dark" aria-pressed="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.4A8.4 8.4 0 0 1 9.6 4a8.4 8.4 0 1 0 10.4 10.4Z"/></svg>
+    <span>Dark</span>
+  </button>
+</div>
+
+    </nav>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var root=document.documentElement;
+    var buttons=[].slice.call(document.querySelectorAll('[data-theme-set]'));
+    function apply(t){root.setAttribute('data-theme',t);
+      buttons.forEach(function(b){var selected=b.getAttribute('data-theme-set')===t; b.classList.toggle('on',selected); b.setAttribute('aria-pressed',String(selected));});
+      try{localStorage.setItem('theme',t);}catch(e){}
+    }
+    var saved=null; try{saved=localStorage.getItem('theme');}catch(e){}
+    apply(saved === 'dark' ? 'dark' : 'light');
+    buttons.forEach(function(b){b.addEventListener('click',function(){apply(b.getAttribute('data-theme-set'));});});
 
     
-
-  </div>
+    var railLinks=[].slice.call(document.querySelectorAll('.rail nav a'));
+    var targets=railLinks.map(function(a){
+      return {a:a, el:document.getElementById(a.getAttribute('href').slice(1))};
+    }).filter(function(t){return t.el;});
+    if(targets.length){
+      var spy=function(){
+        var y=window.scrollY+130, cur=null;
+        targets.forEach(function(t){
+          if(t.el.getBoundingClientRect().top+window.scrollY<=y) cur=t;
+        });
+        railLinks.forEach(function(a){a.classList.remove('active');});
+        if(cur) cur.a.classList.add('active');
+      };
+      window.addEventListener('scroll',spy,{passive:true});
+      window.addEventListener('resize',spy);
+      spy();
+    }
+  })();
+</script>
 </body>
-
-<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
-<link rel="stylesheet" href=/css/custom.css>
-<script src=/lib/jquery/jquery.min.js></script>
-<script src=/js/main.js></script>
-<script src=/js/toc.js></script>
 </html>

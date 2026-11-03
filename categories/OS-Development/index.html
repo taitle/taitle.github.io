@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en-us" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title> — ruysal.com</title>
+<meta name="description" content="Notes on detection engineering, incident response, and threat intelligence.">
+<link rel="stylesheet" href="/css/editorial.css?v=0e5c4983f3e5daeb4fa5f0049542650c">
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header class="masthead">
+  <div class="bar">
+    <a class="home" href="/" aria-label="Home">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.4 12 3.6l8.5 6.8"/><path d="M5.8 9.4V20h12.4V9.4"/><path d="M10 20v-5.2h4V20"/></svg>
+      <span class="wordmark">ruysal<span>.com</span></span>
+    </a>
+    <nav class="nav" aria-label="Main navigation">
+      <a class="navlink" href="/about/">About</a>
+      <a class="navlink" href="/post/index.xml">RSS</a>
+      <div class="switch" role="group" aria-label="Colour theme">
+  <button type="button" data-theme-set="light" class="on" aria-pressed="true">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6"/></svg>
+    <span>Light</span>
+  </button>
+  <button type="button" data-theme-set="dark" aria-pressed="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.4A8.4 8.4 0 0 1 9.6 4a8.4 8.4 0 1 0 10.4 10.4Z"/></svg>
+    <span>Dark</span>
+  </button>
+</div>
+
+    </nav>
+  </div>
+</header>
+
+
+
+
+<main class="wrap" id="main-content">
+  <div class="list-head">
+    <h1></h1>
+    
+  </div>
+  <div class="entries">
+    
+    <div class="entry">
+      <span class="date">19 Nov 2017</span>
+      <div>
+        <h2><a href="/post/2017-11-19-answers-to-page-table-exercises-in-xv6/">Page Tables, Implementing Shebang, and Integer Overflow in Xv6</a></h2>
+        
+        
+        
+        
+        <p>Notes on page tables, shebang handling, and integer overflow exercises in the xv6 operating system.</p>
+        <div class="meta">8 min read</div>
+      </div>
+    </div>
+    
+  </div>
+</main>
+
+<footer>
+  <div class="bar">
+    <a class="home" href="/" aria-label="Home">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.4 12 3.6l8.5 6.8"/><path d="M5.8 9.4V20h12.4V9.4"/><path d="M10 20v-5.2h4V20"/></svg>
+      <span class="wordmark">ruysal<span>.com</span></span>
+    </a>
+    <nav class="nav" aria-label="Footer navigation">
+      <a class="navlink" href="/about/">About</a>
+      <a class="navlink" href="/post/index.xml">RSS</a>
+      <div class="switch" role="group" aria-label="Colour theme">
+  <button type="button" data-theme-set="light" class="on" aria-pressed="true">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6"/></svg>
+    <span>Light</span>
+  </button>
+  <button type="button" data-theme-set="dark" aria-pressed="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.4A8.4 8.4 0 0 1 9.6 4a8.4 8.4 0 1 0 10.4 10.4Z"/></svg>
+    <span>Dark</span>
+  </button>
+</div>
+
+    </nav>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var root=document.documentElement;
+    var buttons=[].slice.call(document.querySelectorAll('[data-theme-set]'));
+    function apply(t){root.setAttribute('data-theme',t);
+      buttons.forEach(function(b){var selected=b.getAttribute('data-theme-set')===t; b.classList.toggle('on',selected); b.setAttribute('aria-pressed',String(selected));});
+      try{localStorage.setItem('theme',t);}catch(e){}
+    }
+    var saved=null; try{saved=localStorage.getItem('theme');}catch(e){}
+    apply(saved === 'dark' ? 'dark' : 'light');
+    buttons.forEach(function(b){b.addEventListener('click',function(){apply(b.getAttribute('data-theme-set'));});});
+
+    
+    var railLinks=[].slice.call(document.querySelectorAll('.rail nav a'));
+    var targets=railLinks.map(function(a){
+      return {a:a, el:document.getElementById(a.getAttribute('href').slice(1))};
+    }).filter(function(t){return t.el;});
+    if(targets.length){
+      var spy=function(){
+        var y=window.scrollY+130, cur=null;
+        targets.forEach(function(t){
+          if(t.el.getBoundingClientRect().top+window.scrollY<=y) cur=t;
+        });
+        railLinks.forEach(function(a){a.classList.remove('active');});
+        if(cur) cur.a.classList.add('active');
+      };
+      window.addEventListener('scroll',spy,{passive:true});
+      window.addEventListener('resize',spy);
+      spy();
+    }
+  })();
+</script>
+</body>
+</html>

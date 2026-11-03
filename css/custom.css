@@ -5,34 +5,70 @@
   --line: rgba(128, 128, 128, 0.28);
   --tint: rgba(128, 128, 128, 0.10);
 }
-/* Colours: warm off-white / soft off-black, with higher text contrast than the stock theme
-   (body text ~11.5:1, accent >= 5:1). `data-theme` is set on <html> by the theme switch. */
+/* Colours: near-white / soft off-black, with higher text contrast than the stock theme
+   (body text ~14.1:1, accent >= 5:1). `data-theme` is set on <html> by the theme switch. */
 html[data-theme="light"] {
-  --bg: #e9e7e3;
+  --bg: #fdfcf6;
   --text: #2a2927;
   --heading: #121212;
-  --accent: #b3265a;
+  --accent: #0f6b6b;         /* deep teal */
+  --link: #1155cc;           /* hyperlinks: classic blue, underlined */
+  --link-hover: #0b3d91;
+  --subheading: #000;        /* h4-h6: same weight as h2/h3, darker colour */
+  --caption: #6a6864;        /* figure captions: muted but readable */
 }
 html[data-theme="dark"] {
   --bg: #1d1f21;
   --text: #d9dadc;
   --heading: #f4f4f5;
-  --accent: #ff80ab;
+  --accent: #5fc4c4;
+  --link: #7aa2ff;
+  --link-hover: #a8c2ff;
+  --subheading: #f4f4f5;
+  --caption: #a5a7aa;
 }
-html { --accent: #b3265a; }                 /* fallback before the switch script runs */
+html { --accent: #0f6b6b; --link: #1155cc; }                 /* fallback before the switch script runs */
 html[data-theme] body { background-color: var(--bg); }
 html[data-theme] article .content,
 html[data-theme] article .content p,
 html[data-theme] article .content li,
 html[data-theme] article .content blockquote,
-html[data-theme] article .content code,
-html[data-theme] article .content a { color: var(--text); }
+html[data-theme] article .content code { color: var(--text); }
+/* hyperlinks: blue, underlined. The stock theme faked the underline with a gradient
+   background, so switch that off and use a real decoration. */
+html[data-theme] article .content a {
+  color: var(--link);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  background-image: none;
+}
+html[data-theme] article .content a:hover {
+  color: var(--link-hover);
+  text-decoration-thickness: 2px;
+}
+/* links that are images, headings or TOC entries keep the surrounding colour */
+html[data-theme] article .content a:has(> img),
+html[data-theme] article .content h1 a,
+html[data-theme] article .content h2 a,
+html[data-theme] article .content h3 a,
+html[data-theme] article .content h4 a,
+html[data-theme] article .content nav#TableOfContents a {
+  color: inherit;
+  text-decoration: none;
+  background-image: none;
+}
 html[data-theme] article .content h1,
 html[data-theme] article .content h2,
 html[data-theme] article .content h3,
 html[data-theme] article .content h2 a,
 html[data-theme] article .content h3 a { color: var(--heading); }
-html[data-theme="light"] #header #nav ul a { color: var(--accent); }
+/* h4-h6: full black in light mode so sub-subsections don't read as grey body text.
+   font-weight is left untouched (already 700, like h2/h3). */
+html[data-theme] article .content h4,
+html[data-theme] article .content h5,
+html[data-theme] article .content h6 { color: var(--subheading); }
+html[data-theme] #header #nav ul a { color: var(--accent); }
 /* code blocks keep their own (syntax-highlight) colours: never recolour them with the text colour */
 html[data-theme] article .content pre,
 html[data-theme] article .content pre code { color: inherit; }
@@ -51,30 +87,49 @@ article .content .highlight {
 }
 
 /* ---------- page frame ---------- */
-body.max-width { max-width: 46rem; }
-article .content { line-height: 1.65; }
+body.max-width { max-width: 40rem; }
+article .content { line-height: 1.45; }
 
 /* .content is a flex column, so vertical margins do NOT collapse:
    every gap below is the sum of both neighbours' margins. */
 
 /* ---------- headings ---------- */
 article .content h2 {
-  margin: 1.5rem 0 0.5rem;
-  padding-bottom: 0.3rem;
+  margin: 1.6rem 0 0.45rem;
+  padding-bottom: 0.25rem;
   border-bottom: 1px solid var(--line);
-  line-height: 1.3;
+  font-size: 1.35rem;
+  line-height: 1.25;
 }
 article .content h2:before { display: none; }
+/* post title: the theme renders it as the first h2 inside .content, at the same size
+   as a section heading. Give it a step up so it reads as the article title. */
+article .content > h2:first-child {
+  margin: 0 0 1.1rem;
+  font-size: 1.9rem;
+  line-height: 1.15;
+}
 article .content h3 {
-  margin: 0.75rem 0 0.4rem;
+  margin: 1.1rem 0 0.35rem;
+  font-size: 1.15rem;
+  line-height: 1.3;
+  text-decoration: none;
+}
+article .content h4,
+article .content h5,
+article .content h6 {
+  display: block;
+  margin: 0.9rem 0 0.3rem;
+  font-size: 1.05rem;
   line-height: 1.35;
+  text-decoration: none;
 }
 article .content h2 + h3 { margin-top: 0.5rem; }
 article .content hr + h2,
 article .content hr + h3 { margin-top: 0; }
 
 /* ---------- paragraphs & lists ---------- */
-article .content p { margin: 0 0 0.75rem; }
+article .content p { margin: 0 0 0.6rem; }
 
 article .content ul,
 article .content ol {
@@ -102,9 +157,13 @@ article .content nav#TableOfContents {
   border-radius: 8px;
   background: var(--tint);
 }
-article .content nav#TableOfContents ul { margin: 0; padding-left: 1.1rem; }
-article .content nav#TableOfContents > ul { padding-left: 0.4rem; }
+/* No bullet markers: the theme leaves them on below 1000px and, with a 0.4rem
+   gutter on the top level, the disc lands on top of the entry text. Indentation only,
+   matching the fixed sidebar version used on wide screens. */
+article .content nav#TableOfContents ul { margin: 0; padding-left: 1rem; list-style: none; }
+article .content nav#TableOfContents > ul { padding-left: 0; }
 article .content nav#TableOfContents li { margin: 0.15rem 0; }
+article .content nav#TableOfContents li::marker { content: none; }
 article .content nav#TableOfContents a { background-image: none; }
 
 /* ---------- blockquotes ---------- */
@@ -162,6 +221,23 @@ article .content img {
   box-sizing: border-box;
 }
 article .content a img { background-image: none; }
+/* figure captions: a paragraph whose only content is italics sitting under an image.
+   Same treatment as the imgrid captions — centred, small, muted. */
+html[data-theme] article .content > p:has(> em:only-child) {
+  margin: 0 0 1.1rem;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: var(--caption);
+  text-align: center;
+}
+/* an image sitting directly above a caption: drop its margins so the caption hugs it
+   (images in any other position keep their normal spacing) */
+html[data-theme] article .content > p:has(> img:only-child):has(+ p > em:only-child) {
+  margin: 0;
+}
+html[data-theme] article .content > p:has(> img:only-child):has(+ p > em:only-child) img {
+  margin-bottom: 0.45rem;
+}
 
 /* ---------- rules ---------- */
 article .content hr {
@@ -196,15 +272,21 @@ article .content h3 { scroll-margin-top: 1.5rem; }
 html { scroll-behavior: smooth; }
 
 @media (min-width: 1000px) {
-  /* TOC hugs the left edge; the column sits right after it (1.25rem + 15rem; 2rem body padding supplies the gap) */
+  /* Centre the whole reading group — sidebar + gutter + article — not just the article,
+     which is what made the right-hand margin look bigger than the left. Below the width
+     where the group fits, fall back to the flush-left gutter so nothing overlaps. */
   body.max-width:has(#TableOfContents) {
-    margin-left: 16.25rem;
+    --article-w: 40rem;
+    --toc-gutter: 16.25rem;    /* 15rem sidebar + 1.25rem gap */
+    margin-left: max(var(--toc-gutter),
+                     calc(50vw - (var(--article-w) / 2) + (var(--toc-gutter) / 2)));
     margin-right: auto;
   }
   article .content nav#TableOfContents {
     position: fixed;
     top: 66px;                 /* level with the top of the logo */
-    left: 1.25rem;
+    /* same centre line as the article, shifted left by half the group gutter */
+    left: max(1.25rem, calc(50vw - (var(--article-w, 46rem) / 2) - (var(--toc-gutter, 16.25rem) / 2)));
     width: 15rem;
     max-height: calc(100vh - 6rem);
     margin: 0;
@@ -258,6 +340,7 @@ html { scroll-behavior: smooth; }
 #header { margin-bottom: 1.5rem; }
 #header #title { display: none; }          /* empty site-title node */
 #header #nav {
+  color: var(--accent);        /* theme hardcodes the old pink here; buttons inherit it */
   font-size: 1.1rem;
   font-weight: normal;
   letter-spacing: 0;
@@ -313,4 +396,35 @@ html { scroll-behavior: smooth; }
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+/* Large screens: a slightly wider reading column so the page isn't mostly margin. */
+@media (min-width: 1500px) {
+  body.max-width { max-width: 42rem; }
+  body.max-width:has(#TableOfContents) { --article-w: 42rem; }
+}
+
+/* ---------- typography ---------- */
+/* The stock theme sets the whole site in JetBrains Mono (a monospace), which is what
+   makes long paragraphs tiring: every glyph gets the same wide box. The source PDF is
+   set in Arial, so use a proportional sans for text and keep the mono for code. */
+html[data-theme] body,
+html[data-theme] body input,
+html[data-theme] body button,
+html[data-theme] body textarea {
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+}
+html[data-theme] body {
+  font-size: 16px;
+  line-height: 1.45;
+}
+/* code keeps the monospace face */
+html[data-theme] article .content code,
+html[data-theme] article .content kbd,
+html[data-theme] article .content pre,
+html[data-theme] article .content pre code,
+html[data-theme] article .content .highlight,
+html[data-theme] article .content .highlight pre,
+html[data-theme] article .content .highlight code {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
 }

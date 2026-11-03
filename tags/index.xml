@@ -1,37 +1,44 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
-		<title>Tags on </title>
+		<title>Tags on ruysal.com</title>
 		<link>https://ruysal.com/tags/</link>
-		<description>Recent content in Tags on </description>
+		<description>Recent content in Tags on ruysal.com</description>
 		<generator>Hugo</generator>
 		<language>en-us</language>
 		
 		
 		
 		
-			<lastBuildDate>Fri, 11 Mar 2022 15:48:37 +0100</lastBuildDate>
+			<lastBuildDate>Sun, 01 Nov 2026 15:29:00 +0000</lastBuildDate>
 		
 			<atom:link href="https://ruysal.com/tags/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>Malware Analysis</title>
+				<link>https://ruysal.com/tags/Malware-Analysis/</link>
+				<pubDate>Sun, 01 Nov 2026 15:29:00 +0000</pubDate>
+				<guid>https://ruysal.com/tags/Malware-Analysis/</guid>
+				<description></description>
+			</item>
+			<item>
+				<title>Threat Intelligence</title>
+				<link>https://ruysal.com/tags/Threat-Intelligence/</link>
+				<pubDate>Sun, 01 Nov 2026 15:29:00 +0000</pubDate>
+				<guid>https://ruysal.com/tags/Threat-Intelligence/</guid>
+				<description></description>
+			</item>
+			<item>
+				<title></title>
+				<link>https://ruysal.com/tags/Incident-Response/</link>
+				<pubDate>Fri, 11 Mar 2022 15:48:37 +0100</pubDate>
+				<guid>https://ruysal.com/tags/Incident-Response/</guid>
+				<description></description>
+			</item>
 			<item>
 				<title>Forensics Analysis</title>
 				<link>https://ruysal.com/tags/Forensics-Analysis/</link>
 				<pubDate>Fri, 11 Mar 2022 15:48:37 +0100</pubDate>
 				<guid>https://ruysal.com/tags/Forensics-Analysis/</guid>
-				<description></description>
-			</item>
-			<item>
-				<title>Incident Reponse</title>
-				<link>https://ruysal.com/tags/Incident-Reponse/</link>
-				<pubDate>Fri, 11 Mar 2022 15:48:37 +0100</pubDate>
-				<guid>https://ruysal.com/tags/Incident-Reponse/</guid>
-				<description></description>
-			</item>
-			<item>
-				<title>Malware Analysis</title>
-				<link>https://ruysal.com/tags/Malware-Analysis/</link>
-				<pubDate>Fri, 11 Mar 2022 15:48:37 +0100</pubDate>
-				<guid>https://ruysal.com/tags/Malware-Analysis/</guid>
 				<description></description>
 			</item>
 			<item>

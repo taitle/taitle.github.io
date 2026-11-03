@@ -1,0 +1,308 @@
+/* ==========================================================================
+   EDITORIAL — a reading theme
+   Tokens first: everything below is derived from these.
+   ========================================================================== */
+:root{
+  --paper:#fbfaf7; --ink:#1b1a18; --muted:#6a675f; --faint:#716e65;
+  --rule:#dcd8cf; --rule-strong:#b9b3a6; --tint:#f3f1ea;
+  --accent:#8c2f2f;            /* oxblood — reads on cream */
+  --link:#1a4f9c; --link-hover:#123a75;
+  --code-kw:#0b5852; --code-str:#93501f; --code-cm:#8f8b81; --code-num:#7a5a2a;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Charter,Georgia,serif;
+  --sans:"Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  --measure:65ch;
+  --rail-w:190px; --rail-gap:52px;
+  --content-w:var(--measure);
+}
+html[data-theme="dark"]{
+  --paper:#151614; --ink:#e7e4dd; --muted:#9d9a91; --faint:#858279;
+  --rule:#3b3c37; --rule-strong:#565750; --tint:#1d1e1b;
+  --accent:#79b98b;            /* forest — reads on the dark surface */
+  --link:#93b6ff; --link-hover:#b9ceff;
+  --code-kw:#7fd0c8; --code-str:#e0a878; --code-cm:#7c7972; --code-num:#d8bd8a;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--serif); font-size:17px; line-height:1.66;
+  font-kerning:normal; font-variant-numeric:old-style-nums proportional-nums;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+::selection{background:#8c2f2f22}
+a{color:var(--link); text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:2px}
+a:hover{color:var(--link-hover); text-decoration-thickness:2px}
+
+.label{
+  font-family:var(--sans); font-size:11.5px; font-weight:600;
+  letter-spacing:.11em; text-transform:uppercase; color:var(--muted);
+  font-variant-numeric:normal;
+}
+.label--accent{color:var(--accent)}
+
+/* ======================= masthead / footer ======================= */
+.masthead{border-bottom:1.5px solid var(--ink)}
+.bar{
+  max-width:var(--content-w); margin:0 auto;
+  padding:20px 0 14px;
+  display:flex; align-items:center; gap:0;
+}
+.home{display:inline-flex; align-items:center; gap:8px; color:var(--ink); text-decoration:none;
+  line-height:1}
+.home svg{width:17px; height:17px; stroke:currentColor; fill:none; stroke-width:1.45;
+  stroke-linecap:round; stroke-linejoin:round; color:var(--muted); transition:color .15s;
+  flex:none; position:relative; top:1px}
+.home:hover svg{color:var(--accent)}
+.home:hover{text-decoration:none}
+.wordmark{font-family:var(--serif); font-size:22px; font-weight:600; letter-spacing:-.01em; color:var(--ink)}
+.wordmark span{color:var(--muted); font-weight:400}
+.nav{display:flex; gap:20px; align-items:center; margin-left:auto}
+.nav a.navlink{
+  font-family:var(--sans); font-size:12.5px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--muted); text-decoration:none; font-weight:600; transition:color .15s;
+}
+.nav a.navlink:hover{color:var(--ink)}
+.switch{display:inline-flex; align-items:center; gap:2px; padding:2px;
+  border:1px solid var(--rule); border-radius:3px; background:none}
+.switch button{
+  display:inline-flex; align-items:center; gap:5px; padding:4px 9px;
+  border:0; border-radius:2px; background:none; color:var(--muted); cursor:pointer;
+  font-family:var(--sans); font-size:10.5px; font-weight:600;
+  letter-spacing:.1em; text-transform:uppercase; line-height:1.1;
+  transition:color .15s, background .15s;
+}
+.switch button svg{width:12px; height:12px; stroke:currentColor; fill:none;
+  stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round}
+.switch button:hover{color:var(--ink)}
+.switch button.on{background:var(--accent); color:var(--paper)}
+footer{border-top:1px solid var(--rule); margin-top:56px}
+footer .bar{padding:16px 0 24px}
+footer .home svg{width:15px; height:15px}
+footer .wordmark{font-size:15px}
+
+/* ============================== layout ============================== */
+.shell{
+  max-width:var(--content-w); margin:0 auto; padding:0;
+  display:grid; grid-template-columns:0 minmax(0,1fr); gap:0;
+  align-items:start;
+}
+.shell.no-rail{grid-template-columns:minmax(0,1fr)}
+.shell.no-rail main{max-width:var(--measure)}
+main{max-width:var(--measure); padding:38px 0 0; min-width:0}
+
+/* contents rail — a file-tree: dots on every entry, a spine per level */
+.rail{position:sticky; top:26px; width:var(--rail-w); transform:translateX(calc(-1 * (var(--rail-w) + var(--rail-gap)))); padding-top:44px; max-height:calc(100vh - 3rem); overflow-y:auto;
+  scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.rail .label{display:block; margin-bottom:10px}
+.rail nav ul{list-style:none; margin:0; padding:0;
+  font-family:var(--sans); font-size:12.5px; line-height:1.45}
+.rail nav li{position:relative; margin:0}
+.rail nav a{
+  display:block; position:relative; padding:5px 6px 5px 20px; margin:0;
+  color:var(--muted); text-decoration:none; opacity:.9;
+  transition:color .15s, opacity .15s;
+}
+.rail nav a:hover{opacity:1; color:var(--ink); text-decoration:none}
+/* the node dot */
+.rail nav a::before{
+  content:""; position:absolute; left:4px; top:.62em;
+  width:5px; height:5px; border-radius:50%; background:var(--rule-strong);
+  transition:background .15s, transform .15s;
+}
+.rail nav a:hover::before{background:var(--ink)}
+.rail nav a.active{color:var(--accent); opacity:1; font-weight:600}
+.rail nav a.active::before{background:var(--accent); transform:scale(1.3)}
+/* spine + connector for each deeper level */
+.rail nav ul ul{margin-left:5px; padding-left:16px; border-left:1px solid var(--rule-strong)}
+.rail nav ul ul li::before{
+  content:""; position:absolute; left:-16px; top:.95em; width:14px; height:1px;
+  background:var(--rule-strong);
+}
+.rail nav ul ul ul a{font-size:11.5px}
+
+/* ============================ article head ============================ */
+header.head{border-bottom:1px solid var(--rule); padding-bottom:22px; margin:0 0 30px}
+.kicker{margin:0 0 14px; display:flex; align-items:baseline; flex-wrap:wrap; gap:9px}
+.kicker .dot{color:var(--rule-strong); font-size:11.5px; line-height:1}
+h1{
+  font-family:var(--serif); font-weight:600; font-size:27px; line-height:1.2;
+  letter-spacing:-.012em; margin:0; max-width:24ch;
+}
+
+/* ================================ body ================================ */
+article h2{
+  font-family:var(--serif); font-weight:600; font-size:20px; line-height:1.28;
+  letter-spacing:-.004em; margin:1.7rem 0 .4rem; max-width:32ch;
+}
+article h3{
+  font-family:var(--sans); font-weight:600; font-size:12.5px; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--ink); margin:1.4rem 0 .35rem;
+}
+article h4{
+  font-family:var(--serif); font-weight:600; font-size:17.5px; margin:1rem 0 .28rem;
+}
+article > h2:first-child, article > h2:first-of-type{margin-top:0}
+article p{margin:0 0 .7em; hyphens:none}
+article p + p{text-indent:0; margin-top:0}
+article p{margin:0 0 .7em}
+
+article ul, article ol{margin:0 0 .7em; padding-left:1.25em}
+article ul li, article ol li{margin:0 0 .3em}
+article ul li::marker{color:var(--accent)}
+article ul ul, article ol ol, article ul ol, article ol ul{margin:.25em 0 .3em; padding-left:1em}
+
+/* quotes that hold real structure (lists, several paragraphs) stay left-aligned
+   with a rule; only a single-paragraph quote becomes a centred pull-quote */
+article blockquote{
+  margin:1.2rem 0; padding:0 0 0 18px;
+  border-left:2px solid var(--rule-strong);
+  font-size:17px; line-height:1.64; font-style:normal; text-align:left;
+  color:var(--ink);
+}
+article blockquote p{margin:0 0 .5em; text-indent:0; font-style:normal}
+article blockquote p:last-child{margin-bottom:0}
+article blockquote ul, article blockquote ol{margin:0 0 .5em}
+article blockquote strong{color:var(--ink)}
+article blockquote:has(> p:only-child){
+  padding:0; border-left:0; text-align:center; color:var(--ink);
+  font-size:19.5px; line-height:1.44;
+}
+article blockquote:has(> p:only-child) p{font-style:italic}
+article blockquote:has(> p:only-child)::before,
+article blockquote:has(> p:only-child)::after{
+  content:""; display:block; width:60px; height:1px; background:var(--rule-strong); margin:0 auto;
+}
+article blockquote:has(> p:only-child)::before{margin-bottom:18px}
+article blockquote:has(> p:only-child)::after{margin-top:18px}
+
+/* images + the italic caption line that follows them */
+article img{display:block; max-width:100%; height:auto; margin:1.4em 0}
+article p:has(> img:only-child){margin:1.2rem 0 .2em}
+/* NB: a caption is the paragraph *immediately after* an image. Matching on
+   "paragraph whose only element child is <em>" also matched body text like
+   "There is simply <em>A LOT</em> to analyze…" and shrank it. */
+article p:has(> img:only-child) img{margin:0 auto}
+article p:has(> img:only-child) + p:has(> em:only-child){
+  margin:8px 0 1.5em; font-family:var(--sans); font-size:12px; line-height:1.5;
+  color:var(--muted); font-style:normal; text-align:center;
+}
+article p:has(> img:only-child) + p:has(> em:only-child) em{font-style:normal}
+
+/* tables */
+article table{display:block; max-width:100%; overflow-x:auto; width:100%; border-collapse:collapse; margin:1.3rem 0;
+  font-family:var(--sans); font-size:12.5px; line-height:1.45}
+article table caption{caption-side:top; text-align:left; font-family:var(--sans); font-size:12px;
+  letter-spacing:.09em; text-transform:uppercase; color:var(--muted); padding-bottom:9px}
+article th{font-weight:600; text-align:left; border-bottom:1px solid var(--ink);
+  padding:0 12px 8px 0; font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink)}
+article td{padding:9px 12px 9px 0; border-bottom:1px solid var(--rule); vertical-align:top;
+  font-variant-numeric:tabular-nums}
+article th:last-child, article td:last-child{padding-right:0}
+
+/* code */
+article code{font-family:var(--mono); font-size:.86em; background:var(--tint); padding:1px 3px;
+  overflow-wrap:anywhere}
+article{overflow-wrap:break-word}
+article pre{margin:1.15rem 0; padding:14px 16px; overflow-x:auto;
+  background:var(--tint); border-left:2px solid var(--rule-strong);
+  font-family:var(--mono); font-size:12.5px; line-height:1.6; font-variant-numeric:normal}
+article .highlight{
+  margin:1.15rem 0; background:var(--tint); border-left:2px solid var(--rule-strong);
+}
+article .highlight pre{margin:0}
+article .highlight pre{background:none; padding:14px 16px}
+article .highlight code{background:none; padding:0; font-size:inherit}
+article pre code{background:none; padding:0}
+article pre{scrollbar-width:thin; scrollbar-color:var(--rule-strong) transparent}
+article pre::-webkit-scrollbar{height:7px}
+article pre::-webkit-scrollbar-track{background:transparent}
+article pre::-webkit-scrollbar-thumb{background:var(--rule-strong); border-radius:4px}
+
+/* chroma tokens — three meanings, everything else ink */
+.chroma .k, .chroma .kc, .chroma .kd, .chroma .kn, .chroma .kp, .chroma .kr,
+.chroma .kt, .chroma .ow{color:var(--code-kw); font-weight:600}
+.chroma .s, .chroma .sa, .chroma .sb, .chroma .sc, .chroma .s1, .chroma .s2,
+.chroma .se, .chroma .sh, .chroma .si, .chroma .sx, .chroma .sr, .chroma .ss,
+.chroma .l, .chroma .ld, .chroma .sd{color:var(--code-str)}
+.chroma .c, .chroma .ch, .chroma .cm, .chroma .c1, .chroma .cs, .chroma .cp{color:var(--code-cm); font-style:italic}
+.chroma .m, .chroma .mi, .chroma .mf, .chroma .mh, .chroma .mo, .chroma .mb, .chroma .il{color:var(--code-num)}
+.chroma .nf, .chroma .fm, .chroma .nb{color:var(--ink); font-weight:600}
+.chroma .err{color:inherit; background:none; border:0}
+
+/* footnotes / sources */
+article .footnotes{margin-top:2.6em; border-top:1px solid var(--rule); padding-top:14px;
+  font-size:14px; line-height:1.55; color:var(--muted)}
+article .footnotes hr{display:none}
+article .footnotes ol{padding-left:1.2em}
+article sup a{color:var(--link); text-decoration:none; font-size:.7em; padding-left:1px}
+
+/* ================================ list ================================ */
+.wrap{max-width:var(--content-w); margin:0 auto; padding:0}
+.list-head{padding:38px 0 8px}
+.list-head h1{font-size:28px; margin:0 0 8px}
+.list-head p{margin:0; color:var(--muted); font-size:15px}
+.entries{margin:4px 0 0}
+.entry{
+  display:grid; grid-template-columns:104px minmax(0,1fr); gap:22px;
+  padding:20px 0; border-bottom:1px solid var(--rule); align-items:baseline;
+}
+.entry .date{font-family:var(--sans); font-size:12px; letter-spacing:.07em; color:var(--faint);
+  font-variant-numeric:tabular-nums; text-transform:uppercase; padding-top:4px}
+.entry h2{font-family:var(--serif); font-size:19px; font-weight:600; letter-spacing:-.005em;
+  margin:0 0 5px; line-height:1.25; max-width:none}
+.entry h2 a{color:var(--ink); text-decoration:none}
+.entry h2 a:hover{color:var(--link); text-decoration:underline}
+.entry p{margin:0; font-size:14px; line-height:1.5; color:var(--muted)}
+.entry .meta{font-family:var(--sans); font-size:11.5px; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--faint); margin-top:6px}
+
+@media (max-width:850px){
+  .shell{grid-template-columns:1fr; gap:0; width:calc(100% - 40px)}
+  .rail{position:static; width:auto; transform:none; max-height:none; overflow:visible; padding-top:22px; order:2}
+  .rail nav > ul{columns:2; column-gap:22px}
+  .rail nav li{break-inside:avoid}
+  .bar{width:calc(100% - 40px); padding:18px 0 12px; flex-wrap:wrap; gap:12px}
+  main{padding-top:26px}
+  h1{font-size:24px; max-width:none}
+  article h2{font-size:18px}
+  body{font-size:16.5px}
+  .wrap{width:calc(100% - 40px)}
+  .entry{grid-template-columns:1fr; gap:6px}
+  footer .bar{padding:16px 0 22px}
+}
+@media (max-width:480px){
+  .rail nav > ul{columns:1}
+}
+
+/* Keyboard navigation, topic links, and compact article contents. */
+.skip-link{position:fixed; top:8px; left:8px; z-index:100; transform:translateY(-160%); background:var(--paper); color:var(--ink); padding:8px 12px; border:2px solid var(--accent)}
+.skip-link:focus{transform:none}
+:focus-visible{outline:2px solid var(--accent); outline-offset:3px}
+.mobile-toc{display:none}
+.post-topics{border-top:1px solid var(--rule); margin-top:2.5rem; padding-top:1rem; display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 14px; font-family:var(--sans); font-size:13px}
+@media(max-width:850px){
+ .rail{display:none}
+ .mobile-toc{display:block; background:var(--paper); margin:0 0 1.5rem; border-block:1px solid var(--rule); font:13px/1.5 var(--sans)}
+ .mobile-toc summary{cursor:pointer; padding:10px 0; color:var(--accent); font-weight:600}
+ .mobile-toc nav{max-height:45vh; overflow:auto; padding:0 0 10px}
+ .mobile-toc ul{margin:0; padding-left:1.3em}
+ .mobile-toc li{margin:.35em 0}
+}
+@media(max-width:400px){
+ .nav{gap:12px}
+ .switch button{padding:4px 6px}
+}
+
+/* Keep the rail beside the article in medium-width browser windows. */
+@media (min-width:851px) and (max-width:1150px){
+ .shell:not(.no-rail){width:calc(100% - 40px); max-width:calc(var(--measure) + 194px); grid-template-columns:170px minmax(0,1fr); gap:24px}
+ .shell:not(.no-rail) .rail{width:170px; transform:none}
+ .bar,.wrap{width:calc(100% - 40px)}
+}
+
+/* Publication context at the start of an article. */
+.publication-note{margin:0 0 1.8rem; padding:14px 16px; background:var(--tint); border-left:2px solid var(--rule-strong); font-size:15px; line-height:1.55}
+.publication-note .label{display:block; margin-bottom:5px}
+.publication-note p{margin:0}

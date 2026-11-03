@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
-		<title></title>
+		<title>ruysal.com</title>
 		<link>https://ruysal.com/</link>
-		<description>Recent content on </description>
+		<description>Recent content on ruysal.com</description>
 		<generator>Hugo</generator>
 		<language>en-us</language>
 		
 		
 		
 		
-			<lastBuildDate>Fri, 11 Mar 2022 15:48:37 +0100</lastBuildDate>
+			<lastBuildDate>Sun, 01 Nov 2026 15:29:00 +0000</lastBuildDate>
 		
 			<atom:link href="https://ruysal.com/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>Disrupting Contagious Interview</title>
+				<link>https://ruysal.com/post/2026-11-01-disrupting-contagious-interview/</link>
+				<pubDate>Sun, 01 Nov 2026 15:29:00 +0000</pubDate>
+				<guid>https://ruysal.com/post/2026-11-01-disrupting-contagious-interview/</guid>
+				<description>&lt;aside class=&#34;publication-note&#34; aria-label=&#34;Note&#34;&gt;&lt;span class=&#34;label&#34;&gt;Note&lt;/span&gt;I co-authored this research with Parthiban Rajendran and Dawid Osojca at Atlassian. It was originally published as an &lt;a href=&#34;https://www.atlassian.com/blog/how-we-build/disrupting-contagious-interview&#34;&gt;Atlassian blog post&lt;/a&gt; and &lt;a href=&#34;https://customertrust.atlassian.com/d/disrupting-contagious-interviews/3VUu9C?lng=en&#34;&gt;full research report&lt;/a&gt;.&lt;/aside&gt;&#xA;&#xA;&lt;h2 id=&#34;executive-summary&#34;&gt;Executive summary&lt;/h2&gt;&#xA;&lt;p&gt;Software developers and IT professionals are increasingly being targeted through fraudulent recruitment processes that exploit their trust in established development platforms. Candidates are invited to complete seemingly legitimate coding assessments hosted publicly on services such as Bitbucket, GitHub, and GitLab, but the underlying repositories contain malicious code designed to steal credentials, cryptocurrency wallets, API tokens, and corporate access.&lt;/p&gt;</description>
+			</item>
 			<item>
 				<title>Windows Dead Box (Disk Image) Forensics</title>
 				<link>https://ruysal.com/post/2022-03-11-Windows-Forensics/</link>
@@ -46,7 +53,7 @@
 				<link>https://ruysal.com/about/</link>
 				<pubDate>Sat, 01 Jan 0101 12:15:02 +0000</pubDate>
 				<guid>https://ruysal.com/about/</guid>
-				<description>&lt;p&gt;Hey, I&amp;rsquo;m Ramazan. I&amp;rsquo;ve been tinkering with technology and hacking since I was a kid, and this is my corner of the internet where I share some of that.&lt;/p&gt;&#xA;&lt;p&gt;I was born and raised in Turkey and went to college there, with a semester in California along the way. My first security job was an internship at NATO in Belgium, doing penetration testing. I then started my career in Amsterdam as a consultant in banking, pentesting web applications, before moving on to malware analysis and reverse engineering.&lt;/p&gt;</description>
+				<description>&lt;p&gt;Hey, I&amp;rsquo;m Ramazan. I&amp;rsquo;m a security engineer based in New York, currently working on detections, incident response, and threat intelligence at Atlassian.&lt;/p&gt;&#xA;&lt;p&gt;I grew up in Turkiye and have been hacking since I was a kid. After college, I interned at NATO in Belgium doing penetration testing, then moved to Amsterdam to continue web app pentesting. From there, I pivoted back to an old hobby: malware analysis and reverse engineering. In 2021, I joined Atlassian doing detection and response, moving over to New York in 2024.&lt;/p&gt;</description>
 			</item>
 	</channel>
 </rss>

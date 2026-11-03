@@ -1,134 +1,54 @@
 <!DOCTYPE html>
-<html lang="en-us">
+<html lang="en-us" data-theme="light">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title> Windows Dead Box (Disk Image) Forensics | </title>
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="all,follow">
-  <meta name="googlebot" content="index,follow,snippet,archive">
-  <meta property="og:url" content="https://ruysal.com/post/2022-03-11-Windows-Forensics/">
-	<meta property="og:title" content="Windows Dead Box (Disk Image) Forensics">
-	<meta property="og:description" content="TL;DR: In case you are responding to an active incident:
-There is simply A LOT to analyze in terms of forensic artifacts on Windows systems. The process can take a long time, and slow down the IR process. Below are some of the artifacts that tends to yield quick results.
-Make sure to switch to offline disk analysis on these tools and point them to the right disk!
-WinLogOnView: Which account was logged into? From what IP? For how long? When?
-Autoruns: List out all the persistence mechanisms in place
-Do not forget to target the disk you are analyzing with Analyze Offline System Shimcache (AppCompatCache): List of executed programs with date
-AMcache: Another list of programs executed on the system
-Files created in the past 7 days:
-Get-ChildItem -Force -Path D:\ -Recurse -ea silentlycontinue| ? {$_.CreationTime -gt (Get-Date).AddDays(-7)}">
-	<meta property="og:locale" content="en_us">
-	<meta property="og:type" content="article">
-		<meta property="article:section" content="post">
-		<meta property="article:published_time" content="2022-03-11T15:48:37+01:00">
-		<meta property="article:modified_time" content="2022-03-11T15:48:37+01:00">
-		<meta property="article:tag" content="Malware Analysis">
-		<meta property="article:tag" content="Incident Reponse">
-		<meta property="article:tag" content="Forensics Analysis">
-		<meta property="article:tag" content="Windows Forensics">
-
-  
-	<meta name="twitter:card" content="summary">
-	<meta name="twitter:title" content="Windows Dead Box (Disk Image) Forensics">
-	<meta name="twitter:description" content="TL;DR: In case you are responding to an active incident:
-There is simply A LOT to analyze in terms of forensic artifacts on Windows systems. The process can take a long time, and slow down the IR process. Below are some of the artifacts that tends to yield quick results.
-Make sure to switch to offline disk analysis on these tools and point them to the right disk!
-WinLogOnView: Which account was logged into? From what IP? For how long? When?
-Autoruns: List out all the persistence mechanisms in place
-Do not forget to target the disk you are analyzing with Analyze Offline System Shimcache (AppCompatCache): List of executed programs with date
-AMcache: Another list of programs executed on the system
-Files created in the past 7 days:
-Get-ChildItem -Force -Path D:\ -Recurse -ea silentlycontinue| ? {$_.CreationTime -gt (Get-Date).AddDays(-7)}">
-
-  
-  
-    
-  
-  
-  
-  
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-  
-
-  
-<link rel="icon" type="image/png" href="https://ruysal.com/images/favicon.ico" />
-
-  
-  
-  
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Windows Dead Box (Disk Image) Forensics — ruysal.com</title>
+<meta name="description" content="My notes on finding and analyzing useful DFIR artifacts in a Windows disk image.">
+<link rel="stylesheet" href="/css/editorial.css?v=0e5c4983f3e5daeb4fa5f0049542650c">
 </head>
+<body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header class="masthead">
+  <div class="bar">
+    <a class="home" href="/" aria-label="Home">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.4 12 3.6l8.5 6.8"/><path d="M5.8 9.4V20h12.4V9.4"/><path d="M10 20v-5.2h4V20"/></svg>
+      <span class="wordmark">ruysal<span>.com</span></span>
+    </a>
+    <nav class="nav" aria-label="Main navigation">
+      <a class="navlink" href="/about/">About</a>
+      <a class="navlink" href="/post/index.xml">RSS</a>
+      <div class="switch" role="group" aria-label="Colour theme">
+  <button type="button" data-theme-set="light" class="on" aria-pressed="true">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6"/></svg>
+    <span>Light</span>
+  </button>
+  <button type="button" data-theme-set="dark" aria-pressed="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.4A8.4 8.4 0 0 1 9.6 4a8.4 8.4 0 1 0 10.4 10.4Z"/></svg>
+    <span>Dark</span>
+  </button>
+</div>
 
-<body class="max-width mx-auto px3 ltr">
-  <div class="content index py4">
-
-    <header id="header">
-    <div id="title">
-    <h1></h1>
+    </nav>
   </div>
-  <div id="nav">
-    <ul>
-      <li class="icon">
-        <a href="#"><i class="fas fa-bars fa-2x"></i></a>
-      </li>
-      
-        <li><a href="/">Home</a></li>
-      
-        <li><a href="/about">About</a></li>
-      
-      <li>
-        <div class="theme-switch" role="group" aria-label="Color theme">
-          <button type="button" class="on" data-theme="light" aria-pressed="true">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Light
-          </button>
-          <button type="button" data-theme="dark" aria-pressed="false">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>Dark
-          </button>
-        </div>
-      </li>
-    </ul>
-  </div>
-
-<script>
-  
-  function setTheme(mode) {
-    var link = document.getElementById('theme-css');
-    if (!link) {
-      link = document.createElement('link');
-      link.id = 'theme-css';
-      link.rel = 'stylesheet';
-      document.head.appendChild(link);
-    }
-    link.href = '/css/style-' + mode + '.css';
-    document.documentElement.setAttribute('data-theme', mode);
-    document.querySelectorAll('.theme-switch button').forEach(function (b) {
-      var on = b.dataset.theme === mode;
-      b.classList.toggle('on', on);
-      b.setAttribute('aria-pressed', on);
-    });
-    if (mode === 'dark') localStorage.setItem('darkMode', 'true');
-    else localStorage.removeItem('darkMode');
-  }
-  document.querySelectorAll('.theme-switch button').forEach(function (b) {
-    b.addEventListener('click', function () { setTheme(b.dataset.theme); });
-  });
-  setTheme(localStorage.getItem('darkMode') ? 'dark' : 'light');
-</script>
 </header>
 
 
-    
-<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
-  <div class="content" itemprop="articleBody">
+
+
+
   
-    <h2><span><a href="https://ruysal.com/post/2022-03-11-Windows-Forensics/">Windows Dead Box (Disk Image) Forensics</a></span></h2>
     
-        <nav id="TableOfContents">
+  
+  
+
+
+<div class="shell">
+  
+  <aside class="rail">
+    <span class="label">On this page</span>
+    <nav id="TableOfContents" aria-label="Article contents">
   <ul>
     <li><a href="#tldr">TL;DR:</a></li>
     <li><a href="#before-you-begin">Before You Begin</a></li>
@@ -167,8 +87,59 @@ Get-ChildItem -Force -Path D:\ -Recurse -ea silentlycontinue| ? {$_.CreationTime
     </li>
   </ul>
 </nav>
-    
-    <h2 id="tldr">TL;DR:</h2>
+  </aside>
+  
+  <main id="main-content">
+    <header class="head">
+      
+      <p class="kicker">
+        <span class="label label--accent">Forensics</span><span class="dot">·</span>
+        <span class="label">11 March 2022</span>
+        <span class="dot">·</span><span class="label">19 min read</span>
+      </p>
+      
+      <h1>Windows Dead Box (Disk Image) Forensics</h1>
+    </header>
+    <details class="mobile-toc"><summary>On this page</summary><nav id="MobileTableOfContents" aria-label="Article contents">
+  <ul>
+    <li><a href="#tldr">TL;DR:</a></li>
+    <li><a href="#before-you-begin">Before You Begin</a></li>
+    <li><a href="#the-essentials">The essentials</a></li>
+    <li><a href="#persistence">Persistence</a></li>
+    <li><a href="#web-server">Web Server</a></li>
+    <li><a href="#general-logs-and-windows-event-logs">General Logs and Windows Event Logs</a></li>
+    <li><a href="#deposited-files--filesystem-artifacts">Deposited Files &amp; Filesystem Artifacts</a>
+      <ul>
+        <li><a href="#recently-accessed-created-and-modified-files">Recently Accessed, Created, and Modified Files</a></li>
+      </ul>
+    </li>
+    <li><a href="#evidence-of-program-execution">Evidence of Program Execution</a>
+      <ul>
+        <li><a href="#userassist">UserAssist</a></li>
+        <li><a href="#prefetch">Prefetch</a></li>
+        <li><a href="#superprefetch">SuperPrefetch</a></li>
+        <li><a href="#startupinfo">StartupInfo</a></li>
+        <li><a href="#crash-dumps">Crash Dumps</a></li>
+        <li><a href="#wmi-ccm_recently_used_apps">WMI CCM_Recently_Used_Apps</a></li>
+        <li><a href="#shimcache-appcompatcache">Shimcache (AppCompatCache)</a></li>
+        <li><a href="#amcache">AMcache</a></li>
+        <li><a href="#background-activity-moderator">Background Activity Moderator</a></li>
+      </ul>
+    </li>
+    <li><a href="#tools">Tools</a>
+      <ul>
+        <li><a href="#registry-explorer">Registry Explorer</a></li>
+        <li><a href="#zimmerman-tools">Zimmerman Tools</a></li>
+        <li><a href="#power-forensics">Power Forensics</a></li>
+        <li><a href="#regripper">RegRipper</a></li>
+        <li><a href="#autoruns">Autoruns</a></li>
+        <li><a href="#winlogonview">WinLogOnView</a></li>
+        <li><a href="#thor">THOR</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></details>
+    <article><h2 id="tldr">TL;DR:</h2>
 <p><strong>In case you are responding to an active incident:</strong></p>
 <blockquote>
 <p>There is simply <em>A LOT</em> to analyze in terms of forensic artifacts on
@@ -310,7 +281,7 @@ make the registry of the victim host available for analysis</p>
 </li>
 <li>
 <p>You can use the
-<!-- raw HTML omitted -->Registry Explorer<!-- raw HTML omitted -->
+<a href="#registry-explorer">Registry Explorer</a>
 tool to load offline registry hives from the disk.</p>
 </li>
 <li>
@@ -881,7 +852,7 @@ at <code>Program Files\Microsoft\Exchange Server\v15\Logging\ECP\Server</code></
 </ul>
 </li>
 <li>
-<p><!-- raw HTML omitted -->Registry Explorer<!-- raw HTML omitted -->
+<p><a href="#registry-explorer">Registry Explorer</a>
 already has a bookmark of this location</p>
 </li>
 <li>
@@ -925,94 +896,94 @@ and they will be loaded automatically</p>
 <ul>
 <li>
 <p>Successful RDP Logon:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-YAML" data-lang="YAML"><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">1149</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>:  <span style="color:#ae81ff">User authentication succeeded.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-RemoteConnectionManager%4Operational.evtx</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">4624</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">An account was successfully logged on.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">21</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#f92672">Remote Desktop Services</span>: <span style="color:#ae81ff">Session login succeeded.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">22</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#f92672">Remote Desktop Services</span>: <span style="color:#ae81ff">Shell start notification received.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span>
-</span></span></code></pre></div></li>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-YAML" data-lang="YAML"><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">1149</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w">  </span><span class="l">User authentication succeeded.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-RemoteConnectionManager%4Operational.evtx</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">4624</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w"> </span><span class="l">An account was successfully logged on.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">21</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w"> </span><span class="nt">Remote Desktop Services</span><span class="p">:</span><span class="w"> </span><span class="l">Session login succeeded.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">22</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w"> </span><span class="nt">Remote Desktop Services</span><span class="p">:</span><span class="w"> </span><span class="l">Shell start notification received.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span><span class="w">
+</span></span></span></code></pre></div></li>
 <li>
 <p>Unsuccessful RDP Logon:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-YAML" data-lang="YAML"><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">1149</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>:  <span style="color:#ae81ff">User authentication succeeded (Network connection, which occurs prior to the user authentication).</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-RemoteConnectionManager%4Operational.evtx</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">4625</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">An account failed to log on.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span>
-</span></span></code></pre></div></li>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-YAML" data-lang="YAML"><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">1149</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w">  </span><span class="l">User authentication succeeded (Network connection, which occurs prior to the user authentication).</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-RemoteConnectionManager%4Operational.evtx</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">4625</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w"> </span><span class="l">An account failed to log on.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span><span class="w">
+</span></span></span></code></pre></div></li>
 <li>
 <p>RDP Session Disconnect (windows close by the user):</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-YAML" data-lang="YAML"><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">24</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>:  <span style="color:#f92672">Remote Desktop Services</span>: <span style="color:#ae81ff">Session has been disconnected.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">40</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">Session XXX has been disconnected, reason code YYY.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">4779</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">A session was disconnected from a windows station.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">4634</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">An account was logged off.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span>
-</span></span></code></pre></div></li>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-YAML" data-lang="YAML"><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">24</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w">  </span><span class="nt">Remote Desktop Services</span><span class="p">:</span><span class="w"> </span><span class="l">Session has been disconnected.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">40</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w"> </span><span class="l">Session XXX has been disconnected, reason code YYY.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">4779</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w"> </span><span class="l">A session was disconnected from a windows station.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">4634</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w"> </span><span class="l">An account was logged off.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span><span class="w">
+</span></span></span></code></pre></div></li>
 <li>
 <p>RDP Session Disconnect (Start -&gt; Disconnect):</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-YAML" data-lang="YAML"><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">24</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>:  <span style="color:#f92672">Remote Desktop Services</span>: <span style="color:#ae81ff">Session has been disconnected.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">39</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">Session XXX has been disconnected, by session YYY.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">40</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">Session XXX has been disconnected, reason code YYY.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">4779</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">A session was disconnected from a window station.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">4634</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">An account was logged off.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span>
-</span></span></code></pre></div></li>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-YAML" data-lang="YAML"><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">24</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w">  </span><span class="nt">Remote Desktop Services</span><span class="p">:</span><span class="w"> </span><span class="l">Session has been disconnected.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">39</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w"> </span><span class="l">Session XXX has been disconnected, by session YYY.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">40</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w"> </span><span class="l">Session XXX has been disconnected, reason code YYY.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">4779</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w"> </span><span class="l">A session was disconnected from a window station.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">4634</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w"> </span><span class="l">An account was logged off.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span><span class="w">
+</span></span></span></code></pre></div></li>
 <li>
 <p>RDP Session Reconnect:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-YAML" data-lang="YAML"><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">1149</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>:  <span style="color:#ae81ff">User authentication succeeded.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-RemoteConnectionManager%4Operational.evtx</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">4624</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">An account was successfully logged on.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">25</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#f92672">Remote Desktop Services</span>: <span style="color:#ae81ff">Session reconnection succeeded.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">40</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">Session XXX has been disconnected, reason code YYY.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">4778</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">A session was reconnected from a window station.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span>
-</span></span></code></pre></div></li>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-YAML" data-lang="YAML"><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">1149</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w">  </span><span class="l">User authentication succeeded.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-RemoteConnectionManager%4Operational.evtx</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">4624</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w"> </span><span class="l">An account was successfully logged on.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">25</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w"> </span><span class="nt">Remote Desktop Services</span><span class="p">:</span><span class="w"> </span><span class="l">Session reconnection succeeded.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">40</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w"> </span><span class="l">Session XXX has been disconnected, reason code YYY.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">4778</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w"> </span><span class="l">A session was reconnected from a window station.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span><span class="w">
+</span></span></span></code></pre></div></li>
 <li>
 <p>RDP Session Logoff :</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-YAML" data-lang="YAML"><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">23</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>:  <span style="color:#f92672">Remote Desktop Services</span>: <span style="color:#ae81ff">Session logoff disconnected.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">4634</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">An account was logged off.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">4647</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">User-initiated logoff.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Event id</span>: <span style="color:#ae81ff">9009</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Description</span>: <span style="color:#ae81ff">The Desktop Window Manager has exited with code XXX.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">Path</span>: <span style="color:#ae81ff">%SystemRoot%\System32\Winevt\Logs\System.evtx</span>
-</span></span></code></pre></div></li>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-YAML" data-lang="YAML"><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">23</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w">  </span><span class="nt">Remote Desktop Services</span><span class="p">:</span><span class="w"> </span><span class="l">Session logoff disconnected.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">4634</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w"> </span><span class="l">An account was logged off.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">4647</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w"> </span><span class="l">User-initiated logoff.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\Security.evtx</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Event id</span><span class="p">:</span><span class="w"> </span><span class="m">9009</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Description</span><span class="p">:</span><span class="w"> </span><span class="l">The Desktop Window Manager has exited with code XXX.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">Path</span><span class="p">:</span><span class="w"> </span><span class="l">%SystemRoot%\System32\Winevt\Logs\System.evtx</span><span class="w">
+</span></span></span></code></pre></div></li>
 <li>
 <p>Reference: <a href="https://www.security-hive.com/post/rdp-forensics-logging-detection-and-forensics">RDP Forensics - Logging, Detection and Forensics</a></p>
 </li>
@@ -1116,19 +1087,13 @@ corresponding file in MetaData folder with <code>strings.exe</code>, or
 <code>notepad.exe</code>.</p>
 </li>
 </ul>
-</li>
-<li>
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#ae81ff">D:\Windows\SysWOW64\config\systemprofile\AppData\LocalLow\Microsoft\CryptnetUrlCache\Content\</span>
-</span></span><span style="display:flex;"><span><span style="color:#ae81ff">D:\Windows\SysWOW64\config\systemprofile\AppData\LocalLow\Microsoft\CryptnetUrlCache\MetaData\</span>
-</span></span><span style="display:flex;"><span><span style="color:#ae81ff">D:\Windows\System32\config\systemprofile\AppData\LocalLow\Microsoft\CryptnetUrlCache\Content\</span>
-</span></span><span style="display:flex;"><span><span style="color:#ae81ff">D:\Windows\System32\config\systemprofile\AppData\LocalLow\Microsoft\CryptnetUrlCache\MetaData\</span>
-</span></span><span style="display:flex;"><span><span style="color:#ae81ff">D:\Users\%USERNAME%\AppData\LocalLow\Microsoft\CryptnetUrlCache\Content\</span>
-</span></span><span style="display:flex;"><span><span style="color:#ae81ff">D:\Users\%USERNAME%\AppData\LocalLow\Microsoft\CryptnetUrlCache\MetaData\</span>
-</span></span></code></pre></div><!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-</li>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="l">D:\Windows\SysWOW64\config\systemprofile\AppData\LocalLow\Microsoft\CryptnetUrlCache\Content\</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="l">D:\Windows\SysWOW64\config\systemprofile\AppData\LocalLow\Microsoft\CryptnetUrlCache\MetaData\</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="l">D:\Windows\System32\config\systemprofile\AppData\LocalLow\Microsoft\CryptnetUrlCache\Content\</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="l">D:\Windows\System32\config\systemprofile\AppData\LocalLow\Microsoft\CryptnetUrlCache\MetaData\</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="l">D:\Users\%USERNAME%\AppData\LocalLow\Microsoft\CryptnetUrlCache\Content\</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="l">D:\Users\%USERNAME%\AppData\LocalLow\Microsoft\CryptnetUrlCache\MetaData\</span><span class="w">
+</span></span></span></code></pre></div></li>
 <li>
 <p>Further reading: <a href="https://thinkdfir.com/2020/07/30/certutil-download-artefacts/amp/">thinkdfir-certutil-download-artefacts</a></p>
 </li>
@@ -1255,7 +1220,7 @@ the bookmarks menu</li>
 automatically</p>
 <ul>
 <li>
-<p>Download <!-- raw HTML omitted -->RegRipper<!-- raw HTML omitted --></p>
+<p>Download <a href="https://github.com/keydet89/RegRipper3.0">RegRipper</a></p>
 </li>
 <li>
 <p>Unzip and execute <code>rr.exe</code> (GUI version)</p>
@@ -1701,28 +1666,72 @@ for. But you can add your own stuff too -if your license allows to it-.</p>
 <p>In my experience, THOR gave quite some FPs. For instance, on a
 default installation it said some files masquerade as JPGs and that
 they are not actually JPGs:</p>
-<pre><code>``` java
-MESSAGE: Suspicious file found
+<pre><code>MESSAGE: Suspicious file found
 FILE: D:\Windows\servicing\LCU\Package_for_RollupFix~31bf3856ad364e35~amd64~~17763.2565.1.7\amd64_microsoft-windows-f..toragereportservice_31bf3856ad364e35_10.0.17763.1697_none_7825694087316827\f\warning.jpg
 REASON_1: YARA rule Cloaked_as_JPG / Detects a non-JPEG file cloaked as
-```
 </code></pre>
 </li>
 </ul>
-
-  
-  </div>
 </article>
+    <nav class="post-topics" aria-label="Post topics"><span class="label">Topics</span> <a href="/tags/Malware-Analysis/">Malware Analysis</a><a href="/tags/Incident-Response/"></a><a href="/tags/Forensics-Analysis/">Forensics Analysis</a><a href="/tags/Windows-Forensics/">Windows Forensics</a></nav>
+  </main>
+</div>
 
+<footer>
+  <div class="bar">
+    <a class="home" href="/" aria-label="Home">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.4 12 3.6l8.5 6.8"/><path d="M5.8 9.4V20h12.4V9.4"/><path d="M10 20v-5.2h4V20"/></svg>
+      <span class="wordmark">ruysal<span>.com</span></span>
+    </a>
+    <nav class="nav" aria-label="Footer navigation">
+      <a class="navlink" href="/about/">About</a>
+      <a class="navlink" href="/post/index.xml">RSS</a>
+      <div class="switch" role="group" aria-label="Colour theme">
+  <button type="button" data-theme-set="light" class="on" aria-pressed="true">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6"/></svg>
+    <span>Light</span>
+  </button>
+  <button type="button" data-theme-set="dark" aria-pressed="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.4A8.4 8.4 0 0 1 9.6 4a8.4 8.4 0 1 0 10.4 10.4Z"/></svg>
+    <span>Dark</span>
+  </button>
+</div>
+
+    </nav>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var root=document.documentElement;
+    var buttons=[].slice.call(document.querySelectorAll('[data-theme-set]'));
+    function apply(t){root.setAttribute('data-theme',t);
+      buttons.forEach(function(b){var selected=b.getAttribute('data-theme-set')===t; b.classList.toggle('on',selected); b.setAttribute('aria-pressed',String(selected));});
+      try{localStorage.setItem('theme',t);}catch(e){}
+    }
+    var saved=null; try{saved=localStorage.getItem('theme');}catch(e){}
+    apply(saved === 'dark' ? 'dark' : 'light');
+    buttons.forEach(function(b){b.addEventListener('click',function(){apply(b.getAttribute('data-theme-set'));});});
 
     
-
-  </div>
+    var railLinks=[].slice.call(document.querySelectorAll('.rail nav a'));
+    var targets=railLinks.map(function(a){
+      return {a:a, el:document.getElementById(a.getAttribute('href').slice(1))};
+    }).filter(function(t){return t.el;});
+    if(targets.length){
+      var spy=function(){
+        var y=window.scrollY+130, cur=null;
+        targets.forEach(function(t){
+          if(t.el.getBoundingClientRect().top+window.scrollY<=y) cur=t;
+        });
+        railLinks.forEach(function(a){a.classList.remove('active');});
+        if(cur) cur.a.classList.add('active');
+      };
+      window.addEventListener('scroll',spy,{passive:true});
+      window.addEventListener('resize',spy);
+      spy();
+    }
+  })();
+</script>
 </body>
-
-<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
-<link rel="stylesheet" href=/css/custom.css>
-<script src=/lib/jquery/jquery.min.js></script>
-<script src=/js/main.js></script>
-<script src=/js/toc.js></script>
 </html>

@@ -1,121 +1,64 @@
 <!DOCTYPE html>
-<html lang="en-us">
+<html lang="en-us" data-theme="light">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title> Combining Multiple Design Patterns in Java | </title>
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="all,follow">
-  <meta name="googlebot" content="index,follow,snippet,archive">
-  <meta property="og:url" content="https://ruysal.com/post/2019-01-23-Combining-Multiple-Design-Patterns-in-Java/">
-	<meta property="og:title" content="Combining Multiple Design Patterns in Java">
-	<meta property="og:description" content="For my designs patterns course, I had to design an application combining multiple Design Patterns and implement it in Java. Below is the given project description :
-So, first of all we have to infer which design patterns we are supposed to use from the given text.
-First sentence indicates we should use Observer Pattern “Family of sensors” manufactured by different factories, so Abstract Factory Pattern it is Adaptability for SMS, so Adapter Pattern will be used Different commands will be executed, so Command Pattern should be used Single object creation, so Singleton Pattern will be used So, we are gonna have to combine 5 patterns to implement the application. First of all, let’s see what the final output of the program will be like, and how the main function is implemented.">
-	<meta property="og:locale" content="en_us">
-	<meta property="og:type" content="article">
-		<meta property="article:section" content="post">
-		<meta property="article:published_time" content="2019-01-23T19:15:02+00:00">
-		<meta property="article:modified_time" content="2019-01-23T19:15:02+00:00">
-		<meta property="article:tag" content="Java">
-		<meta property="article:tag" content="Design Patterns">
-		<meta property="article:tag" content="UML">
-
-  
-	<meta name="twitter:card" content="summary">
-	<meta name="twitter:title" content="Combining Multiple Design Patterns in Java">
-	<meta name="twitter:description" content="For my designs patterns course, I had to design an application combining multiple Design Patterns and implement it in Java. Below is the given project description :
-So, first of all we have to infer which design patterns we are supposed to use from the given text.
-First sentence indicates we should use Observer Pattern “Family of sensors” manufactured by different factories, so Abstract Factory Pattern it is Adaptability for SMS, so Adapter Pattern will be used Different commands will be executed, so Command Pattern should be used Single object creation, so Singleton Pattern will be used So, we are gonna have to combine 5 patterns to implement the application. First of all, let’s see what the final output of the program will be like, and how the main function is implemented.">
-
-  
-  
-    
-  
-  
-  
-  
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-  
-
-  
-<link rel="icon" type="image/png" href="https://ruysal.com/images/favicon.ico" />
-
-  
-  
-  
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Combining Multiple Design Patterns in Java — ruysal.com</title>
+<meta name="description" content="Design patterns in a mock system built with Java.">
+<link rel="stylesheet" href="/css/editorial.css?v=0e5c4983f3e5daeb4fa5f0049542650c">
 </head>
+<body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header class="masthead">
+  <div class="bar">
+    <a class="home" href="/" aria-label="Home">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.4 12 3.6l8.5 6.8"/><path d="M5.8 9.4V20h12.4V9.4"/><path d="M10 20v-5.2h4V20"/></svg>
+      <span class="wordmark">ruysal<span>.com</span></span>
+    </a>
+    <nav class="nav" aria-label="Main navigation">
+      <a class="navlink" href="/about/">About</a>
+      <a class="navlink" href="/post/index.xml">RSS</a>
+      <div class="switch" role="group" aria-label="Colour theme">
+  <button type="button" data-theme-set="light" class="on" aria-pressed="true">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6"/></svg>
+    <span>Light</span>
+  </button>
+  <button type="button" data-theme-set="dark" aria-pressed="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.4A8.4 8.4 0 0 1 9.6 4a8.4 8.4 0 1 0 10.4 10.4Z"/></svg>
+    <span>Dark</span>
+  </button>
+</div>
 
-<body class="max-width mx-auto px3 ltr">
-  <div class="content index py4">
-
-    <header id="header">
-    <div id="title">
-    <h1></h1>
+    </nav>
   </div>
-  <div id="nav">
-    <ul>
-      <li class="icon">
-        <a href="#"><i class="fas fa-bars fa-2x"></i></a>
-      </li>
-      
-        <li><a href="/">Home</a></li>
-      
-        <li><a href="/about">About</a></li>
-      
-      <li>
-        <div class="theme-switch" role="group" aria-label="Color theme">
-          <button type="button" class="on" data-theme="light" aria-pressed="true">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Light
-          </button>
-          <button type="button" data-theme="dark" aria-pressed="false">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>Dark
-          </button>
-        </div>
-      </li>
-    </ul>
-  </div>
-
-<script>
-  
-  function setTheme(mode) {
-    var link = document.getElementById('theme-css');
-    if (!link) {
-      link = document.createElement('link');
-      link.id = 'theme-css';
-      link.rel = 'stylesheet';
-      document.head.appendChild(link);
-    }
-    link.href = '/css/style-' + mode + '.css';
-    document.documentElement.setAttribute('data-theme', mode);
-    document.querySelectorAll('.theme-switch button').forEach(function (b) {
-      var on = b.dataset.theme === mode;
-      b.classList.toggle('on', on);
-      b.setAttribute('aria-pressed', on);
-    });
-    if (mode === 'dark') localStorage.setItem('darkMode', 'true');
-    else localStorage.removeItem('darkMode');
-  }
-  document.querySelectorAll('.theme-switch button').forEach(function (b) {
-    b.addEventListener('click', function () { setTheme(b.dataset.theme); });
-  });
-  setTheme(localStorage.getItem('darkMode') ? 'dark' : 'light');
-</script>
 </header>
 
 
-    
-<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
-  <div class="content" itemprop="articleBody">
+
+
+
   
-    <h2><span><a href="https://ruysal.com/post/2019-01-23-Combining-Multiple-Design-Patterns-in-Java/">Combining Multiple Design Patterns in Java</a></span></h2>
     
-    <p>For my designs patterns course, I had to design an application combining multiple Design Patterns and implement it in Java. Below is the given project description :</p>
+  
+  
+
+
+<div class="shell no-rail">
+  
+  <main id="main-content">
+    <header class="head">
+      
+      <p class="kicker">
+        <span class="label label--accent">Software Design Patterns</span><span class="dot">·</span>
+        <span class="label">23 January 2019</span>
+        <span class="dot">·</span><span class="label">7 min read</span>
+      </p>
+      
+      <h1>Combining Multiple Design Patterns in Java</h1>
+    </header>
+    
+    <article><p>For my designs patterns course, I had to design an application combining multiple Design Patterns and implement it in Java. Below is the given project description :</p>
 <p><img src="/assets/img/design-patterns/desc.png" alt="Project Description"></p>
 <p>So, first of all we have to infer which design patterns we are supposed to use from the given text.</p>
 <ul>
@@ -126,324 +69,324 @@ First sentence indicates we should use Observer Pattern “Family of sensors” 
 <li>Single object creation, so Singleton Pattern will be used</li>
 </ul>
 <p>So, we are gonna have to combine 5 patterns to implement the application. First of all, let&rsquo;s see what the final output of the program will be like, and how the main function is implemented.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MainProject</span>{
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> arg) {
-</span></span><span style="display:flex;"><span>        SingleObject logFile <span style="color:#f92672">=</span> SingleObject.<span style="color:#a6e22e">getInstance</span>();
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        SensorFactory factory;
-</span></span><span style="display:flex;"><span>        factory <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FactoryX();
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        AlarmForMotion alarm <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AlarmForMotion();
-</span></span><span style="display:flex;"><span>        SprinklerForSmoke sprinkler <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SprinklerForSmoke();
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        SensorForSmoke smokesensor <span style="color:#f92672">=</span>  factory.<span style="color:#a6e22e">createSmokeSensor</span>();
-</span></span><span style="display:flex;"><span>        SensorForMotion motionsensor <span style="color:#f92672">=</span> factory.<span style="color:#a6e22e">createMotionSensor</span>();
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        SensorSystem sensorSystem <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SensorSystem();
-</span></span><span style="display:flex;"><span>        sensorSystem.<span style="color:#a6e22e">register</span>((SensorListener) smokesensor);
-</span></span><span style="display:flex;"><span>        sensorSystem.<span style="color:#a6e22e">register</span>((SensorListener) motionsensor);
-</span></span><span style="display:flex;"><span>        sensorSystem.<span style="color:#a6e22e">notifyUser</span>();
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        HomeSecurityRemote remote <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HomeSecurityRemote();
-</span></span><span style="display:flex;"><span>        remote.<span style="color:#a6e22e">setCommand</span>(<span style="color:#66d9ef">new</span> StopAlarmCommand( alarm ));
-</span></span><span style="display:flex;"><span>        remote.<span style="color:#a6e22e">buttonPressed</span>();
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        remote.<span style="color:#a6e22e">setCommand</span>(<span style="color:#66d9ef">new</span> TurnOffSprinklerCommand(sprinkler));
-</span></span><span style="display:flex;"><span>        remote.<span style="color:#a6e22e">buttonPressed</span>();
-</span></span><span style="display:flex;"><span>	    }
-</span></span><span style="display:flex;"><span>	}</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MainProject</span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">arg</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">SingleObject</span><span class="w"> </span><span class="n">logFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SingleObject</span><span class="p">.</span><span class="na">getInstance</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">SensorFactory</span><span class="w"> </span><span class="n">factory</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">factory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">FactoryX</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">AlarmForMotion</span><span class="w"> </span><span class="n">alarm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AlarmForMotion</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">SprinklerForSmoke</span><span class="w"> </span><span class="n">sprinkler</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SprinklerForSmoke</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">SensorForSmoke</span><span class="w"> </span><span class="n">smokesensor</span><span class="w"> </span><span class="o">=</span><span class="w">  </span><span class="n">factory</span><span class="p">.</span><span class="na">createSmokeSensor</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">SensorForMotion</span><span class="w"> </span><span class="n">motionsensor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">factory</span><span class="p">.</span><span class="na">createMotionSensor</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">SensorSystem</span><span class="w"> </span><span class="n">sensorSystem</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SensorSystem</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">sensorSystem</span><span class="p">.</span><span class="na">register</span><span class="p">((</span><span class="n">SensorListener</span><span class="p">)</span><span class="w"> </span><span class="n">smokesensor</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">sensorSystem</span><span class="p">.</span><span class="na">register</span><span class="p">((</span><span class="n">SensorListener</span><span class="p">)</span><span class="w"> </span><span class="n">motionsensor</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">sensorSystem</span><span class="p">.</span><span class="na">notifyUser</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">HomeSecurityRemote</span><span class="w"> </span><span class="n">remote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HomeSecurityRemote</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">remote</span><span class="p">.</span><span class="na">setCommand</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">StopAlarmCommand</span><span class="p">(</span><span class="w"> </span><span class="n">alarm</span><span class="w"> </span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">remote</span><span class="p">.</span><span class="na">buttonPressed</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">remote</span><span class="p">.</span><span class="na">setCommand</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">TurnOffSprinklerCommand</span><span class="p">(</span><span class="n">sprinkler</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">remote</span><span class="p">.</span><span class="na">buttonPressed</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="p">}</span></span></span></code></pre></div>
 <p>First we create the Singleton object. Second, as per the requirements, family of sensors should be produced by different factories. We create the factory with FactoryX and use it to produce motion and smoke sensors. Then the sensors are triggered and the user is notified. The remote is used to start and stop the Alarm and the Sprinkler.</p>
 <p>So, we can see that (in order) Singleton, Observer, Abstract Factory and Command patterns have been used in Main. Only Adapter is missing, which is not directly called in main.</p>
 <p>Let&rsquo;s start with the Singleton Pattern, as it will be the easiest to implement.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SingleObject</span> {
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">//create an object of SingleObject</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> SingleObject instance <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SingleObject();
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">//make the constructor private so that this class cannot be</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">//instantiated</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#a6e22e">SingleObject</span>(){}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">//Get the only object available</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> SingleObject <span style="color:#a6e22e">getInstance</span>(){
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> instance;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">showMessage</span>(String s){
-</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(s<span style="color:#f92672">+</span><span style="color:#e6db74">&#34; detected&#34;</span>);
-</span></span><span style="display:flex;"><span>	    }
-</span></span><span style="display:flex;"><span>	}</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SingleObject</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">//create an object of SingleObject</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">SingleObject</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SingleObject</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">//make the constructor private so that this class cannot be</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">//instantiated</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="nf">SingleObject</span><span class="p">(){}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">//Get the only object available</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">SingleObject</span><span class="w"> </span><span class="nf">getInstance</span><span class="p">(){</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">instance</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">showMessage</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">s</span><span class="p">){</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">s</span><span class="o">+</span><span class="s">&#34; detected&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="p">}</span></span></span></code></pre></div>
 <p>This piece of code is pretty much the same in all the examples you would find with a quick google search. Only in the showMessage function, we print a statement (normally to a log file, but anyways) to see that the object is created and created only once.</p>
 <p>Now we can move on to the next line, creating the factory and the sensors. Let&rsquo;s see it in the class diagram first.</p>
 <p><img src="/assets/img/design-patterns/factory.png" alt="Abstract Factory Class Diagram"></p>
 <p>Let&rsquo;s start with implementing the interface first, then we will write the concrete classes.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">SensorFactory</span> {
-</span></span><span style="display:flex;"><span>		SensorForMotion <span style="color:#a6e22e">createMotionSensor</span>();
-</span></span><span style="display:flex;"><span>		SensorForSmoke <span style="color:#a6e22e">createSmokeSensor</span>();
-</span></span><span style="display:flex;"><span>	}</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">SensorFactory</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">		</span><span class="n">SensorForMotion</span><span class="w"> </span><span class="nf">createMotionSensor</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">		</span><span class="n">SensorForSmoke</span><span class="w"> </span><span class="nf">createSmokeSensor</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="p">}</span></span></span></code></pre></div>
 <p>Each factory will write code for this interface. In this scenario, I&rsquo;ve created only two factories, FactoryX and FactoryY. Following is the code for their concrete classes:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">FactoryX</span> <span style="color:#66d9ef">implements</span> SensorFactory {
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Override</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> SensorForMotion <span style="color:#a6e22e">createMotionSensor</span>() {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> XMotionSensor();
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Override</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> SensorForSmoke <span style="color:#a6e22e">createSmokeSensor</span>() {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> XSmokeSensor();
-</span></span><span style="display:flex;"><span>		}
-</span></span><span style="display:flex;"><span>	}</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">FactoryX</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">SensorFactory</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">SensorForMotion</span><span class="w"> </span><span class="nf">createMotionSensor</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">XMotionSensor</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">SensorForSmoke</span><span class="w"> </span><span class="nf">createSmokeSensor</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">XSmokeSensor</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">		</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="p">}</span></span></span></code></pre></div>
 <hr>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">FactoryY</span> <span style="color:#66d9ef">implements</span> SensorFactory {
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Override</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> SensorForMotion <span style="color:#a6e22e">createMotionSensor</span>() {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> YMotionSensor();
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Override</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> SensorForSmoke <span style="color:#a6e22e">createSmokeSensor</span>() {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> YSmokeSensor();
-</span></span><span style="display:flex;"><span>	    }
-</span></span><span style="display:flex;"><span>	}</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">FactoryY</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">SensorFactory</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">SensorForMotion</span><span class="w"> </span><span class="nf">createMotionSensor</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">YMotionSensor</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">SensorForSmoke</span><span class="w"> </span><span class="nf">createSmokeSensor</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">YSmokeSensor</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="p">}</span></span></span></code></pre></div>
 <p>Now let&rsquo;s take a look at the class diagram for the sensors.</p>
 <p><img src="/assets/img/design-patterns/sensors.png" alt="Sensors"></p>
 <p>SensorListener class is not of our concern right now, we will deal with it later when we implement the Observer Pattern. Again, let&rsquo;s start with the interfaces first, then move on to the concrete classes.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">SensorForSmoke</span> {  
-</span></span><span style="display:flex;"><span>		String <span style="color:#a6e22e">getDescription</span>();  
-</span></span><span style="display:flex;"><span>	}
-</span></span><span style="display:flex;"><span>	</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">SensorForSmoke</span><span class="w"> </span><span class="p">{</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">		</span><span class="n">String</span><span class="w"> </span><span class="nf">getDescription</span><span class="p">();</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span></span></span></code></pre></div>
 <hr>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">SensorForMotion</span> {
-</span></span><span style="display:flex;"><span>        String <span style="color:#a6e22e">getDescription</span>();
-</span></span><span style="display:flex;"><span>    }</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">SensorForMotion</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="nf">getDescription</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span></span></span></code></pre></div>
 <p>Normally you would have a better function than getDescription, but since our application is not supposed to work and instead just print stuff, we will just implement it like this.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">XSmokeSensor</span> <span style="color:#66d9ef">implements</span> SensorForSmoke, SensorListener {
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> String DESCRIPTION <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;This is the FactoryX made Smoke Sensor.&#34;</span>;
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">@Override</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> String <span style="color:#a6e22e">getDescription</span>() {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> DESCRIPTION;
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">detected</span>() {
-</span></span><span style="display:flex;"><span>            Sms sms <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SmokeSmsAdapter(<span style="color:#66d9ef">new</span> SmokeSms());
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Smoke Sensor - Created by Factory X&#34;</span>);
-</span></span><span style="display:flex;"><span>            sms.<span style="color:#a6e22e">sendMessage</span>(<span style="color:#e6db74">&#34;SMOKE detected&#34;</span>);
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>            SprinklerForSmoke sprinkler <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SprinklerForSmoke();
-</span></span><span style="display:flex;"><span>            TurnOnSprinklerCommand turnon <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> TurnOnSprinklerCommand(sprinkler);
-</span></span><span style="display:flex;"><span>            turnon.<span style="color:#a6e22e">execute</span>();
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>            SingleObject logFile <span style="color:#f92672">=</span> SingleObject.<span style="color:#a6e22e">getInstance</span>();
-</span></span><span style="display:flex;"><span>            logFile.<span style="color:#a6e22e">showMessage</span>(<span style="color:#e6db74">&#34;logfile: SMOKE&#34;</span>);
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    </span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">XSmokeSensor</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">SensorForSmoke</span><span class="p">,</span><span class="w"> </span><span class="n">SensorListener</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">DESCRIPTION</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;This is the FactoryX made Smoke Sensor.&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getDescription</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">DESCRIPTION</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">detected</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">Sms</span><span class="w"> </span><span class="n">sms</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SmokeSmsAdapter</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">SmokeSms</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Smoke Sensor - Created by Factory X&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">sms</span><span class="p">.</span><span class="na">sendMessage</span><span class="p">(</span><span class="s">&#34;SMOKE detected&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">SprinklerForSmoke</span><span class="w"> </span><span class="n">sprinkler</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SprinklerForSmoke</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">TurnOnSprinklerCommand</span><span class="w"> </span><span class="n">turnon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TurnOnSprinklerCommand</span><span class="p">(</span><span class="n">sprinkler</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">turnon</span><span class="p">.</span><span class="na">execute</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">SingleObject</span><span class="w"> </span><span class="n">logFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SingleObject</span><span class="p">.</span><span class="na">getInstance</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">logFile</span><span class="p">.</span><span class="na">showMessage</span><span class="p">(</span><span class="s">&#34;logfile: SMOKE&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span></span></span></code></pre></div>
 <hr>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">XMotionSensor</span> <span style="color:#66d9ef">implements</span> SensorForMotion, SensorListener {
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> String DESCRIPTION <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;This is the FactoryX made Motion Sensor.&#34;</span>;
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">@Override</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> String <span style="color:#a6e22e">getDescription</span>() {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> DESCRIPTION;
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">detected</span>() {
-</span></span><span style="display:flex;"><span>            Sms sms <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> MotionSmsAdapter(<span style="color:#66d9ef">new</span> MotionSms());
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Motion Sensor - Created by Factory X&#34;</span>);
-</span></span><span style="display:flex;"><span>            sms.<span style="color:#a6e22e">sendMessage</span>(<span style="color:#e6db74">&#34;MOTION detected&#34;</span>);
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>            <span style="color:#75715e">//I could have invoked the alarm directly, but this is better suited for command pattern</span>
-</span></span><span style="display:flex;"><span>            AlarmForMotion alarm <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AlarmForMotion();
-</span></span><span style="display:flex;"><span>            StartAlarmCommand start <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> StartAlarmCommand(alarm);
-</span></span><span style="display:flex;"><span>            start.<span style="color:#a6e22e">execute</span>();
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>            SingleObject logFile <span style="color:#f92672">=</span> SingleObject.<span style="color:#a6e22e">getInstance</span>();
-</span></span><span style="display:flex;"><span>            logFile.<span style="color:#a6e22e">showMessage</span>(<span style="color:#e6db74">&#34;logfile: MOTION&#34;</span>);
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">XMotionSensor</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">SensorForMotion</span><span class="p">,</span><span class="w"> </span><span class="n">SensorListener</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">DESCRIPTION</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;This is the FactoryX made Motion Sensor.&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getDescription</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">DESCRIPTION</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">detected</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">Sms</span><span class="w"> </span><span class="n">sms</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">MotionSmsAdapter</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">MotionSms</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Motion Sensor - Created by Factory X&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">sms</span><span class="p">.</span><span class="na">sendMessage</span><span class="p">(</span><span class="s">&#34;MOTION detected&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">//I could have invoked the alarm directly, but this is better suited for command pattern</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">AlarmForMotion</span><span class="w"> </span><span class="n">alarm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AlarmForMotion</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">StartAlarmCommand</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">StartAlarmCommand</span><span class="p">(</span><span class="n">alarm</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">start</span><span class="p">.</span><span class="na">execute</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">SingleObject</span><span class="w"> </span><span class="n">logFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SingleObject</span><span class="p">.</span><span class="na">getInstance</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">logFile</span><span class="p">.</span><span class="na">showMessage</span><span class="p">(</span><span class="s">&#34;logfile: MOTION&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span></span></span></code></pre></div>
 <p>Now that we have the Abstract Factory implemented, we get a better picture of how the sensors will work. And like I mentioned earlier, Adapter Pattern was not called in Main, but in the sensors. Let&rsquo;s see how the Adapter pattern is implemented in.</p>
 <p><img src="/assets/img/design-patterns/sms.png" alt="SMS class diagram"></p>
 <p>Interface first:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Sms</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">sendMessage</span>(String s);
-</span></span><span style="display:flex;"><span>	}</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">Sms</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">sendMessage</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">s</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="p">}</span></span></span></code></pre></div>
 <p>Concrete classes:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MotionSmsAdapter</span> <span style="color:#66d9ef">implements</span> Sms {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> MotionSms adaptee;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">MotionSmsAdapter</span>(MotionSms motionsms){
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">adaptee</span> <span style="color:#f92672">=</span> motionsms;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Override</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">sendMessage</span>(String s){
-</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;SMS from MOTION ADAPTER: &#34;</span> <span style="color:#f92672">+</span>s);
-</span></span><span style="display:flex;"><span>        <span style="color:#75715e">//here the message can be modified, adapted, whatever</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#75715e">//we will just print a slightly modified message, that&#39;s it</span>
-</span></span><span style="display:flex;"><span>	    }
-</span></span><span style="display:flex;"><span>	}</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MotionSmsAdapter</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Sms</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">MotionSms</span><span class="w"> </span><span class="n">adaptee</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">MotionSmsAdapter</span><span class="p">(</span><span class="n">MotionSms</span><span class="w"> </span><span class="n">motionsms</span><span class="p">){</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">adaptee</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">motionsms</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">sendMessage</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">s</span><span class="p">){</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;SMS from MOTION ADAPTER: &#34;</span><span class="w"> </span><span class="o">+</span><span class="n">s</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">//here the message can be modified, adapted, whatever</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">//we will just print a slightly modified message, that&#39;s it</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="p">}</span></span></span></code></pre></div>
 <hr>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SmokeSmsAdapter</span> <span style="color:#66d9ef">implements</span> Sms {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">private</span> SmokeSms adaptee;
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">SmokeSmsAdapter</span>(SmokeSms smokesms){
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">adaptee</span> <span style="color:#f92672">=</span> smokesms;
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">@Override</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">sendMessage</span>(String s){
-</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;SMS from SMOKE ADAPTER: &#34;</span> <span style="color:#f92672">+</span>s);
-</span></span><span style="display:flex;"><span>            <span style="color:#75715e">//here the message can be modified, adapted, whatever</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#75715e">//we will just print a slightly modified message, that&#39;s it</span>
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SmokeSmsAdapter</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Sms</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="n">SmokeSms</span><span class="w"> </span><span class="n">adaptee</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="nf">SmokeSmsAdapter</span><span class="p">(</span><span class="n">SmokeSms</span><span class="w"> </span><span class="n">smokesms</span><span class="p">){</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">this</span><span class="p">.</span><span class="na">adaptee</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">smokesms</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">sendMessage</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">s</span><span class="p">){</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;SMS from SMOKE ADAPTER: &#34;</span><span class="w"> </span><span class="o">+</span><span class="n">s</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">//here the message can be modified, adapted, whatever</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">//we will just print a slightly modified message, that&#39;s it</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span></span></span></code></pre></div>
 <hr>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MotionSms</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">sendMessage</span>(String s){
-</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;SMS from MOTION detector. Message is: &#34;</span><span style="color:#f92672">+</span>s);
-</span></span><span style="display:flex;"><span>            <span style="color:#75715e">//real SMS code goes here</span>
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MotionSms</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">sendMessage</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">s</span><span class="p">){</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;SMS from MOTION detector. Message is: &#34;</span><span class="o">+</span><span class="n">s</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">//real SMS code goes here</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span></span></span></code></pre></div>
 <hr>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SmokeSms</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">sendMessage</span>(String s){
-</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;SMS from SMOKE detector. Message is: &#34;</span><span style="color:#f92672">+</span>s);
-</span></span><span style="display:flex;"><span>            <span style="color:#75715e">//real SMS code goes here</span>
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SmokeSms</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">sendMessage</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">s</span><span class="p">){</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;SMS from SMOKE detector. Message is: &#34;</span><span class="o">+</span><span class="n">s</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">//real SMS code goes here</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span></span></span></code></pre></div>
 <p>Now let&rsquo;s look at how these sensors are used with Observer Pattern. Interface first:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">SensorListener</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">detected</span>();
-</span></span><span style="display:flex;"><span>    }</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">interface</span> <span class="nc">SensorListener</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">void</span><span class="w"> </span><span class="nf">detected</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span></span></span></code></pre></div>
 <p>&ldquo;detected&rdquo; functionality was implemented in previous classes. So the only thing left is this class:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#f92672">import</span> java.util.Enumeration;  
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">import</span> java.util.Vector;  
-</span></span><span style="display:flex;"><span>      
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SensorSystem</span> {  
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">private</span> Vector listeners <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Vector();  
-</span></span><span style="display:flex;"><span>      
-</span></span><span style="display:flex;"><span>     <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">register</span>(SensorListener sensorListener) {  
-</span></span><span style="display:flex;"><span>            listeners.<span style="color:#a6e22e">addElement</span>(sensorListener);  
-</span></span><span style="display:flex;"><span>      }  
-</span></span><span style="display:flex;"><span>      
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">notifyUser</span>() {  
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> (Enumeration e <span style="color:#f92672">=</span> listeners.<span style="color:#a6e22e">elements</span>(); e.<span style="color:#a6e22e">hasMoreElements</span>();) {  
-</span></span><span style="display:flex;"><span>                ((SensorListener) e.<span style="color:#a6e22e">nextElement</span>()).<span style="color:#a6e22e">detected</span>();  
-</span></span><span style="display:flex;"><span>	    }  
-</span></span><span style="display:flex;"><span>       }  
-</span></span><span style="display:flex;"><span>   }</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.Enumeration</span><span class="p">;</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.Vector</span><span class="p">;</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">      
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">class</span> <span class="nc">SensorSystem</span><span class="w"> </span><span class="p">{</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="n">Vector</span><span class="w"> </span><span class="n">listeners</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Vector</span><span class="p">();</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">      
+</span></span></span><span class="line"><span class="cl"><span class="w">     </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="n">SensorListener</span><span class="w"> </span><span class="n">sensorListener</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">listeners</span><span class="p">.</span><span class="na">addElement</span><span class="p">(</span><span class="n">sensorListener</span><span class="p">);</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="p">}</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">      
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">notifyUser</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Enumeration</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">listeners</span><span class="p">.</span><span class="na">elements</span><span class="p">();</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="na">hasMoreElements</span><span class="p">();)</span><span class="w"> </span><span class="p">{</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">((</span><span class="n">SensorListener</span><span class="p">)</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="na">nextElement</span><span class="p">()).</span><span class="na">detected</span><span class="p">();</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">	    </span><span class="p">}</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">       </span><span class="p">}</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="p">}</span></span></span></code></pre></div>
 <p>Here we register the events that took place and let the objects call their detected functions when the notifyUser is called.</p>
 <p>Now the only thing left is the Command pattern. In case you want to check on the Main function again to remember how it was called:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    AlarmForMotion alarm <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AlarmForMotion();
-</span></span><span style="display:flex;"><span>    SprinklerForSmoke sprinkler <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SprinklerForSmoke();
-</span></span><span style="display:flex;"><span>    .
-</span></span><span style="display:flex;"><span>    .
-</span></span><span style="display:flex;"><span>    HomeSecurityRemote remote <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HomeSecurityRemote();  
-</span></span><span style="display:flex;"><span>    remote.<span style="color:#a6e22e">setCommand</span>(<span style="color:#66d9ef">new</span> StopAlarmCommand( alarm ));  
-</span></span><span style="display:flex;"><span>    remote.<span style="color:#a6e22e">buttonPressed</span>();  
-</span></span><span style="display:flex;"><span>      
-</span></span><span style="display:flex;"><span>    remote.<span style="color:#a6e22e">setCommand</span>(<span style="color:#66d9ef">new</span> TurnOffSprinklerCommand(sprinkler));  
-</span></span><span style="display:flex;"><span>    remote.<span style="color:#a6e22e">buttonPressed</span>();</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="n">AlarmForMotion</span><span class="w"> </span><span class="n">alarm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AlarmForMotion</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">SprinklerForSmoke</span><span class="w"> </span><span class="n">sprinkler</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SprinklerForSmoke</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">HomeSecurityRemote</span><span class="w"> </span><span class="n">remote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HomeSecurityRemote</span><span class="p">();</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">remote</span><span class="p">.</span><span class="na">setCommand</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">StopAlarmCommand</span><span class="p">(</span><span class="w"> </span><span class="n">alarm</span><span class="w"> </span><span class="p">));</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">remote</span><span class="p">.</span><span class="na">buttonPressed</span><span class="p">();</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">      
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">remote</span><span class="p">.</span><span class="na">setCommand</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">TurnOffSprinklerCommand</span><span class="p">(</span><span class="n">sprinkler</span><span class="p">));</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">remote</span><span class="p">.</span><span class="na">buttonPressed</span><span class="p">();</span></span></span></code></pre></div>
 <p>The class diagram:
 <img src="/assets/img/design-patterns/command.png" alt="Command Pattern Class Diagram"></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Command</span> {  
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">execute</span>();  
-</span></span><span style="display:flex;"><span>    }</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">Command</span><span class="w"> </span><span class="p">{</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">execute</span><span class="p">();</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span></span></span></code></pre></div>
 <hr>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">HomeSecurityRemote</span> {
-</span></span><span style="display:flex;"><span>        Command command;
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">setCommand</span>(Command command) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">command</span> <span style="color:#f92672">=</span> command;
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">buttonPressed</span>() {
-</span></span><span style="display:flex;"><span>            command.<span style="color:#a6e22e">execute</span>();
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">HomeSecurityRemote</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Command</span><span class="w"> </span><span class="n">command</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">setCommand</span><span class="p">(</span><span class="n">Command</span><span class="w"> </span><span class="n">command</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">this</span><span class="p">.</span><span class="na">command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">command</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">buttonPressed</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">command</span><span class="p">.</span><span class="na">execute</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span></span></span></code></pre></div>
 <hr>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TurnOffSprinklerCommand</span> <span style="color:#66d9ef">implements</span> Command{
-</span></span><span style="display:flex;"><span>        SprinklerForSmoke sprinkler;
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">TurnOffSprinklerCommand</span>(SprinklerForSmoke sprinkler) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">super</span>();
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">sprinkler</span> <span style="color:#f92672">=</span> sprinkler;
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">execute</span>() {
-</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Turning off sprinkler.&#34;</span>);
-</span></span><span style="display:flex;"><span>            sprinkler.<span style="color:#a6e22e">turnOff</span>();
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">TurnOffSprinklerCommand</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Command</span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">SprinklerForSmoke</span><span class="w"> </span><span class="n">sprinkler</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="nf">TurnOffSprinklerCommand</span><span class="p">(</span><span class="n">SprinklerForSmoke</span><span class="w"> </span><span class="n">sprinkler</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kd">super</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">this</span><span class="p">.</span><span class="na">sprinkler</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sprinkler</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">execute</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Turning off sprinkler.&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">sprinkler</span><span class="p">.</span><span class="na">turnOff</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span></span></span></code></pre></div>
 <hr>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TurnOnSprinklerCommand</span> <span style="color:#66d9ef">implements</span> Command{
-</span></span><span style="display:flex;"><span>        SprinklerForSmoke sprinkler;
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">TurnOnSprinklerCommand</span>(SprinklerForSmoke sprinkler) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">super</span>();
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">sprinkler</span> <span style="color:#f92672">=</span> sprinkler;
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">execute</span>() {
-</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Turning on sprinkler.&#34;</span>);
-</span></span><span style="display:flex;"><span>            sprinkler.<span style="color:#a6e22e">turnOn</span>();
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">TurnOnSprinklerCommand</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Command</span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">SprinklerForSmoke</span><span class="w"> </span><span class="n">sprinkler</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="nf">TurnOnSprinklerCommand</span><span class="p">(</span><span class="n">SprinklerForSmoke</span><span class="w"> </span><span class="n">sprinkler</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kd">super</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">this</span><span class="p">.</span><span class="na">sprinkler</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sprinkler</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">execute</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Turning on sprinkler.&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">sprinkler</span><span class="p">.</span><span class="na">turnOn</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span></span></span></code></pre></div>
 <hr>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">StartAlarmCommand</span> <span style="color:#66d9ef">implements</span> Command{  
-</span></span><span style="display:flex;"><span>        AlarmForMotion alarm;  
-</span></span><span style="display:flex;"><span>      
-</span></span><span style="display:flex;"><span>     <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">StartAlarmCommand</span>(AlarmForMotion alarm) {  
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">super</span>();  
-</span></span><span style="display:flex;"><span>     <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">alarm</span> <span style="color:#f92672">=</span> alarm;  
-</span></span><span style="display:flex;"><span>      }  
-</span></span><span style="display:flex;"><span>      
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">execute</span>() {  
-</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Starting Alarm.&#34;</span>);  
-</span></span><span style="display:flex;"><span>      alarm.<span style="color:#a6e22e">start</span>();  
-</span></span><span style="display:flex;"><span>      }  
-</span></span><span style="display:flex;"><span>    }</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">StartAlarmCommand</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Command</span><span class="p">{</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">AlarmForMotion</span><span class="w"> </span><span class="n">alarm</span><span class="p">;</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">      
+</span></span></span><span class="line"><span class="cl"><span class="w">     </span><span class="kd">public</span><span class="w"> </span><span class="nf">StartAlarmCommand</span><span class="p">(</span><span class="n">AlarmForMotion</span><span class="w"> </span><span class="n">alarm</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kd">super</span><span class="p">();</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">     </span><span class="k">this</span><span class="p">.</span><span class="na">alarm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">alarm</span><span class="p">;</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="p">}</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">      
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">execute</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Starting Alarm.&#34;</span><span class="p">);</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="n">alarm</span><span class="p">.</span><span class="na">start</span><span class="p">();</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="p">}</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span></span></span></code></pre></div>
 <hr>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">StopAlarmCommand</span> <span style="color:#66d9ef">implements</span> Command{
-</span></span><span style="display:flex;"><span>        AlarmForMotion alarm;
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">StopAlarmCommand</span>(AlarmForMotion alarm) {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">super</span>();
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">alarm</span> <span style="color:#f92672">=</span> alarm;
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">execute</span>() {
-</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Stopping Alarm.&#34;</span>);
-</span></span><span style="display:flex;"><span>            alarm.<span style="color:#a6e22e">stop</span>();
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">StopAlarmCommand</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Command</span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">AlarmForMotion</span><span class="w"> </span><span class="n">alarm</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="nf">StopAlarmCommand</span><span class="p">(</span><span class="n">AlarmForMotion</span><span class="w"> </span><span class="n">alarm</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kd">super</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">this</span><span class="p">.</span><span class="na">alarm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">alarm</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">execute</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Stopping Alarm.&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">alarm</span><span class="p">.</span><span class="na">stop</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span></span></span></code></pre></div>
 <hr>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SprinklerForSmoke</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span>  <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">turnOn</span>() {
-</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Sprinkler is on&#34;</span>);
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">turnOff</span>() {
-</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Sprinkler is off&#34;</span>);
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SprinklerForSmoke</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">turnOn</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Sprinkler is on&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">turnOff</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Sprinkler is off&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span></span></span></code></pre></div>
 <hr>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AlarmForMotion</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">start</span>() {
-</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Alarm Started..&#34;</span>);
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">stop</span>() {
-</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Alarm stopped..&#34;</span>);
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">AlarmForMotion</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">void</span><span class="w"> </span><span class="nf">start</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Alarm Started..&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">void</span><span class="w"> </span><span class="nf">stop</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Alarm stopped..&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span></span></span></code></pre></div>
 <p>And with the command pattern finished, we are done with the program. Here is the final class diagram:
 <img src="/assets/img/design-patterns/uml.png" alt="Final class diagram"></p>
 <p>I would&rsquo;ve preferred to put down a references/resources list, but unfortunately I did not keep track of that. But it was all in pretty much the first page results for related pattern name searches.</p>
@@ -451,20 +394,66 @@ First sentence indicates we should use Observer Pattern “Family of sensors” 
 <p>You can check the  <a href="/assets/DesignPatternsCode/DesignPatternsCode.zip">Github Repo</a> for the whole code.
 That&rsquo;s it for this post, and feel free to reach out for adjustments/improvements on the post.</p>
 <p>BTW, I fuckin hate Java, just sayin'</p>
-
-  
-  </div>
 </article>
+    <nav class="post-topics" aria-label="Post topics"><span class="label">Topics</span> <a href="/tags/Java/">Java</a><a href="/tags/Design-Patterns/">Design Patterns</a><a href="/tags/UML/">UML</a></nav>
+  </main>
+</div>
 
+<footer>
+  <div class="bar">
+    <a class="home" href="/" aria-label="Home">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.4 12 3.6l8.5 6.8"/><path d="M5.8 9.4V20h12.4V9.4"/><path d="M10 20v-5.2h4V20"/></svg>
+      <span class="wordmark">ruysal<span>.com</span></span>
+    </a>
+    <nav class="nav" aria-label="Footer navigation">
+      <a class="navlink" href="/about/">About</a>
+      <a class="navlink" href="/post/index.xml">RSS</a>
+      <div class="switch" role="group" aria-label="Colour theme">
+  <button type="button" data-theme-set="light" class="on" aria-pressed="true">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6"/></svg>
+    <span>Light</span>
+  </button>
+  <button type="button" data-theme-set="dark" aria-pressed="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.4A8.4 8.4 0 0 1 9.6 4a8.4 8.4 0 1 0 10.4 10.4Z"/></svg>
+    <span>Dark</span>
+  </button>
+</div>
+
+    </nav>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var root=document.documentElement;
+    var buttons=[].slice.call(document.querySelectorAll('[data-theme-set]'));
+    function apply(t){root.setAttribute('data-theme',t);
+      buttons.forEach(function(b){var selected=b.getAttribute('data-theme-set')===t; b.classList.toggle('on',selected); b.setAttribute('aria-pressed',String(selected));});
+      try{localStorage.setItem('theme',t);}catch(e){}
+    }
+    var saved=null; try{saved=localStorage.getItem('theme');}catch(e){}
+    apply(saved === 'dark' ? 'dark' : 'light');
+    buttons.forEach(function(b){b.addEventListener('click',function(){apply(b.getAttribute('data-theme-set'));});});
 
     
-
-  </div>
+    var railLinks=[].slice.call(document.querySelectorAll('.rail nav a'));
+    var targets=railLinks.map(function(a){
+      return {a:a, el:document.getElementById(a.getAttribute('href').slice(1))};
+    }).filter(function(t){return t.el;});
+    if(targets.length){
+      var spy=function(){
+        var y=window.scrollY+130, cur=null;
+        targets.forEach(function(t){
+          if(t.el.getBoundingClientRect().top+window.scrollY<=y) cur=t;
+        });
+        railLinks.forEach(function(a){a.classList.remove('active');});
+        if(cur) cur.a.classList.add('active');
+      };
+      window.addEventListener('scroll',spy,{passive:true});
+      window.addEventListener('resize',spy);
+      spy();
+    }
+  })();
+</script>
 </body>
-
-<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
-<link rel="stylesheet" href=/css/custom.css>
-<script src=/lib/jquery/jquery.min.js></script>
-<script src=/js/main.js></script>
-<script src=/js/toc.js></script>
 </html>
